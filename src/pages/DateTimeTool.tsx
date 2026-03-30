@@ -20,7 +20,7 @@ function describeCron(expr: string) {
   return parts.map((p, i) => `${cronFields[i]}: ${p}`).join(" | ");
 }
 
-const timezones = Intl.supportedValuesOf?.("timeZone")?.slice(0, 50) ?? [
+const timezones = (Intl as any).supportedValuesOf?.("timeZone")?.slice(0, 50) ?? [
   "UTC", "America/New_York", "America/Los_Angeles", "Europe/London", "Europe/Berlin",
   "Asia/Tokyo", "Asia/Shanghai", "Australia/Sydney", "America/Chicago", "Asia/Kolkata",
 ];
