@@ -5,6 +5,13 @@ import {
   Fingerprint,
   Palette,
   Wrench,
+  KeyRound,
+  GitCompare,
+  Users,
+  FileText,
+  Hash,
+  Clock,
+  Regex,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -27,6 +34,13 @@ const tools = [
   { title: "URL Encode", url: "/url-encode", icon: Link },
   { title: "UUID Generator", url: "/uuid", icon: Fingerprint },
   { title: "Color Converter", url: "/color", icon: Palette },
+  { title: "JWT Decoder", url: "/jwt", icon: KeyRound },
+  { title: "API Diff", url: "/diff", icon: GitCompare },
+  { title: "Fake Data", url: "/fake-data", icon: Users },
+  { title: "Env Generator", url: "/env", icon: FileText },
+  { title: "Hash Generator", url: "/hash", icon: Hash },
+  { title: "Date & Time", url: "/datetime", icon: Clock },
+  { title: "Regex", url: "/regex", icon: Regex },
 ];
 
 export function AppSidebar() {
