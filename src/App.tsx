@@ -10,6 +10,13 @@ import Base64Tool from "./pages/Base64Tool";
 import UrlEncodeTool from "./pages/UrlEncodeTool";
 import UuidGenerator from "./pages/UuidGenerator";
 import ColorConverter from "./pages/ColorConverter";
+import JwtDecoder from "./pages/JwtDecoder";
+import ApiDiffTool from "./pages/ApiDiffTool";
+import FakeDataGenerator from "./pages/FakeDataGenerator";
+import EnvGenerator from "./pages/EnvGenerator";
+import HashGenerator from "./pages/HashGenerator";
+import DateTimeTool from "./pages/DateTimeTool";
+import RegexPlayground from "./pages/RegexPlayground";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +35,13 @@ const App = () => (
             <Route path="/url-encode" element={<UrlEncodeTool />} />
             <Route path="/uuid" element={<UuidGenerator />} />
             <Route path="/color" element={<ColorConverter />} />
+            <Route path="/jwt" element={<JwtDecoder />} />
+            <Route path="/diff" element={<ApiDiffTool />} />
+            <Route path="/fake-data" element={<FakeDataGenerator />} />
+            <Route path="/env" element={<EnvGenerator />} />
+            <Route path="/hash" element={<HashGenerator />} />
+            <Route path="/datetime" element={<DateTimeTool />} />
+            <Route path="/regex" element={<RegexPlayground />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

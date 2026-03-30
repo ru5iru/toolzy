@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex } from "lucide-react";
 
 const tools = [
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
@@ -7,6 +7,13 @@ const tools = [
   { title: "URL Encode", description: "Encode & decode URL components", url: "/url-encode", icon: Link },
   { title: "UUID Generator", description: "Generate v4 UUIDs instantly", url: "/uuid", icon: Fingerprint },
   { title: "Color Converter", description: "Convert between HEX, RGB & HSL", url: "/color", icon: Palette },
+  { title: "JWT Decoder", description: "Decode JWTs with expiry visualization", url: "/jwt", icon: KeyRound },
+  { title: "API Diff", description: "Compare JSON responses & spot differences", url: "/diff", icon: GitCompare },
+  { title: "Fake Data", description: "Generate realistic test data in JSON", url: "/fake-data", icon: Users },
+  { title: "Env Generator", description: "Build .env files from templates", url: "/env", icon: FileText },
+  { title: "Hash Generator", description: "SHA-1, SHA-256, SHA-384, SHA-512", url: "/hash", icon: Hash },
+  { title: "Date & Time", description: "Timestamps, timezones & cron builder", url: "/datetime", icon: Clock },
+  { title: "Regex Playground", description: "Live regex tester with match highlighting", url: "/regex", icon: Regex },
 ];
 
 const Index = () => {
