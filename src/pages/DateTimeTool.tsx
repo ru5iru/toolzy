@@ -59,6 +59,7 @@ const DateTimeTool = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
+      <ToolSEO title="Date & Time Toolkit" description="Convert Unix timestamps to human dates, compare timezones, and build cron expressions with a visual cron generator. Free online date/time tools." canonicalPath="/datetime" keywords={["Unix timestamp converter", "timezone converter", "cron expression generator", "epoch converter", "date time tool"]} faq={[{question:"How do I convert a Unix timestamp?",answer:"Enter a Unix timestamp (seconds since epoch) and click Convert to see the human-readable date, or enter a date to get the Unix timestamp."},{question:"What is a cron expression?",answer:"A cron expression defines a schedule using five fields: minute, hour, day of month, month, and day of week. This tool helps you build and visualize cron schedules."}]} howToSteps={["Enter a Unix timestamp or date to convert","Use the timezone section to compare times across zones","Build cron expressions using the interactive generator"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Date & Time Toolkit</h1>
 
       {/* Unix ↔ Human */}

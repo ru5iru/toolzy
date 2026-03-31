@@ -59,6 +59,7 @@ const ApiDiffTool = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="API Response Diff Tool" description="Compare two JSON API responses and highlight differences visually. Ignore array order, spot added/removed/changed fields instantly." canonicalPath="/diff" keywords={["JSON diff", "API response compare", "JSON compare online", "diff tool", "compare JSON objects"]} faq={[{question:"How do I compare two JSON responses?",answer:"Paste the first JSON response in the left panel and the second in the right panel. Click Compare to see all differences highlighted with added, removed, and changed indicators."},{question:"Can I ignore array order?",answer:"Yes. Toggle the 'Ignore array order' option to compare arrays by content rather than position."}]} howToSteps={["Paste the first JSON response in Response A","Paste the second JSON response in Response B","Optionally toggle 'Ignore array order'","Click Compare to see highlighted differences"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">API Response Diff</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">

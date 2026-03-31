@@ -31,6 +31,7 @@ const UuidGenerator = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <ToolSEO title="UUID Generator" description="Generate random RFC 4122 v4 UUIDs instantly. Click to copy individual UUIDs or copy all at once. Free, no sign-up required." canonicalPath="/uuid" keywords={["UUID generator", "GUID generator", "random UUID", "UUID v4", "generate UUID online"]} faq={[{question:"What is a UUID?",answer:"A UUID (Universally Unique Identifier) is a 128-bit identifier guaranteed to be unique across space and time. Version 4 UUIDs are randomly generated."},{question:"Are these UUIDs truly unique?",answer:"UUID v4 uses cryptographically random numbers. The probability of collision is astronomically low — about 1 in 5.3×10^36."}]} howToSteps={["Click Regenerate to create 5 new UUIDs","Click any UUID to copy it to your clipboard","Click Copy All to copy all UUIDs at once"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground mb-6">UUID Generator</h1>
       <div className="space-y-2 mb-4">
         {uuids.map((uuid, i) => (

@@ -44,6 +44,7 @@ const ColorConverter = () => {
 
   return (
     <div className="max-w-lg mx-auto">
+      <ToolSEO title="Color Converter" description="Convert colors between HEX, RGB, and HSL formats instantly. Free online color converter with live preview." canonicalPath="/color" keywords={["color converter", "HEX to RGB", "RGB to HSL", "color picker", "convert color online"]} faq={[{question:"How do I convert HEX to RGB?",answer:"Enter a 6-digit HEX color code (e.g., #3B82F6) and the tool instantly shows the equivalent RGB and HSL values."},{question:"What color formats are supported?",answer:"This tool converts between HEX (e.g., #FF5733), RGB (e.g., rgb(255,87,51)), and HSL (e.g., hsl(11,100%,60%))."}]} howToSteps={["Enter a HEX color code in the input field","See the live color preview and RGB/HSL values","Click any value to copy it to your clipboard"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground mb-6">Color Converter</h1>
       <div className="space-y-6">
         <div className="flex items-center gap-4">

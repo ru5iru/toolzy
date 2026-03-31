@@ -59,6 +59,7 @@ const RegexPlayground = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="Regex Playground" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Regex Playground</h1>
 
       <div>

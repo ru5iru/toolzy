@@ -38,6 +38,7 @@ const HashGenerator = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="Hash Generator" description="Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes online using the native Web Crypto API. Free, client-side, no data sent to servers." canonicalPath="/hash" keywords={["hash generator", "SHA-256 hash", "SHA-512", "SHA-1 hash online", "generate hash"]} faq={[{question:"What hash algorithms are supported?",answer:"SHA-1, SHA-256, SHA-384, and SHA-512 are supported via the browser's native Web Crypto API."},{question:"Why is MD5 not available?",answer:"MD5 is not supported by the Web Crypto API. It is also considered cryptographically broken and should not be used for security purposes."}]} howToSteps={["Enter text in the input field","Click Generate Hashes to compute all hash values","Click any hash to copy it to your clipboard"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Hash Generator</h1>
       <p className="text-xs text-muted-foreground">MD5 is not available in browser Web Crypto API. bcrypt requires a server. SHA family is supported natively.</p>
       <div className="space-y-2">
