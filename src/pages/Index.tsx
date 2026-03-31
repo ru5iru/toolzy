@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex } from "lucide-react";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
