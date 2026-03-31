@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const hexToRgb = (hex: string) => {
   const h = hex.replace("#", "");

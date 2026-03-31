@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const commonCrons = [
   { label: "Every minute", expr: "* * * * *" },
