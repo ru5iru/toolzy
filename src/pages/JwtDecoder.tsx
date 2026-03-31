@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { ToolSEO } from "@/components/ToolSEO";
 
 function decodeJwt(token: string) {
   const parts = token.split(".");
@@ -54,6 +55,7 @@ const JwtDecoder = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="JWT Decoder" description="Decode and inspect JSON Web Tokens online. View header, payload, claims, and expiration status. Free JWT debugger." canonicalPath="/jwt" keywords={["JWT decoder", "JWT debugger", "decode JWT online", "JSON Web Token", "JWT expiration check"]} faq={[{question:"What is a JWT?",answer:"A JSON Web Token (JWT) is a compact, URL-safe token format used for authentication and authorization. It consists of three parts: header, payload, and signature."},{question:"Can this tool verify JWT signatures?",answer:"This tool decodes and displays JWT contents (header and payload). Signature verification requires the secret key and is typically done server-side."}]} howToSteps={["Paste your JWT token into the input field","Click Decode to view the header and payload","Check the expiration status and claim details"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">JWT Decoder</h1>
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground uppercase tracking-wider">Paste JWT</label>

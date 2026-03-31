@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "Sarah", "Daniel", "Emma", "Chris", "Olivia", "Alex", "Sophia", "Liam", "Mia", "Noah"];
 const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "White", "Harris", "Clark", "Lewis"];
@@ -48,6 +49,7 @@ const FakeDataGenerator = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="Fake Data Generator" description="Generate realistic fake user data in JSON format for testing and development. Includes names, emails, addresses, and UUIDs." canonicalPath="/fake-data" keywords={["fake data generator", "mock data", "test data generator", "random user data", "JSON test data"]} faq={[{question:"What kind of fake data can I generate?",answer:"Generate realistic user profiles with names, emails, phone numbers, addresses, ages, and UUIDs — all in JSON format."},{question:"Can I control how many records are generated?",answer:"Yes, specify any count from 1 to 100 records per generation."}]} howToSteps={["Set the number of records to generate (1-100)","Click Generate to create fake user data","Click Copy to copy the JSON output"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Fake Data Generator</h1>
       <div className="flex items-end gap-4">
         <div className="space-y-2">

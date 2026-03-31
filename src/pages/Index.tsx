@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex } from "lucide-react";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
@@ -21,6 +22,17 @@ const Index = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <ToolSEO
+        title="DevTools"
+        description="Free collection of online developer tools — JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, and more."
+        canonicalPath="/"
+        keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator"]}
+        faq={[
+          { question: "What developer tools are available?", answer: "DevTools offers 12+ free utilities including JSON formatter, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, and regex playground." },
+          { question: "Are these developer tools free?", answer: "Yes, all tools are 100% free, run entirely in your browser, and require no sign-up or installation." },
+          { question: "Is my data safe?", answer: "All processing happens client-side in your browser. No data is sent to any server." },
+        ]}
+      />
       <div className="mb-10">
         <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Developer Tools</h1>
         <p className="text-muted-foreground">A collection of handy utilities for everyday development.</p>

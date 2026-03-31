@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { ToolSEO } from "@/components/ToolSEO";
 
 const templates: Record<string, string> = {
   Node: `NODE_ENV=development
@@ -83,6 +84,7 @@ const EnvGenerator = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <ToolSEO title="Environment File Generator" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Copy or download instantly." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Environment Generator</h1>
       <div>
         <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Templates</label>
