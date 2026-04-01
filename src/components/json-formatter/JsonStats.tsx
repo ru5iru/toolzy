@@ -19,7 +19,7 @@ const getDepth = (obj: any, current = 0): number => {
 const countKeys = (obj: any): number => {
   if (obj === null || typeof obj !== "object") return 0;
   if (Array.isArray(obj)) return obj.reduce((sum, item) => sum + countKeys(item), 0);
-  return Object.keys(obj).length + Object.values(obj).reduce((sum: number, v) => sum + countKeys(v), 0);
+  return Object.keys(obj).length + Object.values(obj).reduce((sum: number, v: any) => sum + countKeys(v), 0);
 };
 
 const formatBytes = (bytes: number) => {
