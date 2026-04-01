@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -7,13 +7,36 @@ import { ToolSEO } from "@/components/ToolSEO";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Download, Copy, Minimize2, Maximize2, Upload, Search, X } from "lucide-react";
+import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link } from "lucide-react";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
 import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
+import { JsonStats } from "@/components/json-formatter/JsonStats";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
 
 type IndentOption = "2" | "4" | "tab";
+
+const compressToUrl = (json: string): string => {
+  try {
+    const encoded = btoa(unescape(encodeURIComponent(json)));
+    const url = new URL(window.location.href);
+    url.searchParams.set("d", encoded);
+    return url.toString();
+  } catch {
+    return "";
+  }
+};
+
+const decompressFromUrl = (): string | null => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const d = params.get("d");
+    if (!d) return null;
+    return decodeURIComponent(escape(atob(d)));
+  } catch {
+    return null;
+  }
+};
 
 const JsonFormatter = () => {
   const [input, setInput] = useState("");
@@ -25,6 +48,18 @@ const JsonFormatter = () => {
   const [treeKey, setTreeKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load from URL on mount
+  useEffect(() => {
+    const fromUrl = decompressFromUrl();
+    if (fromUrl) {
+      setInput(fromUrl);
+      try {
+        setOutput(JSON.stringify(JSON.parse(fromUrl), null, 2));
+        toast.success("Loaded JSON from shared link");
+      } catch { /* invalid */ }
+    }
+  }, []);
 
   const getIndent = (): string | number => indentOption === "tab" ? "\t" : Number(indentOption);
 
@@ -69,6 +104,23 @@ const JsonFormatter = () => {
   const expandAll = () => { setTreeExpanded(true); setTreeKey((k) => k + 1); };
   const collapseAll = () => { setTreeExpanded(false); setTreeKey((k) => k + 1); };
 
+  const shareLink = () => {
+    if (!input.trim()) { toast.error("No JSON to share"); return; }
+    try {
+      JSON.parse(input);
+      const url = compressToUrl(input);
+      if (url.length > 8000) {
+        toast.error("JSON too large for URL sharing. Try a smaller payload.");
+        return;
+      }
+      navigator.clipboard.writeText(url);
+      window.history.replaceState(null, "", url);
+      toast.success("Shareable link copied to clipboard!");
+    } catch {
+      toast.error("Fix JSON errors before sharing");
+    }
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -108,7 +160,7 @@ const JsonFormatter = () => {
         <PrivacyBadge />
       </div>
 
-      {/* Action buttons — moved to top */}
+      {/* Action buttons */}
       <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-lg bg-card border border-border">
         <Button onClick={format}>Format</Button>
         <Button variant="secondary" onClick={minify}><Minimize2 className="w-4 h-4 mr-1" /> Minify</Button>
@@ -118,6 +170,7 @@ const JsonFormatter = () => {
 
         <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFileUpload} className="hidden" />
         <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="w-3 h-3 mr-1" /> Upload</Button>
+        <Button variant="outline" size="sm" onClick={shareLink} disabled={!input}><Share2 className="w-3 h-3 mr-1" /> Share</Button>
 
         <div className="border-l border-border h-6 mx-1" />
 
@@ -172,6 +225,13 @@ const JsonFormatter = () => {
           </div>
         </div>
       </div>
+
+      {/* Stats bar */}
+      {parsedData !== null && (
+        <div className="mb-4 p-2 px-3 rounded-lg bg-card border border-border">
+          <JsonStats input={input} parsedData={parsedData} />
+        </div>
+      )}
 
       {/* Input / Output */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
