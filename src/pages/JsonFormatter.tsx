@@ -152,112 +152,102 @@ const JsonFormatter = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <ToolSEO title="JSON Formatter & Validator" description="Free online JSON formatter, validator, and minifier. Paste your JSON to format, beautify, or compress it instantly in your browser." canonicalPath="/json" keywords={["JSON formatter", "JSON validator", "JSON beautifier", "JSON minifier", "format JSON online"]} faq={[{question:"How do I format JSON online?",answer:"Paste your JSON into the input field and click Format. The tool will parse, validate, and pretty-print your JSON with proper indentation."},{question:"Does this JSON formatter send my data to a server?",answer:"No. All JSON formatting and validation happens entirely in your browser — your data never leaves your machine."}]} howToSteps={["Paste your JSON into the input textarea","Click Format to beautify or Minify to compress","Click Copy to copy the result to your clipboard"]} />
 
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-mono font-bold text-foreground">JSON Formatter</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-lg font-mono font-bold text-foreground">JSON Formatter</h1>
         <PrivacyBadge />
       </div>
 
-      {/* Action buttons */}
-      <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-lg bg-card border border-border">
-        <Button onClick={format}>Format</Button>
-        <Button variant="secondary" onClick={minify}><Minimize2 className="w-4 h-4 mr-1" /> Minify</Button>
-        <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-1" /> Copy</Button>
+      {/* Compact toolbar */}
+      <div className="flex flex-wrap items-center gap-1.5 mb-2 p-2 rounded-lg bg-card border border-border text-xs">
+        <Button size="sm" className="h-7 px-3 text-xs" onClick={format}>Format</Button>
+        <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" onClick={minify}><Minimize2 className="w-3 h-3 mr-1" />Minify</Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={copy} disabled={!output}><Copy className="w-3 h-3 mr-1" />Copy</Button>
 
-        <div className="border-l border-border h-6 mx-1" />
+        <div className="border-l border-border h-5 mx-0.5" />
 
         <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFileUpload} className="hidden" />
-        <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="w-3 h-3 mr-1" /> Upload</Button>
-        <Button variant="outline" size="sm" onClick={shareLink} disabled={!input}><Share2 className="w-3 h-3 mr-1" /> Share</Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => fileInputRef.current?.click()}><Upload className="w-3 h-3 mr-1" />Upload</Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={shareLink} disabled={!input}><Share2 className="w-3 h-3 mr-1" />Share</Button>
 
-        <div className="border-l border-border h-6 mx-1" />
+        <div className="border-l border-border h-5 mx-0.5" />
 
-        <Button variant="outline" size="sm" onClick={() => handleDownload("json")} disabled={!input}><Download className="w-3 h-3 mr-1" /> JSON</Button>
-        <Button variant="outline" size="sm" onClick={() => handleDownload("xml")} disabled={!input}><Download className="w-3 h-3 mr-1" /> XML</Button>
-        <Button variant="outline" size="sm" onClick={() => handleDownload("csv")} disabled={!input}><Download className="w-3 h-3 mr-1" /> CSV</Button>
-        <Button variant="outline" size="sm" onClick={() => handleDownload("yaml")} disabled={!input}><Download className="w-3 h-3 mr-1" /> YAML</Button>
-      </div>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("json")} disabled={!input}><Download className="w-3 h-3" /></Button>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("xml")} disabled={!input}>XML</Button>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("csv")} disabled={!input}>CSV</Button>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("yaml")} disabled={!input}>YAML</Button>
 
-      {/* Controls row */}
-      <div className="flex flex-wrap items-center gap-4 mb-4 p-3 rounded-lg bg-card border border-border">
-        <div className="flex items-center gap-2">
-          <Label className="text-xs text-muted-foreground">Indent</Label>
-          <Select value={indentOption} onValueChange={(v) => setIndentOption(v as IndentOption)}>
-            <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2">2 spaces</SelectItem>
-              <SelectItem value="4">4 spaces</SelectItem>
-              <SelectItem value="tab">Tabs</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="border-l border-border h-5 mx-0.5" />
+
+        <Select value={indentOption} onValueChange={(v) => setIndentOption(v as IndentOption)}>
+          <SelectTrigger className="w-[90px] h-7 text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="2">2 spaces</SelectItem>
+            <SelectItem value="4">4 spaces</SelectItem>
+            <SelectItem value="tab">Tabs</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="flex items-center gap-1">
+          <Switch id="sort-keys" checked={sortKeys} onCheckedChange={setSortKeys} className="scale-75" />
+          <Label htmlFor="sort-keys" className="text-xs text-muted-foreground cursor-pointer">Sort</Label>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Switch id="sort-keys" checked={sortKeys} onCheckedChange={setSortKeys} />
-          <Label htmlFor="sort-keys" className="text-xs text-muted-foreground cursor-pointer">Sort keys</Label>
+        <div className="relative flex-1 min-w-[120px] max-w-[200px]">
+          <Search className="w-3 h-3 text-muted-foreground absolute left-2 top-1/2 -translate-y-1/2" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search…"
+            className="h-7 text-xs pl-7 pr-6"
+          />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
-        {/* Search */}
-        <div className="flex items-center gap-2 flex-1 min-w-[180px]">
-          <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <div className="relative flex-1">
-            <Input
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search keys & values…"
-              className="h-8 text-xs pr-7"
-            />
-            {searchTerm && (
-              <button onClick={() => setSearchTerm("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Label className="text-xs text-muted-foreground">View</Label>
-          <div className="flex rounded-md border border-border overflow-hidden">
-            <button onClick={() => setViewMode("text")} className={`px-3 py-1 text-xs transition-colors ${viewMode === "text" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
-            <button onClick={() => setViewMode("tree")} className={`px-3 py-1 text-xs transition-colors ${viewMode === "tree" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
-          </div>
+        <div className="flex rounded-md border border-border overflow-hidden ml-auto">
+          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
+          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
         </div>
       </div>
 
-      {/* Stats bar */}
+      {/* Stats bar - inline */}
       {parsedData !== null && (
-        <div className="mb-4 p-2 px-3 rounded-lg bg-card border border-border">
+        <div className="mb-2 p-1.5 px-3 rounded-lg bg-card border border-border">
           <JsonStats input={input} parsedData={parsedData} />
         </div>
       )}
 
-      {/* Input / Output */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
+      {/* Input / Output — equal height */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder='{"key": "value"}'
-            className="min-h-[400px] font-mono text-sm bg-card border-border resize-none"
+            className="flex-1 min-h-[500px] font-mono text-sm bg-card border-border resize-none"
           />
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
             {viewMode === "tree" && parsedData !== null && (
               <div className="flex gap-1">
-                <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 px-2 text-xs gap-1"><Maximize2 className="w-3 h-3" /> Expand</Button>
-                <Button variant="ghost" size="sm" onClick={collapseAll} className="h-6 px-2 text-xs gap-1"><Minimize2 className="w-3 h-3" /> Collapse</Button>
+                <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
+                <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
               </div>
             )}
           </div>
           {viewMode === "text" ? (
-            <Textarea value={output} readOnly className="min-h-[400px] font-mono text-sm bg-card border-border resize-none" />
+            <Textarea value={output} readOnly className="flex-1 min-h-[500px] font-mono text-sm bg-card border-border resize-none" />
           ) : (
-            <div className="min-h-[400px] bg-card border border-border rounded-md p-3 overflow-auto">
+            <div className="flex-1 min-h-[500px] bg-card border border-border rounded-md p-3 overflow-auto">
               {filteredData !== null && filteredData !== undefined ? (
                 <JsonTreeNode key={treeKey} value={filteredData} defaultExpanded={treeExpanded} searchTerm={searchTerm} />
               ) : (
@@ -269,7 +259,7 @@ const JsonFormatter = () => {
       </div>
 
       {/* Schema Panel */}
-      <div className="mt-4">
+      <div className="mt-3">
         <SchemaPanel parsedData={parsedData} />
       </div>
     </div>
