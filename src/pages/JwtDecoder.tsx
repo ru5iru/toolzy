@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Trash2, ShieldCheck, Timer, AlertTriangle } from "lucide-react";
+import { Copy, Trash2, ShieldCheck, Timer, AlertTriangle, ArrowRight } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import {
   decodeJwt, formatTimestamp, getTokenStatus, calculateSecurityScore,
