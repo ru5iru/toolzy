@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Trash2, ShieldCheck, Timer, AlertTriangle } from "lucide-react";
+import { Copy, Trash2, ShieldCheck, Timer, AlertTriangle, ArrowRight } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import {
   decodeJwt, formatTimestamp, getTokenStatus, calculateSecurityScore,
@@ -20,12 +21,23 @@ import { SignatureVerifier } from "@/components/jwt-decoder/SignatureVerifier";
 import { ClaimsValidator } from "@/components/jwt-decoder/ClaimsValidator";
 
 const JwtDecoder = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [token, setToken] = useState("");
   const [result, setResult] = useState<DecodedJwt | null>(null);
   const [error, setError] = useState("");
   const [autoClear, setAutoClear] = useState(false);
   const autoClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load token from URL param (from encoder)
+  useEffect(() => {
+    const urlToken = searchParams.get("token");
+    if (urlToken) {
+      setToken(urlToken);
+      doDecode(urlToken);
+    }
+  }, []);
 
   // Live decode with debounce
   const doDecode = useCallback((raw: string) => {
@@ -116,6 +128,9 @@ const JwtDecoder = () => {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-mono font-bold text-foreground">JWT Decoder</h1>
+          <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1" onClick={() => navigate("/jwt-encoder")}>
+            <ArrowRight className="w-3 h-3" /> Encoder
+          </Button>
           {status && (
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${status.color} ${
               status.label === "Expired" ? "border-destructive bg-destructive/10" :

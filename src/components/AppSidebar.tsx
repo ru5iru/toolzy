@@ -35,6 +35,7 @@ const tools = [
   { title: "UUID Generator", url: "/uuid", icon: Fingerprint },
   { title: "Color Converter", url: "/color", icon: Palette },
   { title: "JWT Decoder", url: "/jwt", icon: KeyRound },
+  { title: "JWT Encoder", url: "/jwt-encoder", icon: KeyRound },
   { title: "API Diff", url: "/diff", icon: GitCompare },
   { title: "Fake Data", url: "/fake-data", icon: Users },
   { title: "Env Generator", url: "/env", icon: FileText },
