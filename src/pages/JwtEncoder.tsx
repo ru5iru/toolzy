@@ -143,8 +143,8 @@ const JwtEncoder = () => {
     const tpl = PAYLOAD_TEMPLATES[name];
     if (tpl) {
       // Refresh timestamps
-      const fresh = { ...tpl, iat: now() };
-      if (tpl.exp) fresh.exp = now() + (tpl.exp - tpl.iat);
+      const fresh: Record<string, any> = { ...tpl, iat: now() };
+      if (tpl.exp) fresh.exp = now() + ((tpl.exp as number) - (tpl.iat as number));
       setPayloadStr(JSON.stringify(fresh, null, 2));
       toast.success(`Applied "${name}" template`);
     }
