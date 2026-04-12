@@ -128,6 +128,9 @@ const JwtDecoder = () => {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-mono font-bold text-foreground">JWT Decoder</h1>
+          <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1" onClick={() => navigate("/jwt-encoder")}>
+            <ArrowRight className="w-3 h-3" /> Encoder
+          </Button>
           {status && (
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${status.color} ${
               status.label === "Expired" ? "border-destructive bg-destructive/10" :
