@@ -12,6 +12,7 @@ import UrlEncodeTool from "./pages/UrlEncodeTool";
 import UuidGenerator from "./pages/UuidGenerator";
 import ColorConverter from "./pages/ColorConverter";
 import JwtDecoder from "./pages/JwtDecoder";
+import JwtEncoder from "./pages/JwtEncoder";
 import ApiDiffTool from "./pages/ApiDiffTool";
 import FakeDataGenerator from "./pages/FakeDataGenerator";
 import EnvGenerator from "./pages/EnvGenerator";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/uuid" element={<UuidGenerator />} />
             <Route path="/color" element={<ColorConverter />} />
             <Route path="/jwt" element={<JwtDecoder />} />
+            <Route path="/jwt-encoder" element={<JwtEncoder />} />
             <Route path="/diff" element={<ApiDiffTool />} />
             <Route path="/fake-data" element={<FakeDataGenerator />} />
             <Route path="/env" element={<EnvGenerator />} />
