@@ -21,12 +21,23 @@ import { SignatureVerifier } from "@/components/jwt-decoder/SignatureVerifier";
 import { ClaimsValidator } from "@/components/jwt-decoder/ClaimsValidator";
 
 const JwtDecoder = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [token, setToken] = useState("");
   const [result, setResult] = useState<DecodedJwt | null>(null);
   const [error, setError] = useState("");
   const [autoClear, setAutoClear] = useState(false);
   const autoClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load token from URL param (from encoder)
+  useEffect(() => {
+    const urlToken = searchParams.get("token");
+    if (urlToken) {
+      setToken(urlToken);
+      doDecode(urlToken);
+    }
+  }, []);
 
   // Live decode with debounce
   const doDecode = useCallback((raw: string) => {
