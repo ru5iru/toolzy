@@ -34,8 +34,8 @@ const Index = () => {
         ]}
       />
       <div className="mb-10">
-        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Developer Tools</h1>
-        <p className="text-muted-foreground">A collection of handy utilities for everyday development.</p>
+        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Toolzy</h1>
+        <p className="text-muted-foreground">Free developer tools — 100% client-side, no sign-up required.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tools.map((tool) => (
