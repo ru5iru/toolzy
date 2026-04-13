@@ -153,7 +153,7 @@ export function detectContentType(bytes: Uint8Array): DetectedContent {
   // Check image signatures
   const mime = detectMimeType(bytes);
   if (mime?.startsWith('image/')) {
-    const blob = new Blob([bytes], { type: mime });
+    const blob = new Blob([bytes.buffer as ArrayBuffer], { type: mime });
     const url = URL.createObjectURL(blob);
     return { type: 'image', mimeType: mime, imageUrl: url, blobUrl: url };
   }
@@ -169,7 +169,7 @@ export function detectContentType(bytes: Uint8Array): DetectedContent {
       return { type: 'text', text, mimeType: 'text/plain' };
     }
   } catch {
-    const blob = new Blob([bytes]);
+    const blob = new Blob([bytes.buffer as ArrayBuffer]);
     return { type: 'binary', mimeType: mime || 'application/octet-stream', blobUrl: URL.createObjectURL(blob) };
   }
 }
