@@ -15,7 +15,7 @@ interface ToolSEOProps {
   howToSteps?: string[];
 }
 
-const BASE_URL = "https://dev-with-ru.lovable.app";
+const BASE_URL = "https://toolzy.lovable.app";
 
 export function ToolSEO({
   title,
@@ -25,7 +25,7 @@ export function ToolSEO({
   faq = [],
   howToSteps = [],
 }: ToolSEOProps) {
-  const fullTitle = `${title} — Free Online Developer Tool | DevTools`;
+  const fullTitle = `${title} — Free Online Developer Tool | Toolzy`;
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
 
   const webAppSchema = {
@@ -43,7 +43,7 @@ export function ToolSEO({
     },
     isPartOf: {
       "@type": "WebSite",
-      name: "DevTools",
+      name: "Toolzy",
       url: BASE_URL,
     },
   };
@@ -92,7 +92,7 @@ export function ToolSEO({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:site_name" content="DevTools" />
+      <meta property="og:site_name" content="Toolzy" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

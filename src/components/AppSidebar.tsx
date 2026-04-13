@@ -56,7 +56,7 @@ export function AppSidebar() {
           <Wrench className="h-5 w-5 text-primary shrink-0" />
           {!collapsed && (
             <span className="font-mono text-sm font-bold tracking-tight text-foreground">
-              DevTools
+              Toolzy
             </span>
           )}
         </div>
