@@ -410,6 +410,7 @@ const UrlEncodeTool = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      </div>
 
       {/* Tabs for advanced features */}
       <Tabs defaultValue="query-parser" className="mt-4">
