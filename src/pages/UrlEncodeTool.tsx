@@ -370,12 +370,14 @@ const UrlEncodeTool = () => {
       )}
 
       {/* Main Panels */}
-      <ResizablePanelGroup
-        direction="horizontal"
-        className="rounded-lg border border-border min-h-[400px]"
+      <div
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
+      >
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="rounded-lg border border-border min-h-[400px]"
       >
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
