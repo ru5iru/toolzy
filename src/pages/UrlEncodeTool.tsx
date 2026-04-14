@@ -265,7 +265,7 @@ const UrlEncodeTool = () => {
             </div>
           ))}
           {securityWarnings.map((w, i) => (
-            <div key={i} className="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400">
+            <div key={i} className="p-2 rounded-lg bg-accent/20 border border-accent/30 flex items-center gap-2 text-xs text-accent-foreground">
               <Shield className="w-3.5 h-3.5 shrink-0" /> {w}
             </div>
           ))}
@@ -539,12 +539,12 @@ const UrlEncodeTool = () => {
         <TabsContent value="security" className="mt-2">
           <div className="p-3 rounded-lg bg-card border border-border space-y-2">
             {securityWarnings.length === 0 ? (
-              <div className="flex items-center gap-2 text-xs text-green-500">
+              <div className="flex items-center gap-2 text-xs text-primary">
                 <Shield className="w-4 h-4" /> No security issues detected
               </div>
             ) : (
               securityWarnings.map((w, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-yellow-500">
+                <div key={i} className="flex items-center gap-2 text-xs text-accent-foreground">
                   <AlertTriangle className="w-4 h-4 shrink-0" /> {w}
                 </div>
               ))
