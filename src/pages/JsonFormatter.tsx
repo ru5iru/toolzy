@@ -224,40 +224,47 @@ const JsonFormatter = () => {
         </div>
       )}
 
-      {/* Input / Output — equal height */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder='{"key": "value"}'
-            className="flex-1 min-h-[500px] font-mono text-sm bg-card border-border resize-none"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
-            {viewMode === "tree" && parsedData !== null && (
-              <div className="flex gap-1">
-                <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
-                <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
+      {/* Input / Output — resizable panels */}
+      <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border min-h-[500px]">
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="flex flex-col h-full">
+            <div className="p-2 border-b border-border">
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
+            </div>
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder='{"key": "value"}'
+              className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-2 border-b border-border">
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
+              {viewMode === "tree" && parsedData !== null && (
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
+                  <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
+                </div>
+              )}
+            </div>
+            {viewMode === "text" ? (
+              <Textarea value={output} readOnly className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" />
+            ) : (
+              <div className="flex-1 min-h-0 p-3 overflow-auto">
+                {filteredData !== null && filteredData !== undefined ? (
+                  <JsonTreeNode key={treeKey} value={filteredData} defaultExpanded={treeExpanded} searchTerm={searchTerm} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">{input ? "Invalid JSON" : "Paste JSON in the input to see tree view"}</p>
+                )}
               </div>
             )}
           </div>
-          {viewMode === "text" ? (
-            <Textarea value={output} readOnly className="flex-1 min-h-[500px] font-mono text-sm bg-card border-border resize-none" />
-          ) : (
-            <div className="flex-1 min-h-[500px] bg-card border border-border rounded-md p-3 overflow-auto">
-              {filteredData !== null && filteredData !== undefined ? (
-                <JsonTreeNode key={treeKey} value={filteredData} defaultExpanded={treeExpanded} searchTerm={searchTerm} />
-              ) : (
-                <p className="text-sm text-muted-foreground">{input ? "Invalid JSON" : "Paste JSON in the input to see tree view"}</p>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       {/* Schema Panel */}
       <div className="mt-3">
