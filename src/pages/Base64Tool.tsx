@@ -238,9 +238,9 @@ const Base64Tool = () => {
                   {detectedContent && <Badge variant="secondary" className="text-[10px] h-4 px-1.5">{detectedContent.type}{detectedContent.mimeType ? ` • ${detectedContent.mimeType}` : ""}</Badge>}
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyOutput("raw")} disabled={!output} title="Copy"><Copy className="w-3 h-3" /></Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={downloadOutput} disabled={!output} title="Download"><Download className="w-3 h-3" /></Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={swap} disabled={!output} title="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyOutput("raw")} disabled={!output} aria-label="Copy output" title="Copy"><Copy className="w-3 h-3" aria-hidden="true" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={downloadOutput} disabled={!output} aria-label="Download output" title="Download"><Download className="w-3 h-3" aria-hidden="true" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={swap} disabled={!output} aria-label="Swap input and output" title="Swap"><ArrowLeftRight className="w-3 h-3" aria-hidden="true" /></Button>
                 </div>
               </div>
 
