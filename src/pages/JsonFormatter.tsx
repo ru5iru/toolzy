@@ -156,16 +156,17 @@ const JsonFormatter = () => {
     <div className="max-w-6xl mx-auto">
       <ToolSEO title="JSON Formatter & Validator" description="Free online JSON formatter, validator, and minifier. Paste your JSON to format, beautify, or compress it instantly in your browser." canonicalPath="/json" keywords={["JSON formatter", "JSON validator", "JSON beautifier", "JSON minifier", "format JSON online"]} faq={[{question:"How do I format JSON online?",answer:"Paste your JSON into the input field and click Format. The tool will parse, validate, and pretty-print your JSON with proper indentation."},{question:"Does this JSON formatter send my data to a server?",answer:"No. All JSON formatting and validation happens entirely in your browser — your data never leaves your machine."}]} howToSteps={["Paste your JSON into the input textarea","Click Format to beautify or Minify to compress","Click Copy to copy the result to your clipboard"]} />
 
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-lg font-mono font-bold text-foreground">JSON Formatter</h1>
+      <header className="flex items-center justify-between mb-2">
+        <h1 className="text-lg font-mono font-bold text-foreground">JSON Formatter, Validator & Minifier</h1>
         <PrivacyBadge />
-      </div>
+      </header>
 
       {/* Compact toolbar */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-2 p-2 rounded-lg bg-card border border-border text-xs">
+      <h2 className="sr-only">Actions</h2>
+      <div role="toolbar" aria-label="JSON formatter actions" className="flex flex-wrap items-center gap-1.5 mb-2 p-2 rounded-lg bg-card border border-border text-xs">
         <Button size="sm" className="h-7 px-3 text-xs" onClick={format}>Format</Button>
         <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" onClick={minify}><Minimize2 className="w-3 h-3 mr-1" />Minify</Button>
-        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={copy} disabled={!output}><Copy className="w-3 h-3 mr-1" />Copy</Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={copy} disabled={!output} aria-label="Copy output to clipboard"><Copy className="w-3 h-3 mr-1" aria-hidden="true" />Copy</Button>
 
         <div className="border-l border-border h-5 mx-0.5" />
 
@@ -175,7 +176,7 @@ const JsonFormatter = () => {
 
         <div className="border-l border-border h-5 mx-0.5" />
 
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("json")} disabled={!input}><Download className="w-3 h-3" /></Button>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("json")} disabled={!input} aria-label="Download as JSON"><Download className="w-3 h-3" aria-hidden="true" /><span className="sr-only">Download JSON</span></Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("xml")} disabled={!input}>XML</Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("csv")} disabled={!input}>CSV</Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("yaml")} disabled={!input}>YAML</Button>
@@ -205,8 +206,8 @@ const JsonFormatter = () => {
             className="h-7 text-xs pl-7 pr-6"
           />
           {searchTerm && (
-            <button onClick={() => setSearchTerm("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-              <X className="w-3 h-3" />
+            <button onClick={() => setSearchTerm("")} aria-label="Clear search" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X className="w-3 h-3" aria-hidden="true" />
             </button>
           )}
         </div>

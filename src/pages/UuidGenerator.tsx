@@ -149,15 +149,15 @@ const UuidGenerator = () => {
         ]}
       />
 
-      <div className="flex items-center justify-between">
+      <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-mono font-bold text-foreground">UUID Generator</h1>
-          <p className="text-sm text-muted-foreground mt-1">Generate, validate, and decode UUIDs</p>
+          <h1 className="text-2xl font-mono font-bold text-foreground">UUID Generator — v1, v3, v4 & v5</h1>
+          <p className="text-sm text-muted-foreground mt-1">Generate, validate, and decode UUIDs in the browser</p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
-          <History className="h-4 w-4 mr-1" /> History
+        <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)} aria-label="Toggle generation history">
+          <History className="h-4 w-4 mr-1" aria-hidden="true" /> History
         </Button>
-      </div>
+      </header>
 
       {showHistory && history.length > 0 && (
         <div className="border border-border rounded-lg p-3 bg-card space-y-2">

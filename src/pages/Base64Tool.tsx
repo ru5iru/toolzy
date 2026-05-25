@@ -156,13 +156,14 @@ const Base64Tool = () => {
       <ToolSEO title="Base64 Encoder & Decoder" description="Professional Base64 encoder and decoder with file support, image preview, and real-time processing. 100% client-side." canonicalPath="/base64" keywords={["Base64 encoder", "Base64 decoder", "Base64 file converter", "Base64 image"]} faq={[{ question: "What is Base64?", answer: "Base64 is a binary-to-text encoding for transmitting data over text-based protocols." }, { question: "Is Base64 encryption?", answer: "No. Base64 is encoding, not encryption. It is easily reversible." }]} howToSteps={["Enter text or upload a file", "Choose encode or decode mode", "Copy or download the result"]} />
 
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="text-xl font-mono font-bold text-foreground">Base64 Encode / Decode</h1>
+      <header className="flex items-center justify-between flex-wrap gap-2">
+        <h1 className="text-xl font-mono font-bold text-foreground">Base64 Encoder & Decoder</h1>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1 text-xs"><Shield className="w-3 h-3" /> Client-side only</Badge>
-          <Badge variant="outline" className="gap-1 text-xs"><Info className="w-3 h-3" /> Encoding ≠ Encryption</Badge>
+          <Badge variant="outline" className="gap-1 text-xs"><Shield className="w-3 h-3" aria-hidden="true" /> Client-side only</Badge>
+          <Badge variant="outline" className="gap-1 text-xs"><Info className="w-3 h-3" aria-hidden="true" /> Encoding ≠ Encryption</Badge>
         </div>
-      </div>
+      </header>
+      <h2 className="sr-only">Conversion settings</h2>
 
       {/* Controls bar */}
       <div className="flex flex-wrap items-center gap-2 p-2 rounded-lg bg-muted/30 border border-border text-xs">
@@ -211,8 +212,8 @@ const Base64Tool = () => {
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input {mode === "encode" ? "(Text/File)" : "(Base64)"}</span>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => fileRef.current?.click()} title="Upload file"><Upload className="w-3 h-3" /></Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setInput(""); setOutput(""); setError(null); setDetectedContent(null); setAnalysis(null); }} title="Clear"><Trash2 className="w-3 h-3" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => fileRef.current?.click()} aria-label="Upload file" title="Upload file"><Upload className="w-3 h-3" aria-hidden="true" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setInput(""); setOutput(""); setError(null); setDetectedContent(null); setAnalysis(null); }} aria-label="Clear input" title="Clear"><Trash2 className="w-3 h-3" aria-hidden="true" /></Button>
                 </div>
               </div>
               <input ref={fileRef} type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); }} />
@@ -237,16 +238,16 @@ const Base64Tool = () => {
                   {detectedContent && <Badge variant="secondary" className="text-[10px] h-4 px-1.5">{detectedContent.type}{detectedContent.mimeType ? ` • ${detectedContent.mimeType}` : ""}</Badge>}
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyOutput("raw")} disabled={!output} title="Copy"><Copy className="w-3 h-3" /></Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={downloadOutput} disabled={!output} title="Download"><Download className="w-3 h-3" /></Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={swap} disabled={!output} title="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyOutput("raw")} disabled={!output} aria-label="Copy output" title="Copy"><Copy className="w-3 h-3" aria-hidden="true" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={downloadOutput} disabled={!output} aria-label="Download output" title="Download"><Download className="w-3 h-3" aria-hidden="true" /></Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={swap} disabled={!output} aria-label="Swap input and output" title="Swap"><ArrowLeftRight className="w-3 h-3" aria-hidden="true" /></Button>
                 </div>
               </div>
 
               {/* Image preview */}
               {detectedContent?.type === "image" && detectedContent.imageUrl && (
                 <div className="p-3 border-b border-border bg-muted/10 flex flex-col items-center gap-2">
-                  <img src={detectedContent.imageUrl} alt="Preview" className="max-h-40 max-w-full rounded border border-border object-contain" />
+                  <img src={detectedContent.imageUrl} alt={`Base64 decoded image preview${detectedContent.mimeType ? ` (${detectedContent.mimeType})` : ""}`} className="max-h-40 max-w-full rounded border border-border object-contain" />
                   <span className="text-[10px] text-muted-foreground">{detectedContent.mimeType}</span>
                 </div>
               )}

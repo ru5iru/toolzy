@@ -234,13 +234,14 @@ const UrlEncodeTool = () => {
         ]}
       />
 
-      <div className="flex items-center justify-between mb-3">
-        <h1 className="text-lg font-mono font-bold text-foreground">URL Encode / Decode</h1>
+      <header className="flex items-center justify-between mb-3">
+        <h1 className="text-lg font-mono font-bold text-foreground">URL Encoder & Decoder</h1>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Keyboard className="w-3 h-3" />
+          <Keyboard className="w-3 h-3" aria-hidden="true" />
           <span>Ctrl+Enter: Encode | Ctrl+Shift+Enter: Decode</span>
         </div>
-      </div>
+      </header>
+      <h2 className="sr-only">Encoding tools</h2>
 
       {/* Detection Banner */}
       {detection && input.trim() && (
