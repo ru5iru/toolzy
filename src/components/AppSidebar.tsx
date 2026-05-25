@@ -70,15 +70,18 @@ export function AppSidebar() {
             <SidebarMenu>
               {tools.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       to={item.url}
                       end
+                      aria-label={item.title}
+                      title={item.title}
                       className="hover:bg-secondary"
                       activeClassName="bg-secondary text-primary font-medium"
                     >
-                      <item.icon className="mr-2 h-4 w-4 shrink-0" />
+                      <item.icon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
                       {!collapsed && <span>{item.title}</span>}
+                      {collapsed && <span className="sr-only">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

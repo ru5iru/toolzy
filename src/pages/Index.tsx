@@ -33,25 +33,29 @@ const Index = () => {
           { question: "Is my data safe?", answer: "All processing happens client-side in your browser. No data is sent to any server." },
         ]}
       />
-      <div className="mb-10">
-        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Toolzy</h1>
-        <p className="text-muted-foreground">Free developer tools — 100% client-side, no sign-up required.</p>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tools.map((tool) => (
-          <button
-            key={tool.url}
-            onClick={() => navigate(tool.url)}
-            className="group flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-5 text-left transition-all hover:border-primary/40 hover:bg-secondary"
-          >
-            <tool.icon className="h-6 w-6 text-primary" />
-            <div>
-              <div className="font-mono text-sm font-semibold text-card-foreground">{tool.title}</div>
-              <div className="text-xs text-muted-foreground mt-1">{tool.description}</div>
-            </div>
-          </button>
-        ))}
-      </div>
+      <header className="mb-10">
+        <h1 className="text-3xl font-mono font-bold text-foreground mb-2">Toolzy — Free Online Developer Tools</h1>
+        <p className="text-muted-foreground">A collection of fast, browser-based utilities for developers — 100% client-side, no sign-up required.</p>
+      </header>
+      <section aria-labelledby="tools-heading">
+        <h2 id="tools-heading" className="sr-only">Available developer tools</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {tools.map((tool) => (
+            <button
+              key={tool.url}
+              onClick={() => navigate(tool.url)}
+              aria-label={`Open ${tool.title} — ${tool.description}`}
+              className="group flex flex-col items-start gap-3 rounded-lg border border-border bg-card p-5 text-left transition-all hover:border-primary/40 hover:bg-secondary"
+            >
+              <tool.icon className="h-6 w-6 text-primary" aria-hidden="true" />
+              <div>
+                <div className="font-mono text-sm font-semibold text-card-foreground">{tool.title}</div>
+                <div className="text-xs text-muted-foreground mt-1">{tool.description}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };
