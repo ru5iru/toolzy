@@ -178,12 +178,10 @@ const EncodingHub = () => {
         url: "Detected: Percent-encoded URL — decoding",
         dataurl: "Detected: Data URL — decoding",
       };
-      // If it looks like plain text we encode instead
-      const looksEncoded = effective !== "url" || /%[0-9A-Fa-f]{2}/.test(text);
-      const autoDir = looksEncoded || effective === "base64" || effective === "base64url" || effective === "dataurl"
-        ? "decode" : "encode";
+      // In auto-detect, default to decoding (the detector only fires for encoded-looking inputs)
+      const autoDir: "encode" | "decode" = "decode";
       dir = autoDir;
-      setDetectExplain(autoDir === "decode" ? explanations[effective] : `Detected: plain text — encoding as ${MODE_LABELS[effective]}`);
+      setDetectExplain(explanations[effective]);
     } else {
       setDetectExplain("");
     }
