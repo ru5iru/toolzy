@@ -33,8 +33,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/json" element={<JsonFormatter />} />
-            <Route path="/base64" element={<Base64Tool />} />
-            <Route path="/url-encode" element={<UrlEncodeTool />} />
+            <Route path="/encode" element={<EncodingHub />} />
+            <Route path="/base64" element={<Navigate to="/encode" replace />} />
+            <Route path="/url-encode" element={<Navigate to="/encode?mode=url" replace />} />
             <Route path="/uuid" element={<UuidGenerator />} />
             <Route path="/color" element={<ColorConverter />} />
             <Route path="/jwt" element={<JwtDecoder />} />
