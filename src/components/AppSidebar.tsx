@@ -29,8 +29,7 @@ import {
 
 const tools = [
   { title: "JSON Formatter", url: "/json", icon: Braces },
-  { title: "Base64", url: "/base64", icon: Binary },
-  { title: "URL Encode", url: "/url-encode", icon: Link },
+  { title: "Encoding Hub", url: "/encode", icon: Code2 },
   { title: "UUID Generator", url: "/uuid", icon: Fingerprint },
   { title: "Color Converter", url: "/color", icon: Palette },
   { title: "JWT Decoder", url: "/jwt", icon: KeyRound },
