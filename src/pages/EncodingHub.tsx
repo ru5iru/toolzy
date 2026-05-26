@@ -66,7 +66,7 @@ function detectMode(input: string): Exclude<HubMode, "auto"> {
 
 // --- Base64 URL-safe helpers ---
 function toUrlSafe(b64: string) {
-  return b64.replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/, "");
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 // --- Data URL parsing ---
