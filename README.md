@@ -87,8 +87,9 @@ toolzy/
 │   │   ├── NavLink.tsx        # React Router NavLink wrapper
 │   │   ├── ToolSEO.tsx        # Per-tool meta tags, JSON-LD FAQ/HowTo
 │   │   ├── ui/                # shadcn/ui primitives (button, dialog, …)
-│   │   ├── base64/            # Base64 utilities
-│   │   ├── url-encode/        # URL encoding engine
+│   │   ├── encoding-hub/      # (uses base64/ + url-encode/ utilities)
+│   │   ├── base64/            # Base64 encode/decode + content detection
+│   │   ├── url-encode/        # Percent-encoding, query parsing, batch, diff
 │   │   ├── uuid/              # UUID v1/v3/v4/v5 helpers
 │   │   ├── color/             # Color parsing, conversion, palettes, WCAG
 │   │   ├── json-formatter/    # JSON tree, stats, schema, privacy badge
@@ -145,33 +146,30 @@ Format, validate, minify, and explore JSON with a developer-grade workbench.
 - **Copy / Download** as `.json`.
 - **Auto-format on paste** with debounce.
 
-### 2. Base64 — `/base64`
-Production-grade Base64 encoder/decoder with smart detection.
+### 2. Encoding Hub — `/encode`
+Unified encoder/decoder for Base64, URL encoding, and Data URLs with
+auto-detect and file support.
 
-- **Encode / Decode** for text and files (drag-and-drop or file picker).
-- **Auto-detect mode**: input scanned and routed to encode or decode automatically.
-- **UTF-8 safe**: uses `TextEncoder` / `TextDecoder`, not raw `atob` / `btoa`.
-- **Decoded content detection**: JSON → pretty preview; image / PDF → inline data-URL preview.
-- **Resizable input/output panels**.
-- **Real-time processing** with 300–500ms debounce.
-- **Copy**, **Download**, **Clear**, **Swap** actions.
-- **Data URL builder** with MIME selection.
+**Modes** (segmented pill selector, URL-persisted via `?mode=`):
 
-### 3. URL Encode / Decode — `/url-encode`
-Advanced URL encoding playground for API and web developers.
+- **Auto-Detect**: scans input and silently routes to the correct
+  encoder/decoder, with a live "Detected: …" explanation.
+- **Base64**: encode text or files to Base64; decode to text with
+  JSON/image/PDF content previews. UTF-8 safe (TextEncoder/TextDecoder).
+- **Base64 URL-safe**: same as Base64 but uses `-` and `_` instead of `+` and `/`,
+  no padding — safe for URLs and filenames.
+- **URL Encode**: four sub-modes (`encodeURIComponent`, `encodeURI`, form,
+  RFC 3986). Query-string table editor, batch mode, character breakdown,
+  security scanner, visual diff, local history.
+- **Data URL**: builder (text or file → data URI) and decoder with inline
+  image/text/JSON previews and file download.
 
-- **Four encoding modes**: `encodeURIComponent`, `encodeURI`, `form` (`x-www-form-urlencoded`), and **RFC 3986** strict.
-- **Auto-detect** double or partial encoding.
-- **Query-string parser**: edit URL params in a table view, add/remove rows, rebuild URL.
-- **Batch mode**: encode/decode many lines at once (Text / JSON / CSV output).
-- **Character-by-character breakdown**: Unicode code points + byte sequence.
-- **Security scanner**: highlights XSS / SQL-injection patterns in the input.
-- **Visual diff** between original and encoded outputs.
-- **Shareable state**: input is persisted to the URL for easy linking.
-- **Keyboard shortcuts** (`Ctrl/Cmd + Enter` to run).
-- **Local history** with quick restore.
+**Shared UX**: resizable split-pane, swap (output → input), copy, download,
+character count, async offload for inputs > 50 KB.
 
-### 4. UUID Generator — `/uuid`
+Nothing leaves the browser. Old routes `/base64` and `/url-encode` redirect here.
+
+### 3. UUID Generator — `/uuid`
 Generate, validate, and decode UUIDs of every common version.
 
 - **Versions supported**: v1 (timestamp), v3 (MD5 namespace), v4 (random — `crypto.getRandomValues`), v5 (SHA-1 namespace).
@@ -183,7 +181,7 @@ Generate, validate, and decode UUIDs of every common version.
 - **Code snippets**: ready-to-paste generators in JavaScript, Python, Go, and SQL.
 - **History log** stored in `localStorage`.
 
-### 5. Color Converter — `/color`
+### 4. Color Converter — `/color`
 Comprehensive color toolkit for developers and designers.
 
 - **Inputs accepted**: HEX (3/6/8-digit), RGB(A), HSL(A), HSV/HSB, HWB, CSS Color Level 4 (`lab`, `lch`), CSS named colors.
@@ -196,7 +194,7 @@ Comprehensive color toolkit for developers and designers.
 - **Batch converter** via textarea.
 - **Favorites & history** in `localStorage`; **URL state** (`?value=#3ecfcf`).
 
-### 6. JWT Decoder — `/jwt`
+### 5. JWT Decoder — `/jwt`
 Decode, inspect, and audit JSON Web Tokens.
 
 - **Three-section view**: Header, Payload, Signature with syntax highlighting.
@@ -207,7 +205,7 @@ Decode, inspect, and audit JSON Web Tokens.
 - **History** of recently decoded tokens (`localStorage`).
 - **Code examples** in multiple languages for verifying the token server-side.
 
-### 7. JWT Encoder — `/jwt-encoder`
+### 6. JWT Encoder — `/jwt-encoder`
 Build and sign JWTs in the browser.
 
 - **Algorithm picker**: HS256/384/512 via Web Crypto `HMAC`; RS/ES via imported keys.
@@ -216,7 +214,7 @@ Build and sign JWTs in the browser.
 - **Live token preview** updated on every keystroke.
 - **Copy / Download** signed token.
 
-### 8. API Response Diff — `/diff`
+### 7. API Response Diff — `/diff`
 Compare two API responses with structural awareness.
 
 - **Format auto-detect**: JSON, XML, HTML, plain text.
@@ -229,23 +227,23 @@ Compare two API responses with structural awareness.
 - **Export** diff as JSON or Markdown report.
 - **Resizable split-pane** layout.
 
-### 9. Fake Data Generator — `/fake-data`
+### 8. Fake Data Generator — `/fake-data`
 Generate realistic mock data for prototypes, tests, and seed scripts. Names, emails, addresses, phone numbers, dates, IDs and more — exportable to JSON, CSV, or SQL.
 
-### 10. Env Generator — `/env`
+### 9. Env Generator — `/env`
 Build `.env` / `.env.example` files from a structured form. Random secret generation (via Web Crypto), key naming validation, and one-click download.
 
-### 11. Hash Generator — `/hash`
+### 10. Hash Generator — `/hash`
 SHA-1, SHA-256, SHA-384, SHA-512 hashes computed via the native **Web Crypto API** (`crypto.subtle.digest`).
 
 - Multi-algorithm output in a single click.
 - Per-hash copy buttons.
 - Note: MD5 and bcrypt are intentionally **not** supported — MD5 isn't in Web Crypto and is cryptographically broken; bcrypt requires a server.
 
-### 12. Date & Time — `/datetime`
+### 11. Date & Time — `/datetime`
 Convert between Unix timestamps (s/ms), ISO 8601, RFC 2822, and human-readable formats. Time-zone aware conversions, "now" snapshot, relative time helpers.
 
-### 13. Regex Playground — `/regex`
+### 12. Regex Playground — `/regex`
 Test regular expressions against sample text with live match highlighting, flags toggle (`g`, `i`, `m`, `s`, `u`, `y`), capture-group inspection, and replace preview.
 
 ---

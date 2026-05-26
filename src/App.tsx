@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,8 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
 import JsonFormatter from "./pages/JsonFormatter";
-import Base64Tool from "./pages/Base64Tool";
-import UrlEncodeTool from "./pages/UrlEncodeTool";
+import EncodingHub from "./pages/EncodingHub";
 import UuidGenerator from "./pages/UuidGenerator";
 import ColorConverter from "./pages/ColorConverter";
 import JwtDecoder from "./pages/JwtDecoder";
@@ -34,8 +33,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/json" element={<JsonFormatter />} />
-            <Route path="/base64" element={<Base64Tool />} />
-            <Route path="/url-encode" element={<UrlEncodeTool />} />
+            <Route path="/encode" element={<EncodingHub />} />
+            <Route path="/base64" element={<Navigate to="/encode" replace />} />
+            <Route path="/url-encode" element={<Navigate to="/encode?mode=url" replace />} />
             <Route path="/uuid" element={<UuidGenerator />} />
             <Route path="/color" element={<ColorConverter />} />
             <Route path="/jwt" element={<JwtDecoder />} />
