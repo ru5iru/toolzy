@@ -87,8 +87,9 @@ toolzy/
 │   │   ├── NavLink.tsx        # React Router NavLink wrapper
 │   │   ├── ToolSEO.tsx        # Per-tool meta tags, JSON-LD FAQ/HowTo
 │   │   ├── ui/                # shadcn/ui primitives (button, dialog, …)
-│   │   ├── base64/            # Base64 utilities
-│   │   ├── url-encode/        # URL encoding engine
+│   │   ├── encoding-hub/      # (uses base64/ + url-encode/ utilities)
+│   │   ├── base64/            # Base64 encode/decode + content detection
+│   │   ├── url-encode/        # Percent-encoding, query parsing, batch, diff
 │   │   ├── uuid/              # UUID v1/v3/v4/v5 helpers
 │   │   ├── color/             # Color parsing, conversion, palettes, WCAG
 │   │   ├── json-formatter/    # JSON tree, stats, schema, privacy badge
