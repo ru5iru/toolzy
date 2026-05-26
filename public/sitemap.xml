@@ -11,14 +11,10 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/base64</loc>
+    <loc>https://toolzy.lovable.app/encode</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://toolzy.lovable.app/url-encode</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/uuid</loc>
