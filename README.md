@@ -181,7 +181,7 @@ Generate, validate, and decode UUIDs of every common version.
 - **Code snippets**: ready-to-paste generators in JavaScript, Python, Go, and SQL.
 - **History log** stored in `localStorage`.
 
-### 5. Color Converter — `/color`
+### 4. Color Converter — `/color`
 Comprehensive color toolkit for developers and designers.
 
 - **Inputs accepted**: HEX (3/6/8-digit), RGB(A), HSL(A), HSV/HSB, HWB, CSS Color Level 4 (`lab`, `lch`), CSS named colors.
@@ -194,7 +194,7 @@ Comprehensive color toolkit for developers and designers.
 - **Batch converter** via textarea.
 - **Favorites & history** in `localStorage`; **URL state** (`?value=#3ecfcf`).
 
-### 6. JWT Decoder — `/jwt`
+### 5. JWT Decoder — `/jwt`
 Decode, inspect, and audit JSON Web Tokens.
 
 - **Three-section view**: Header, Payload, Signature with syntax highlighting.
@@ -205,7 +205,7 @@ Decode, inspect, and audit JSON Web Tokens.
 - **History** of recently decoded tokens (`localStorage`).
 - **Code examples** in multiple languages for verifying the token server-side.
 
-### 7. JWT Encoder — `/jwt-encoder`
+### 6. JWT Encoder — `/jwt-encoder`
 Build and sign JWTs in the browser.
 
 - **Algorithm picker**: HS256/384/512 via Web Crypto `HMAC`; RS/ES via imported keys.
@@ -214,7 +214,7 @@ Build and sign JWTs in the browser.
 - **Live token preview** updated on every keystroke.
 - **Copy / Download** signed token.
 
-### 8. API Response Diff — `/diff`
+### 7. API Response Diff — `/diff`
 Compare two API responses with structural awareness.
 
 - **Format auto-detect**: JSON, XML, HTML, plain text.
@@ -227,23 +227,23 @@ Compare two API responses with structural awareness.
 - **Export** diff as JSON or Markdown report.
 - **Resizable split-pane** layout.
 
-### 9. Fake Data Generator — `/fake-data`
+### 8. Fake Data Generator — `/fake-data`
 Generate realistic mock data for prototypes, tests, and seed scripts. Names, emails, addresses, phone numbers, dates, IDs and more — exportable to JSON, CSV, or SQL.
 
-### 10. Env Generator — `/env`
+### 9. Env Generator — `/env`
 Build `.env` / `.env.example` files from a structured form. Random secret generation (via Web Crypto), key naming validation, and one-click download.
 
-### 11. Hash Generator — `/hash`
+### 10. Hash Generator — `/hash`
 SHA-1, SHA-256, SHA-384, SHA-512 hashes computed via the native **Web Crypto API** (`crypto.subtle.digest`).
 
 - Multi-algorithm output in a single click.
 - Per-hash copy buttons.
 - Note: MD5 and bcrypt are intentionally **not** supported — MD5 isn't in Web Crypto and is cryptographically broken; bcrypt requires a server.
 
-### 12. Date & Time — `/datetime`
+### 11. Date & Time — `/datetime`
 Convert between Unix timestamps (s/ms), ISO 8601, RFC 2822, and human-readable formats. Time-zone aware conversions, "now" snapshot, relative time helpers.
 
-### 13. Regex Playground — `/regex`
+### 12. Regex Playground — `/regex`
 Test regular expressions against sample text with live match highlighting, flags toggle (`g`, `i`, `m`, `s`, `u`, `y`), capture-group inspection, and replace preview.
 
 ---
