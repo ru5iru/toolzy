@@ -1,0 +1,34 @@
+# Toolzy llms.txt — AI/LLM discovery file
+# https://toolzy.lovable.app
+
+## Encoding Hub
+
+URL: https://toolzy.lovable.app/encode
+Category: Encoding & Serialisation
+
+Encode and decode text and files using Base64, URL-safe Base64,
+percent-encoding, and Data URLs — entirely in the browser.
+
+Capabilities:
+- Base64 encode and decode (UTF-8 safe, handles multibyte characters)
+- Base64 URL-safe encode and decode (+ → -, / → _, no padding)
+- URL percent-encode and decode with four sub-modes: encodeURIComponent,
+  encodeURI, form (x-www-form-urlencoded), RFC 3986 strict
+- Data URL builder (text or file → data:[mime];base64,[data]) and decoder
+  with inline image and text previews
+- File encode: drag-and-drop any file to Base64 or Data URL
+- Query-string table editor: parse, edit, and rebuild URL parameters
+- Batch mode: encode or decode multiple lines at once (Text / JSON / CSV output)
+- Character breakdown: Unicode code points and percent-encoded byte sequences
+- Security scanner: flags XSS and SQL-injection patterns in URL inputs
+- Auto-detect mode: identifies the encoding type and routes automatically
+- All processing is client-side; no data is transmitted
+
+Example queries this tool answers:
+- "Encode this text to Base64"
+- "Decode this Base64 string"
+- "What does this percent-encoded URL decode to?"
+- "Convert this image file to a data URL"
+- "Parse the query parameters from this URL"
+- "What is the difference between encodeURI and encodeURIComponent?"
+- "Encode this string using RFC 3986"
