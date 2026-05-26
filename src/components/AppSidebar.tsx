@@ -1,7 +1,6 @@
 import {
   Braces,
-  Binary,
-  Link,
+  Code2,
   Fingerprint,
   Palette,
   Wrench,
