@@ -126,7 +126,7 @@ async function verifyHmacToken(token: string, secret: string, hashAlg: string): 
     "raw", new TextEncoder().encode(secret),
     { name: "HMAC", hash: hashAlg }, false, ["verify"]
   );
-  return crypto.subtle.verify("HMAC", key, b64uToBytes(parts[2]), data);
+  return crypto.subtle.verify("HMAC", key, b64uToBuf(parts[2]), data);
 }
 
 function pemToBuf(pem: string): ArrayBuffer {
@@ -145,7 +145,7 @@ async function verifyRsaToken(token: string, pubKeyPem: string, hashAlg: string)
     "spki", pemToBuf(pubKeyPem),
     { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, false, ["verify"]
   );
-  return crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64uToBytes(parts[2]), data);
+  return crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64uToBuf(parts[2]), data);
 }
 
 async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: string, alg: string): Promise<boolean> {
@@ -157,7 +157,7 @@ async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: strin
     "spki", pemToBuf(pubKeyPem),
     { name: "ECDSA", namedCurve }, false, ["verify"]
   );
-  return crypto.subtle.verify({ name: "ECDSA", hash: hashAlg }, key, b64uToBytes(parts[2]), data);
+  return crypto.subtle.verify({ name: "ECDSA", hash: hashAlg }, key, b64uToBuf(parts[2]), data);
 }
 
 // ---------- Token Preview (right column, shared) ----------
