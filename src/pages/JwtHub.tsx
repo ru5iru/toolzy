@@ -107,15 +107,15 @@ function pushHistory(token: string, label: string) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
 }
 
-// base64url helpers (for verification)
-function b64uToBytes(s: string): Uint8Array {
+// base64url helpers (for verification) — returns ArrayBuffer for crypto.subtle compatibility
+function b64uToBuf(s: string): ArrayBuffer {
   const padded = s.replace(/-/g, "+").replace(/_/g, "/");
   const pad = padded.length % 4;
   const final = pad ? padded + "=".repeat(4 - pad) : padded;
   const bin = atob(final);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return out;
+  return out.buffer;
 }
 
 async function verifyHmacToken(token: string, secret: string, hashAlg: string): Promise<boolean> {
