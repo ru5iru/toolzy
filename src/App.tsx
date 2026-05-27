@@ -37,8 +37,8 @@ const App = () => (
             <Route path="/url-encode" element={<Navigate to="/encode?mode=url" replace />} />
             <Route path="/uuid" element={<UuidGenerator />} />
             <Route path="/color" element={<ColorConverter />} />
-            <Route path="/jwt" element={<JwtDecoder />} />
-            <Route path="/jwt-encoder" element={<JwtEncoder />} />
+            <Route path="/jwt" element={<JwtHub />} />
+            <Route path="/jwt-encoder" element={<Navigate to="/jwt" replace />} />
             <Route path="/diff" element={<ApiDiffTool />} />
             <Route path="/fake-data" element={<FakeDataGenerator />} />
             <Route path="/env" element={<EnvGenerator />} />
