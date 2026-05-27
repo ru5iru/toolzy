@@ -4,7 +4,7 @@ import {
   Fingerprint,
   Palette,
   Wrench,
-  KeyRound,
+  ShieldCheck,
   GitCompare,
   Users,
   FileText,
