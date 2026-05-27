@@ -93,8 +93,8 @@ toolzy/
 │   │   ├── uuid/              # UUID v1/v3/v4/v5 helpers
 │   │   ├── color/             # Color parsing, conversion, palettes, WCAG
 │   │   ├── json-formatter/    # JSON tree, stats, schema, privacy badge
-│   │   ├── jwt-decoder/       # Decode/verify/score/compare JWTs
-│   │   ├── jwt-encoder/       # Build & sign JWTs
+│   │   ├── jwt/               # JWT Hub utilities (decode/encode/verify) — shared by /jwt
+│   │   │                       # (legacy jwt-decoder/ and jwt-encoder/ folders also house reusable helpers)
 │   │   └── api-diff/          # Structural diff engine (JSON/XML/HTML/Text)
 │   ├── pages/                 # One file per tool route
 │   ├── hooks/                 # use-mobile, use-toast
@@ -194,25 +194,14 @@ Comprehensive color toolkit for developers and designers.
 - **Batch converter** via textarea.
 - **Favorites & history** in `localStorage`; **URL state** (`?value=#3ecfcf`).
 
-### 5. JWT Decoder — `/jwt`
-Decode, inspect, and audit JSON Web Tokens.
+### 6. JWT Hub — `/jwt`
+Decode, encode, and verify JSON Web Tokens in a unified three-tab workbench.
 
-- **Three-section view**: Header, Payload, Signature with syntax highlighting.
-- **Claims validator**: checks `exp`, `nbf`, `iat`, `iss`, `aud`, `sub`.
-- **Signature verifier**: HS256/384/512 (secret) and RS256/ES256 (public key / JWK).
-- **Security score card**: flags weak algos (`none`, HS256 with short secret), missing claims, long expirations.
-- **Token comparison** side-by-side.
-- **History** of recently decoded tokens (`localStorage`).
-- **Code examples** in multiple languages for verifying the token server-side.
-
-### 6. JWT Encoder — `/jwt-encoder`
-Build and sign JWTs in the browser.
-
-- **Algorithm picker**: HS256/384/512 via Web Crypto `HMAC`; RS/ES via imported keys.
-- **Custom header & payload** editors with validation.
-- **Quick claim helpers** for `exp`, `iat`, `nbf`, `iss`, `aud`, `sub`, `jti`.
-- **Live token preview** updated on every keystroke.
-- **Copy / Download** signed token.
+- **Decode tab**: paste any JWT, inspect syntax-highlighted header and payload, validate standard claims (`exp`, `nbf`, `iat`, `iss`, `aud`, `sub`), restore from 10-token `localStorage` history.
+- **Encode tab**: algorithm picker (HS256/384/512, RS256, ES256), JSON header and payload editors, quick claim helpers (`exp`, `nbf`, `iss`, `aud`, `jti`), sign via Web Crypto API.
+- **Verify tab**: signature verification with secret or PEM public key, claims checklist, server-side code examples (Node.js, Python, Go, PHP).
+- **Shared panel (all tabs)**: colour-coded token preview (header · payload · signature pills) and a live security score card (A–F grade, per-finding severity badges).
+- Nothing leaves the browser.
 
 ### 7. API Response Diff — `/diff`
 Compare two API responses with structural awareness.

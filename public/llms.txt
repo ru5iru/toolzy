@@ -32,3 +32,24 @@ Example queries this tool answers:
 - "Parse the query parameters from this URL"
 - "What is the difference between encodeURI and encodeURIComponent?"
 - "Encode this string using RFC 3986"
+## JWT Hub
+
+URL: https://toolzy.lovable.app/jwt
+Category: Authentication & Security
+
+Decode, encode, and verify JSON Web Tokens (JWTs) entirely in the browser. No data leaves the client.
+
+Capabilities:
+- Decode any JWT and inspect header, payload, and claims (exp, nbf, iat, iss, aud, sub)
+- Encode and sign new JWTs using HS256, HS384, HS512, RS256, or ES256 via the Web Crypto API
+- Verify JWT signatures with a secret or public key (HMAC and RSA/ECDSA)
+- Security score card grading token safety: algorithm strength, secret length, claim presence, expiry window
+- Token history (last 10 tokens, localStorage)
+- Server-side verification code examples in Node.js, Python, Go, and PHP
+
+Example queries this tool answers:
+- "Decode this JWT and show me the payload"
+- "Generate a signed HS256 JWT with a 1-hour expiry"
+- "Is this JWT signature valid?"
+- "What claims are missing from this token?"
+- "How do I verify a JWT in Node.js?"
