@@ -93,8 +93,8 @@ toolzy/
 │   │   ├── uuid/              # UUID v1/v3/v4/v5 helpers
 │   │   ├── color/             # Color parsing, conversion, palettes, WCAG
 │   │   ├── json-formatter/    # JSON tree, stats, schema, privacy badge
-│   │   ├── jwt-decoder/       # Decode/verify/score/compare JWTs
-│   │   ├── jwt-encoder/       # Build & sign JWTs
+│   │   ├── jwt/               # JWT Hub utilities (decode/encode/verify) — shared by /jwt
+│   │   │                       # (legacy jwt-decoder/ and jwt-encoder/ folders also house reusable helpers)
 │   │   └── api-diff/          # Structural diff engine (JSON/XML/HTML/Text)
 │   ├── pages/                 # One file per tool route
 │   ├── hooks/                 # use-mobile, use-toast
