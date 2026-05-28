@@ -216,16 +216,18 @@ function HashTab() {
     if (err || !bytes) { setResults({}); return; }
     if (mode !== "hex" && mode !== "text") return;
 
+    const data = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
     if (hmac) {
       if (!secret) { setResults({}); return; }
-      const keyBuf = new TextEncoder().encode(secret);
+      const keyBytes = new TextEncoder().encode(secret);
+      const keyBuf = keyBytes.buffer.slice(keyBytes.byteOffset, keyBytes.byteOffset + keyBytes.byteLength) as ArrayBuffer;
       for (const algo of algosToRun) {
         const key = await crypto.subtle.importKey("raw", keyBuf, { name: "HMAC", hash: algo }, false, ["sign"]);
-        r[algo] = await crypto.subtle.sign("HMAC", key, bytes);
+        r[algo] = await crypto.subtle.sign("HMAC", key, data);
       }
     } else {
       for (const algo of algosToRun) {
-        r[algo] = await crypto.subtle.digest(algo, bytes);
+        r[algo] = await crypto.subtle.digest(algo, data);
       }
     }
     setResults(r);
