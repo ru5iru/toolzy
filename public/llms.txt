@@ -53,3 +53,44 @@ Example queries this tool answers:
 - "Is this JWT signature valid?"
 - "What claims are missing from this token?"
 - "How do I verify a JWT in Node.js?"
+
+## Crypto Suite
+
+URL: https://toolzy.lovable.app/crypto
+Category: Cryptography & Identifiers
+
+Generate cryptographic hashes and universally unique identifiers entirely
+in the browser using the native Web Crypto API.
+
+Capabilities — Hashing tab:
+- Compute SHA-1, SHA-256, SHA-384, SHA-512 hashes from text, files, or hex
+  input simultaneously
+- Output formats: hex (lower/upper), Base64, Base64 URL-safe
+- HMAC mode: HMAC-SHA-256, HMAC-SHA-384, HMAC-SHA-512 with a secret key
+- File hashing up to 500 MB via Web Worker with progress indicator
+- Hash comparison with character-level diff highlighting
+- Algorithm visibility toggles, persisted in localStorage
+- Hash history (last 10 inputs)
+- MD5 intentionally not supported (cryptographically broken)
+
+Capabilities — UUID Generator tab:
+- Generate UUID v1 (timestamp), v3 (MD5/namespace), v4 (random via
+  crypto.getRandomValues), v5 (SHA-1/namespace)
+- Bulk generation up to 10,000 UUIDs with virtualised results list
+- Formatting: uppercase, no hyphens, braces, urn:uuid: prefix
+- UUID validator: detect version, variant, well-formedness
+- v1 decoder: extract timestamp, clock sequence, node
+- Export: CSV, JSON, SQL INSERT, plain TXT
+- Code snippets: JavaScript, Python, Go, SQL
+- UUID comparison with field-by-field breakdown and timestamp diff for v1
+- Nil UUID and Max UUID (RFC 9562) quick-copy shortcuts
+
+Example queries this tool answers:
+- "Generate the SHA-256 hash of this text"
+- "What is the SHA-512 hash of this file?"
+- "Compute HMAC-SHA-256 with this secret key"
+- "Generate 1000 UUID v4 tokens and export as CSV"
+- "Is this a valid UUID? What version is it?"
+- "What timestamp is embedded in this v1 UUID?"
+- "Generate a UUID v5 from this namespace and name"
+- "What is the difference between SHA-256 and SHA-512?"
