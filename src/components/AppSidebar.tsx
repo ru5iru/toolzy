@@ -1,14 +1,13 @@
 import {
   Braces,
   Code2,
-  Fingerprint,
   Palette,
   Wrench,
   ShieldCheck,
   GitCompare,
   Users,
   FileText,
-  Hash,
+  KeyRound,
   Clock,
   Regex,
 } from "lucide-react";
@@ -30,13 +29,12 @@ import {
 const tools = [
   { title: "JSON Formatter", url: "/json", icon: Braces },
   { title: "Encoding Hub", url: "/encode", icon: Code2 },
-  { title: "UUID Generator", url: "/uuid", icon: Fingerprint },
+  { title: "Crypto Suite", url: "/crypto", icon: KeyRound },
   { title: "Color Converter", url: "/color", icon: Palette },
   { title: "JWT Hub", url: "/jwt", icon: ShieldCheck },
   { title: "API Diff", url: "/diff", icon: GitCompare },
   { title: "Fake Data", url: "/fake-data", icon: Users },
   { title: "Env Generator", url: "/env", icon: FileText },
-  { title: "Hash Generator", url: "/hash", icon: Hash },
   { title: "Date & Time", url: "/datetime", icon: Clock },
   { title: "Regex", url: "/regex", icon: Regex },
 ];

@@ -17,9 +17,10 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/uuid</loc>
+    <loc>https://toolzy.lovable.app/crypto</loc>
+    <lastmod>2026-05-28</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/color</loc>
@@ -46,11 +47,6 @@
     <loc>https://toolzy.lovable.app/env</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolzy.lovable.app/hash</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/datetime</loc>
