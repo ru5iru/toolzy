@@ -282,7 +282,8 @@ function HashTab() {
     if (hmac) {
       // HMAC always main-thread (key import is light)
       if (!secret) { setProgress(null); return; }
-      const keyBuf = new TextEncoder().encode(secret);
+      const kb = new TextEncoder().encode(secret);
+      const keyBuf = kb.buffer.slice(kb.byteOffset, kb.byteOffset + kb.byteLength) as ArrayBuffer;
       const r: Record<string, ArrayBuffer> = {};
       for (const algo of algosToRun) {
         const key = await crypto.subtle.importKey("raw", keyBuf, { name: "HMAC", hash: algo }, false, ["sign"]);
