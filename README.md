@@ -169,19 +169,7 @@ character count, async offload for inputs > 50 KB.
 
 Nothing leaves the browser. Old routes `/base64` and `/url-encode` redirect here.
 
-### 3. UUID Generator — `/uuid`
-Generate, validate, and decode UUIDs of every common version.
-
-- **Versions supported**: v1 (timestamp), v3 (MD5 namespace), v4 (random — `crypto.getRandomValues`), v5 (SHA-1 namespace).
-- **Bulk generation**: up to **10,000** UUIDs in one go.
-- **Formatting toggles**: uppercase, no hyphens, `{braces}`, `urn:uuid:` prefix.
-- **Validator**: detect version, variant, and well-formedness.
-- **v1 decoder**: extract embedded timestamp + clock sequence + node.
-- **Export**: CSV, JSON, SQL `INSERT`, plain TXT.
-- **Code snippets**: ready-to-paste generators in JavaScript, Python, Go, and SQL.
-- **History log** stored in `localStorage`.
-
-### 4. Color Converter — `/color`
+### 3. Color Converter — `/color`
 Comprehensive color toolkit for developers and designers.
 
 - **Inputs accepted**: HEX (3/6/8-digit), RGB(A), HSL(A), HSV/HSB, HWB, CSS Color Level 4 (`lab`, `lch`), CSS named colors.
@@ -194,7 +182,33 @@ Comprehensive color toolkit for developers and designers.
 - **Batch converter** via textarea.
 - **Favorites & history** in `localStorage`; **URL state** (`?value=#3ecfcf`).
 
-### 6. JWT Hub — `/jwt`
+### 4. Crypto Suite — `/crypto`
+Browser-native cryptographic hashing and UUID generation in a two-tab workbench, powered entirely by the Web Crypto API. Old routes `/hash` and `/uuid` redirect here.
+
+**Hashing tab**
+
+- Input modes: Text, File (drag-and-drop, up to 500 MB via Web Worker), Hex string
+- Algorithms: SHA-1, SHA-256, SHA-384, SHA-512 — computed simultaneously, visibility toggleable per algorithm
+- Output formats: hex lowercase, hex uppercase, Base64, Base64 URL-safe
+- HMAC mode: HMAC-SHA-256/384/512 with secret key input
+- File hashing with progress bar; chunked streaming for files > 50 MB
+- Hash comparison with character-level diff highlighting
+- Hash history (last 10 inputs, localStorage)
+- MD5 and bcrypt intentionally not supported
+
+**UUID Generator tab**
+
+- Versions: v1 (timestamp), v3 (MD5/namespace), v4 (random, `crypto.getRandomValues`), v5 (SHA-1/namespace)
+- Bulk generation: 1–10,000 UUIDs; Web Worker for > 1,000; virtualised list for > 500 results
+- Formatting toggles: uppercase, no hyphens, `{braces}`, `urn:uuid:` prefix
+- Validator: version, variant, well-formedness detection
+- v1 decoder: embedded timestamp (ISO 8601), clock sequence, node
+- Nil UUID and Max UUID (RFC 9562) quick-copy shortcuts
+- UUID comparison: field-by-field breakdown, v1 timestamp delta
+- Export: CSV, JSON, SQL `INSERT`, plain TXT
+- Code snippets: JavaScript, Python, Go, SQL
+
+### 5. JWT Hub — `/jwt`
 Decode, encode, and verify JSON Web Tokens in a unified three-tab workbench.
 
 - **Decode tab**: paste any JWT, inspect syntax-highlighted header and payload, validate standard claims (`exp`, `nbf`, `iat`, `iss`, `aud`, `sub`), restore from 10-token `localStorage` history.
@@ -203,7 +217,7 @@ Decode, encode, and verify JSON Web Tokens in a unified three-tab workbench.
 - **Shared panel (all tabs)**: colour-coded token preview (header · payload · signature pills) and a live security score card (A–F grade, per-finding severity badges).
 - Nothing leaves the browser.
 
-### 7. API Response Diff — `/diff`
+### 6. API Response Diff — `/diff`
 Compare two API responses with structural awareness.
 
 - **Format auto-detect**: JSON, XML, HTML, plain text.
@@ -216,23 +230,16 @@ Compare two API responses with structural awareness.
 - **Export** diff as JSON or Markdown report.
 - **Resizable split-pane** layout.
 
-### 8. Fake Data Generator — `/fake-data`
+### 7. Fake Data Generator — `/fake-data`
 Generate realistic mock data for prototypes, tests, and seed scripts. Names, emails, addresses, phone numbers, dates, IDs and more — exportable to JSON, CSV, or SQL.
 
-### 9. Env Generator — `/env`
+### 8. Env Generator — `/env`
 Build `.env` / `.env.example` files from a structured form. Random secret generation (via Web Crypto), key naming validation, and one-click download.
 
-### 10. Hash Generator — `/hash`
-SHA-1, SHA-256, SHA-384, SHA-512 hashes computed via the native **Web Crypto API** (`crypto.subtle.digest`).
-
-- Multi-algorithm output in a single click.
-- Per-hash copy buttons.
-- Note: MD5 and bcrypt are intentionally **not** supported — MD5 isn't in Web Crypto and is cryptographically broken; bcrypt requires a server.
-
-### 11. Date & Time — `/datetime`
+### 9. Date & Time — `/datetime`
 Convert between Unix timestamps (s/ms), ISO 8601, RFC 2822, and human-readable formats. Time-zone aware conversions, "now" snapshot, relative time helpers.
 
-### 12. Regex Playground — `/regex`
+### 10. Regex Playground — `/regex`
 Test regular expressions against sample text with live match highlighting, flags toggle (`g`, `i`, `m`, `s`, `u`, `y`), capture-group inspection, and replace preview.
 
 ---
