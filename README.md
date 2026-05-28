@@ -90,7 +90,7 @@ toolzy/
 │   │   ├── encoding-hub/      # (uses base64/ + url-encode/ utilities)
 │   │   ├── base64/            # Base64 encode/decode + content detection
 │   │   ├── url-encode/        # Percent-encoding, query parsing, batch, diff
-│   │   ├── uuid/              # UUID v1/v3/v4/v5 helpers
+│   │   ├── crypto/            # Hashing engine (Web Crypto, HMAC, file streaming) and UUID generation (v1/v3/v4/v5, bulk, export). Workers live in src/workers/.
 │   │   ├── color/             # Color parsing, conversion, palettes, WCAG
 │   │   ├── json-formatter/    # JSON tree, stats, schema, privacy badge
 │   │   ├── jwt/               # JWT Hub utilities (decode/encode/verify) — shared by /jwt
