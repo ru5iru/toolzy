@@ -1,9 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
+import { Share2 } from "lucide-react";
+
+const encodeShare = (pattern: string, flags: string, text: string) =>
+  btoa(unescape(encodeURIComponent(JSON.stringify({ p: pattern, f: flags, t: text }))));
+
+const decodeShare = (): { p: string; f: string; t: string } | null => {
+  try {
+    const d = new URLSearchParams(window.location.search).get("d");
+    if (!d) return null;
+    return JSON.parse(decodeURIComponent(escape(atob(d))));
+  } catch {
+    return null;
+  }
+};
 
 const snippets = [
   { label: "Email", pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", flags: "g" },
@@ -18,6 +32,27 @@ const RegexPlayground = () => {
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState("g");
   const [text, setText] = useState("");
+
+  // Load shared state from URL on mount
+  useEffect(() => {
+    const shared = decodeShare();
+    if (shared) {
+      setPattern(shared.p);
+      setFlags(shared.f);
+      setText(shared.t);
+      toast.success("Loaded regex from shared link");
+    }
+  }, []);
+
+  const shareLink = () => {
+    if (!pattern) { toast.error("Enter a pattern to share"); return; }
+    const url = new URL(window.location.href);
+    url.searchParams.set("d", encodeShare(pattern, flags, text));
+    if (url.toString().length > 8000) { toast.error("Text too large for URL sharing"); return; }
+    navigator.clipboard.writeText(url.toString());
+    window.history.replaceState(null, "", url.toString());
+    toast.success("Shareable link copied to clipboard!");
+  };
 
   const { matches, error, highlighted } = useMemo(() => {
     if (!pattern) return { matches: [], error: "", highlighted: text };
