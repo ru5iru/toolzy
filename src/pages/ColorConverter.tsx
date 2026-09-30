@@ -139,7 +139,7 @@ const ColorConverter = () => {
 
   const CopyBtn = ({ text, k }: { text: string; k: string }) => (
     <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => copy(text, k)}>
-      {copiedKey === k ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+      {copiedKey === k ? <Check className="h-3.5 w-3.5 text-[hsl(var(--success-foreground))]" /> : <Copy className="h-3.5 w-3.5" />}
     </Button>
   );
 
@@ -211,7 +211,7 @@ const ColorConverter = () => {
                   <span className="text-muted-foreground/50">·</span>
                   <span className="font-mono">bg-{twClass}</span>
                   <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto" onClick={() => toggleFavorite(hex)}>
-                    <Heart className={`h-3 w-3 ${favorites.includes(hex) ? "fill-red-400 text-red-400" : ""}`} />
+                    <Heart className={`h-3 w-3 ${favorites.includes(hex) ? "fill-red-400 text-destructive" : ""}`} />
                   </Button>
                 </div>
               )}
@@ -347,12 +347,12 @@ const ColorConverter = () => {
                   <div className="text-2xl font-bold text-foreground">{ratio.toFixed(2)}:1</div>
                   <div className="text-[10px] text-muted-foreground">Contrast Ratio</div>
                 </div>
-                <div className={`rounded-md border p-3 text-center ${ratio >= 4.5 ? "border-green-500/30 bg-green-500/5" : "border-red-500/30 bg-red-500/5"}`}>
-                  <div className={`text-lg font-bold ${ratio >= 4.5 ? "text-green-400" : "text-red-400"}`}>{ratio >= 4.5 ? "PASS" : "FAIL"}</div>
+                <div className={`rounded-md border p-3 text-center ${ratio >= 4.5 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
+                  <div className={`text-lg font-bold ${ratio >= 4.5 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 4.5 ? "PASS" : "FAIL"}</div>
                   <div className="text-[10px] text-muted-foreground">WCAG AA (4.5:1)</div>
                 </div>
-                <div className={`rounded-md border p-3 text-center ${ratio >= 7 ? "border-green-500/30 bg-green-500/5" : "border-red-500/30 bg-red-500/5"}`}>
-                  <div className={`text-lg font-bold ${ratio >= 7 ? "text-green-400" : "text-red-400"}`}>{ratio >= 7 ? "PASS" : "FAIL"}</div>
+                <div className={`rounded-md border p-3 text-center ${ratio >= 7 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
+                  <div className={`text-lg font-bold ${ratio >= 7 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 7 ? "PASS" : "FAIL"}</div>
                   <div className="text-[10px] text-muted-foreground">WCAG AAA (7:1)</div>
                 </div>
               </div>

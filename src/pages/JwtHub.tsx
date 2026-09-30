@@ -78,18 +78,18 @@ function computeSecurity(header: Record<string, any> | null, payload: Record<str
 }
 
 const GRADE_COLOR: Record<SecurityResult["grade"], string> = {
-  A: "bg-green-500/15 text-green-500 border-green-500/40",
-  B: "bg-blue-500/15 text-blue-500 border-blue-500/40",
-  C: "bg-yellow-500/15 text-yellow-500 border-yellow-500/40",
-  D: "bg-orange-500/15 text-orange-500 border-orange-500/40",
+  A: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success-foreground))] border-[hsl(var(--success))]/40",
+  B: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/40",
+  C: "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning-foreground))] border-[hsl(var(--warning))]/40",
+  D: "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning-foreground))] border-[hsl(var(--warning))]/40",
   F: "bg-destructive/15 text-destructive border-destructive/40",
 };
 
 const SEVERITY_COLOR: Record<SecurityFinding["severity"], string> = {
   critical: "bg-destructive/15 text-destructive border-destructive/40",
-  high: "bg-orange-500/15 text-orange-500 border-orange-500/40",
-  medium: "bg-yellow-500/15 text-yellow-500 border-yellow-500/40",
-  low: "bg-blue-500/15 text-blue-500 border-blue-500/40",
+  high: "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning-foreground))] border-[hsl(var(--warning))]/40",
+  medium: "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning-foreground))] border-[hsl(var(--warning))]/40",
+  low: "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] border-[hsl(var(--info))]/40",
   info: "bg-muted text-muted-foreground border-border",
 };
 
@@ -173,16 +173,16 @@ function TokenPreview({ token }: { token: string }) {
       <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Token Preview</div>
       {token ? (
         <div className="font-mono text-xs break-all leading-relaxed">
-          <button onClick={() => copyPart(parts[0], "Header")} className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 hover:bg-blue-500/25 transition-colors" title="Copy header">
+          <button onClick={() => copyPart(parts[0], "Header")} className="px-1.5 py-0.5 rounded bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/25 transition-colors" title="Copy header">
             {parts[0]}
           </button>
           <span className="text-muted-foreground">.</span>
-          <button onClick={() => copyPart(parts[1], "Payload")} className="px-1.5 py-0.5 rounded bg-green-500/15 text-green-500 hover:bg-green-500/25 transition-colors" title="Copy payload">
+          <button onClick={() => copyPart(parts[1], "Payload")} className="px-1.5 py-0.5 rounded bg-[hsl(var(--success))]/15 text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/25 transition-colors" title="Copy payload">
             {parts[1]}
           </button>
           <span className="text-muted-foreground">.</span>
           {parts[2] ? (
-            <button onClick={() => copyPart(parts[2], "Signature")} className="px-1.5 py-0.5 rounded bg-red-500/15 text-red-500 hover:bg-red-500/25 transition-colors" title="Copy signature">
+            <button onClick={() => copyPart(parts[2], "Signature")} className="px-1.5 py-0.5 rounded bg-destructive/15 text-destructive hover:bg-destructive/25 transition-colors" title="Copy signature">
               {parts[2]}
             </button>
           ) : (
@@ -212,7 +212,7 @@ function SecurityCard({ result }: { result: SecurityResult }) {
         </div>
       </div>
       {result.findings.length === 0 ? (
-        <div className="flex items-center gap-2 text-xs text-green-500">
+        <div className="flex items-center gap-2 text-xs text-[hsl(var(--success-foreground))]">
           <CheckCircle className="w-4 h-4" /> No issues found
         </div>
       ) : (
@@ -260,7 +260,7 @@ function ClaimsChecklist({ payload }: { payload: Record<string, any> | null }) {
     <div className="rounded-md border border-border bg-card divide-y divide-border">
       {rows.map(r => (
         <div key={r.claim} className="flex items-center gap-2 px-3 py-1.5 text-xs">
-          {r.ok ? <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" /> : <XCircle className="w-3.5 h-3.5 text-destructive shrink-0" />}
+          {r.ok ? <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success-foreground))] shrink-0" /> : <XCircle className="w-3.5 h-3.5 text-destructive shrink-0" />}
           <span className="font-mono font-semibold text-foreground w-10">{r.claim}</span>
           <span className={`font-mono ${r.ok ? "text-muted-foreground" : "text-destructive"}`}>{r.note}</span>
         </div>
@@ -272,8 +272,8 @@ function ClaimsChecklist({ payload }: { payload: Record<string, any> | null }) {
 // ---------- JSON viewer with copy ----------
 function JsonBlock({ title, data, accent }: { title: string; data: any; accent: "blue" | "green" }) {
   const text = JSON.stringify(data, null, 2);
-  const cls = accent === "blue" ? "border-blue-500/30" : "border-green-500/30";
-  const titleCls = accent === "blue" ? "text-blue-500" : "text-green-500";
+  const cls = accent === "blue" ? "border-[hsl(var(--info))]/30" : "border-[hsl(var(--success))]/30";
+  const titleCls = accent === "blue" ? "text-[hsl(var(--info))]" : "text-[hsl(var(--success-foreground))]";
   return (
     <div className={`rounded-md border ${cls} bg-card`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
@@ -534,13 +534,13 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs text-blue-500 uppercase tracking-wider">Header</Label>
-        <Textarea value={headerStr} onChange={e => setHeaderStr(e.target.value)} className="min-h-[90px] font-mono text-xs bg-card border-blue-500/30 resize-none" />
+        <Label className="text-xs text-[hsl(var(--info))] uppercase tracking-wider">Header</Label>
+        <Textarea value={headerStr} onChange={e => setHeaderStr(e.target.value)} className="min-h-[90px] font-mono text-xs bg-card border-[hsl(var(--info))]/30 resize-none" />
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs text-green-500 uppercase tracking-wider">Payload</Label>
-        <Textarea value={payloadStr} onChange={e => setPayloadStr(e.target.value)} className="min-h-[110px] font-mono text-xs bg-card border-green-500/30 resize-none" />
+        <Label className="text-xs text-[hsl(var(--success-foreground))] uppercase tracking-wider">Payload</Label>
+        <Textarea value={payloadStr} onChange={e => setPayloadStr(e.target.value)} className="min-h-[110px] font-mono text-xs bg-card border-[hsl(var(--success))]/30 resize-none" />
       </div>
 
       <div className="flex flex-wrap gap-1">
@@ -556,7 +556,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </Button>
 
       {shared.signatureStatus === "unsigned" && (
-        <p className="text-[10px] text-yellow-500 flex items-center gap-1">
+        <p className="text-[10px] text-[hsl(var(--warning-foreground))] flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" /> Unsigned preview — click Sign to generate signature
         </p>
       )}
@@ -642,8 +642,8 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       {result && (
         <div
           className={`w-full rounded-md border p-3 flex items-center gap-2 text-sm font-medium ${
-            result === "valid" ? "bg-green-500/10 border-green-500/40 text-green-500"
-            : result === "warn-none" ? "bg-yellow-500/10 border-yellow-500/40 text-yellow-500"
+            result === "valid" ? "bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/40 text-[hsl(var(--success-foreground))]"
+            : result === "warn-none" ? "bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/40 text-[hsl(var(--warning-foreground))]"
             : "bg-destructive/10 border-destructive/40 text-destructive"
           }`}
         >

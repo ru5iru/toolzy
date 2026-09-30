@@ -54,7 +54,7 @@ export const SignatureVerifier = ({ token, algorithm }: Props) => {
         </Button>
       </div>
       {result !== null && (
-        <div className={`flex items-center gap-2 text-sm font-medium ${result ? "text-green-500" : "text-destructive"}`}>
+        <div className={`flex items-center gap-2 text-sm font-medium ${result ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>
           {result ? <ShieldCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}
           {result ? "Signature is valid ✓" : "Signature is invalid ✗"}
         </div>

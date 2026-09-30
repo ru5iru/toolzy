@@ -167,10 +167,10 @@ export function assessEncoderSecurity(
 
   score = Math.max(0, score);
   let label = "Excellent";
-  let color = "text-green-500";
+  let color = "text-[hsl(var(--success-foreground))]";
   if (score < 40) { label = "Poor"; color = "text-destructive"; }
-  else if (score < 60) { label = "Fair"; color = "text-yellow-500"; }
-  else if (score < 80) { label = "Good"; color = "text-blue-400"; }
+  else if (score < 60) { label = "Fair"; color = "text-[hsl(var(--warning-foreground))]"; }
+  else if (score < 80) { label = "Good"; color = "text-[hsl(var(--info))]"; }
 
   return { score, label, color, issues };
 }
