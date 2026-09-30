@@ -17,7 +17,7 @@ const highlightMatch = (text: string, search: string) => {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-yellow-500/40 text-inherit rounded-sm px-0.5">{text.slice(idx, idx + search.length)}</mark>
+      <mark className="bg-[hsl(var(--syntax-highlight)/0.4)] text-inherit rounded-sm px-0.5">{text.slice(idx, idx + search.length)}</mark>
       {text.slice(idx + search.length)}
     </>
   );
@@ -48,10 +48,10 @@ export const JsonTreeNode = ({ keyName, value, defaultExpanded, searchTerm = "",
   const renderKey = (k: string) => searchTerm ? highlightMatch(k, searchTerm) : k;
   const renderVal = (v: string) => searchTerm ? highlightMatch(v, searchTerm) : v;
 
-  if (value === null) return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-orange-400">null</span><PathButton path={currentPath} /></div>;
-  if (typeof value === "boolean") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-yellow-400">{String(value)}</span><PathButton path={currentPath} /></div>;
-  if (typeof value === "number") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-cyan-400">{value}</span><PathButton path={currentPath} /></div>;
-  if (typeof value === "string") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-green-400">"{renderVal(value)}"</span><PathButton path={currentPath} /></div>;
+  if (value === null) return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-[hsl(var(--syntax-null))]">null</span><PathButton path={currentPath} /></div>;
+  if (typeof value === "boolean") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-[hsl(var(--syntax-boolean))]">{String(value)}</span><PathButton path={currentPath} /></div>;
+  if (typeof value === "number") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-[hsl(var(--syntax-number))]">{value}</span><PathButton path={currentPath} /></div>;
+  if (typeof value === "string") return <div className="pl-4 font-mono text-sm group/node"><span className="text-muted-foreground">{keyName && <>{renderKey(keyName)}: </>}</span><span className="text-[hsl(var(--syntax-string))]">"{renderVal(value)}"</span><PathButton path={currentPath} /></div>;
 
   const isArray = Array.isArray(value);
   const entries = isArray ? value.map((v: any, i: number) => [String(i), v] as [string, any]) : Object.entries(value);
