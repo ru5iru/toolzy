@@ -98,7 +98,12 @@ const RegexPlayground = () => {
       <h1 className="text-2xl font-mono font-bold text-foreground">Regex Playground</h1>
 
       <div>
-        <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Common Patterns</label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs text-muted-foreground uppercase tracking-wider">Common Patterns</label>
+          <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={shareLink} disabled={!pattern}>
+            <Share2 className="w-3 h-3 mr-1" />Share
+          </Button>
+        </div>
         <div className="flex flex-wrap gap-2">
           {snippets.map((s) => (
             <Button key={s.label} variant="secondary" size="sm" onClick={() => loadSnippet(s)}>{s.label}</Button>
