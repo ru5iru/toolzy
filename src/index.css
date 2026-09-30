@@ -51,6 +51,19 @@
 
     --success: 145 65% 45%;
     --warning: 40 90% 55%;
+
+    /* Syntax highlighting tokens */
+    --syntax-string: 145 60% 60%;
+    --syntax-number: 190 80% 65%;
+    --syntax-boolean: 45 90% 60%;
+    --syntax-null: 25 85% 60%;
+    --syntax-key: 210 20% 75%;
+    --syntax-highlight: 50 90% 55%;
+
+    /* Semantic status tokens */
+    --info: 210 80% 60%;
+    --success-foreground: 145 65% 60%;
+    --warning-foreground: 40 90% 60%;
   }
 }
 

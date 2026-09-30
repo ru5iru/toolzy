@@ -525,7 +525,7 @@ function HashTab() {
           </div>
           <Button size="sm" onClick={() => setCmp(constantTimeCompare(hashA.trim(), hashB.trim()))}>Compare</Button>
           {cmp && (
-            <div className={`rounded-lg p-3 border text-sm ${cmp.match ? "border-green-500/30 bg-green-500/5 text-green-500" : "border-destructive/30 bg-destructive/5 text-destructive"}`}>
+            <div className={`rounded-lg p-3 border text-sm ${cmp.match ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5 text-[hsl(var(--success-foreground))]" : "border-destructive/30 bg-destructive/5 text-destructive"}`}>
               {cmp.match ? "✓ Hashes match" : "✗ Hashes do not match"}
               {!cmp.match && (
                 <div className="mt-2 font-mono text-xs text-foreground break-all">
@@ -871,7 +871,7 @@ function UuidTab() {
             <Button size="sm" onClick={() => setValidation(validateUUID(validateInput))}>Check</Button>
           </div>
           {validation && (
-            <div className={`rounded p-3 text-xs border ${validation.valid ? "border-green-500/30 bg-green-500/5 text-green-500" : "border-destructive/30 bg-destructive/5 text-destructive"}`}>
+            <div className={`rounded p-3 text-xs border ${validation.valid ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5 text-[hsl(var(--success-foreground))]" : "border-destructive/30 bg-destructive/5 text-destructive"}`}>
               {validation.valid ? `Valid · v${validation.version} · ${validation.variant}` : "Invalid UUID"}
             </div>
           )}

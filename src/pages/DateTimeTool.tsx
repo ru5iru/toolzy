@@ -121,6 +121,27 @@ const DateTimeTool = () => {
   const [tzInput, setTzInput] = useState(new Date().toISOString().slice(0, 16));
   const [cron, setCron] = useState("0 * * * *");
   const [liveNow, setLiveNow] = useState(new Date());
+  const [diffStart, setDiffStart] = useState(new Date().toISOString().slice(0, 16));
+  const [diffEnd, setDiffEnd] = useState(new Date(Date.now() + 86400000).toISOString().slice(0, 16));
+
+  const dateDiff = useMemo(() => {
+    const a = new Date(diffStart).getTime();
+    const b = new Date(diffEnd).getTime();
+    if (isNaN(a) || isNaN(b)) return null;
+    const ms = Math.abs(b - a);
+    const totalMinutes = Math.floor(ms / 60000);
+    const totalHours = Math.floor(ms / 3600000);
+    const totalDays = Math.floor(ms / 86400000);
+    const days = totalDays;
+    const hours = totalHours % 24;
+    const mins = totalMinutes % 60;
+    return {
+      label: `${days}d ${hours}h ${mins}m`,
+      totalDays: totalDays.toLocaleString(),
+      totalHours: totalHours.toLocaleString(),
+      totalMinutes: totalMinutes.toLocaleString(),
+    };
+  }, [diffStart, diffEnd]);
 
   useEffect(() => {
     const ts = Number(timestamp);
@@ -320,6 +341,32 @@ const DateTimeTool = () => {
         <div className="border border-border rounded-lg p-3 bg-background font-mono text-xs text-muted-foreground">
           {describeCron(cron)}
         </div>
+      </section>
+
+      {/* Date difference calculator */}
+      <section className="border border-border rounded-lg bg-card p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-primary" />
+          <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">Date Difference</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground font-medium">Start date</label>
+            <Input type="datetime-local" value={diffStart} onChange={(e) => setDiffStart(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground font-medium">End date</label>
+            <Input type="datetime-local" value={diffEnd} onChange={(e) => setDiffEnd(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
+          </div>
+        </div>
+        {dateDiff && (
+          <div className="flex flex-wrap gap-3 text-xs font-mono">
+            <span className="border border-border rounded px-2 py-1 bg-background text-primary font-semibold">{dateDiff.label}</span>
+            <span className="border border-border rounded px-2 py-1 bg-background text-muted-foreground">{dateDiff.totalDays} days</span>
+            <span className="border border-border rounded px-2 py-1 bg-background text-muted-foreground">{dateDiff.totalHours} hours</span>
+            <span className="border border-border rounded px-2 py-1 bg-background text-muted-foreground">{dateDiff.totalMinutes} minutes</span>
+          </div>
+        )}
       </section>
     </div>
   );

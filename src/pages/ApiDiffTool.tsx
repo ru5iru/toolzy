@@ -15,14 +15,14 @@ import {
 import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X } from "lucide-react";
 
 const colorMap: Record<string, string> = {
-  added: "text-green-400", removed: "text-red-400",
-  changed: "text-yellow-400", type_changed: "text-orange-400"
+  added: "text-[hsl(var(--success-foreground))]", removed: "text-destructive",
+  changed: "text-[hsl(var(--warning-foreground))]", type_changed: "text-[hsl(var(--warning-foreground))]"
 };
 const bgMap: Record<string, string> = {
-  added: "bg-green-400/10 border-green-400/20",
-  removed: "bg-red-400/10 border-red-400/20",
-  changed: "bg-yellow-400/10 border-yellow-400/20",
-  type_changed: "bg-orange-400/10 border-orange-400/20"
+  added: "bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/20",
+  removed: "bg-destructive/10 border-destructive/20",
+  changed: "bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/20",
+  type_changed: "bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/20"
 };
 const labelMap: Record<string, string> = {
   added: "ADDED", removed: "REMOVED", changed: "CHANGED", type_changed: "TYPE CHANGED"
@@ -299,20 +299,20 @@ const ApiDiffTool = () => {
       {/* Summary */}
       {summary && compared && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="border border-green-400/20 bg-green-400/5 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-green-400 font-mono">{summary.added}</div>
+          <div className="border border-[hsl(var(--success))]/20 bg-[hsl(var(--success))]/5 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-[hsl(var(--success-foreground))] font-mono">{summary.added}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Added</div>
           </div>
-          <div className="border border-red-400/20 bg-red-400/5 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-red-400 font-mono">{summary.removed}</div>
+          <div className="border border-destructive/20 bg-destructive/5 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-destructive font-mono">{summary.removed}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Removed</div>
           </div>
-          <div className="border border-yellow-400/20 bg-yellow-400/5 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-yellow-400 font-mono">{summary.changed}</div>
+          <div className="border border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/5 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-[hsl(var(--warning-foreground))] font-mono">{summary.changed}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Changed</div>
           </div>
-          <div className="border border-orange-400/20 bg-orange-400/5 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-orange-400 font-mono">{summary.typeChanged}</div>
+          <div className="border border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/5 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-[hsl(var(--warning-foreground))] font-mono">{summary.typeChanged}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Type Changed</div>
           </div>
         </div>
@@ -339,8 +339,8 @@ const ApiDiffTool = () => {
           </div>
 
           {diffs.length === 0 ? (
-            <div className="border border-green-400/20 bg-green-400/5 rounded-lg p-6 text-center">
-              <p className="text-green-400 font-mono text-sm">✓ Responses are identical</p>
+            <div className="border border-[hsl(var(--success))]/20 bg-[hsl(var(--success))]/5 rounded-lg p-6 text-center">
+              <p className="text-[hsl(var(--success-foreground))] font-mono text-sm">✓ Responses are identical</p>
             </div>
           ) : viewMode === "structured" ? (
             <div className="space-y-2">
@@ -359,13 +359,13 @@ const ApiDiffTool = () => {
                   </div>
                   <div className="mt-2 space-y-1">
                     {d.left !== undefined && (
-                      <div className="text-red-400 text-xs flex items-start gap-1">
+                      <div className="text-destructive text-xs flex items-start gap-1">
                         <span className="shrink-0">−</span>
                         <code className="break-all">{d.left}</code>
                       </div>
                     )}
                     {d.right !== undefined && (
-                      <div className="text-green-400 text-xs flex items-start gap-1">
+                      <div className="text-[hsl(var(--success-foreground))] text-xs flex items-start gap-1">
                         <span className="shrink-0">+</span>
                         <code className="break-all">{d.right}</code>
                       </div>
@@ -390,8 +390,8 @@ const ApiDiffTool = () => {
                     <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
                       <td className="px-3 py-2 text-foreground">{d.path}</td>
                       <td className="px-3 py-2"><Badge variant="outline" className={`text-[9px] ${colorMap[d.type]}`}>{labelMap[d.type]}</Badge></td>
-                      <td className="px-3 py-2 text-red-400 max-w-[200px] truncate">{d.left ?? "—"}</td>
-                      <td className="px-3 py-2 text-green-400 max-w-[200px] truncate">{d.right ?? "—"}</td>
+                      <td className="px-3 py-2 text-destructive max-w-[200px] truncate">{d.left ?? "—"}</td>
+                      <td className="px-3 py-2 text-[hsl(var(--success-foreground))] max-w-[200px] truncate">{d.right ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>

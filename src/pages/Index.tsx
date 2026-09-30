@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -19,6 +20,11 @@ const tools = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const filteredTools = q
+    ? tools.filter((t) => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
+    : tools;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -39,8 +45,27 @@ const Index = () => {
       </header>
       <section aria-labelledby="tools-heading">
         <h2 id="tools-heading" className="sr-only">Available developer tools</h2>
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search tools…"
+            aria-label="Search developer tools"
+            className="w-full h-10 rounded-lg border border-border bg-card pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          {query && (
+            <button onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        {filteredTools.length === 0 && (
+          <p className="text-sm text-muted-foreground mb-4">No tools match "{query}".</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tools.map((tool) => (
+          {filteredTools.map((tool) => (
             <button
               key={tool.url}
               onClick={() => navigate(tool.url)}

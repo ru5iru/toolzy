@@ -38,9 +38,9 @@ export const ClaimsValidator = ({ payload }: Props) => {
         <div className="space-y-1">
           {results.map(r => (
             <div key={r.claim} className="flex items-center gap-2 text-xs font-mono">
-              {r.match ? <CheckCircle className="w-3.5 h-3.5 text-green-500" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+              {r.match ? <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success-foreground))]" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
               <span className="text-muted-foreground">{r.claim}:</span>
-              <span className={r.match ? "text-green-500" : "text-destructive"}>{r.actual}</span>
+              <span className={r.match ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}>{r.actual}</span>
               {!r.match && <span className="text-muted-foreground">expected: {r.expected}</span>}
             </div>
           ))}

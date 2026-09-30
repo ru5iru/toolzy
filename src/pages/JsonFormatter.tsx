@@ -13,6 +13,7 @@ import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
 import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
+import { JsonHighlighted } from "@/components/json-formatter/JsonHighlighted";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
 
 type IndentOption = "2" | "4" | "tab";
@@ -253,7 +254,11 @@ const JsonFormatter = () => {
               )}
             </div>
             {viewMode === "text" ? (
-              <Textarea value={output} readOnly className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" />
+              output && !output.startsWith("Error:") ? (
+                <JsonHighlighted code={output} />
+              ) : (
+                <Textarea value={output} readOnly placeholder="Formatted output will appear here…" className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" />
+              )
             ) : (
               <div className="flex-1 min-h-0 p-3 overflow-auto">
                 {filteredData !== null && filteredData !== undefined ? (
