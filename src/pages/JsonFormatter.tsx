@@ -233,7 +233,7 @@ const JsonFormatter = () => {
       <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border min-h-[500px]">
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="p-2 border-b border-border">
+            <div className="h-10 shrink-0 flex items-center px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
             </div>
             <Textarea
@@ -247,7 +247,7 @@ const JsonFormatter = () => {
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-2 border-b border-border">
+            <div className="h-10 shrink-0 flex items-center justify-between px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
               {viewMode === "tree" && parsedData !== null && (
                 <div className="flex gap-1">
