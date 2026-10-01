@@ -203,6 +203,24 @@ const ColorConverter = () => {
                   className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent"
                   aria-label="Color picker"
                 />
+                {"EyeDropper" in window && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 shrink-0"
+                    aria-label="Pick color from screen"
+                    title="Pick color from screen"
+                    onClick={async () => {
+                      try {
+                        const result = await (new (window as any).EyeDropper()).open();
+                        setInput(result.sRGBHex);
+                        toast.success(`Picked ${result.sRGBHex}`);
+                      } catch { /* user cancelled */ }
+                    }}
+                  >
+                    <Pipette className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
               {rgb && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
