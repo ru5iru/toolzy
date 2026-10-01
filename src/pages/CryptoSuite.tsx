@@ -378,6 +378,7 @@ function HashTab() {
         <div className="space-y-2">
           <label className="text-xs text-muted-foreground uppercase tracking-wider">Input text</label>
           <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Text to hash…" className="min-h-[140px] font-mono text-sm bg-card border-border" />
+          {text && <PasswordStrength text={text} />}
         </div>
       )}
       {mode === "hex" && (
