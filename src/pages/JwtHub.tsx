@@ -12,8 +12,11 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle,
-  ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus,
+  ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles,
 } from "lucide-react";
+
+// Classic jwt.io demo token (HS256, secret "your-256-bit-secret") for instant demos
+const SAMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 import {
   decodeJwt, formatTimestamp, extractJwtFromInput, type DecodedJwt,
 } from "@/components/jwt-decoder/jwtUtils";
