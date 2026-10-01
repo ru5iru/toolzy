@@ -15,6 +15,7 @@ import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
 import { JsonHighlighted } from "@/components/json-formatter/JsonHighlighted";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 type IndentOption = "2" | "4" | "tab";
 
