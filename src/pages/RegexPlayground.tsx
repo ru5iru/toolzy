@@ -55,8 +55,11 @@ const RegexPlayground = () => {
     toast.success("Shareable link copied to clipboard!");
   };
 
+  const debouncedPattern = useDebouncedValue(pattern, 300);
+  const debouncedText = useDebouncedValue(text, 300);
+
   const { matches, error, highlighted } = useMemo(() => {
-    if (!pattern) return { matches: [], error: "", highlighted: text };
+    if (!debouncedPattern) return { matches: [], error: "", highlighted: debouncedText };
     try {
       const re = new RegExp(pattern, flags);
       const m: { match: string; index: number; groups?: Record<string, string> }[] = [];
