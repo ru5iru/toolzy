@@ -70,10 +70,12 @@ const JsonFormatter = () => {
     return sortKeys ? sortKeysDeep(parsed) : parsed;
   };
 
+  const debouncedInput = useDebouncedValue(input, 300);
+
   const parsedData = useMemo(() => {
-    try { return processJson(input); } catch { return null; }
+    try { return processJson(debouncedInput); } catch { return null; }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input, sortKeys]);
+  }, [debouncedInput, sortKeys]);
 
   const filteredData = useMemo(() => {
     if (!parsedData || !searchTerm) return parsedData;

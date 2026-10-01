@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Share2 } from "lucide-react";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 const encodeShare = (pattern: string, flags: string, text: string) =>
   btoa(unescape(encodeURIComponent(JSON.stringify({ p: pattern, f: flags, t: text }))));
