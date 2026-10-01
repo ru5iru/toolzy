@@ -27,6 +27,39 @@ import UuidWorker from "@/workers/uuidWorker?worker";
 // ---------- Hash helpers ----------
 type HashAlgo = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 const ALL_ALGOS: HashAlgo[] = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+
+// Password strength meter (entropy-based heuristic, runs locally)
+function PasswordStrength({ text }: { text: string }) {
+  const { score, label, color, tips } = useMemo(() => {
+    let s = 0;
+    const tips: string[] = [];
+    if (text.length >= 8) s++; else tips.push("Use at least 8 characters");
+    if (text.length >= 16) s++;
+    if (/[a-z]/.test(text) && /[A-Z]/.test(text)) s++; else tips.push("Mix upper and lower case");
+    if (/\d/.test(text)) s++; else tips.push("Add numbers");
+    if (/[^a-zA-Z0-9]/.test(text)) s++; else tips.push("Add symbols");
+    if (/^(.)\1+$/.test(text) || /^(0123|1234|abcd|qwerty|password)/i.test(text)) { s = Math.max(0, s - 2); tips.push("Avoid common patterns"); }
+    const labels = ["Very weak", "Weak", "Fair", "Good", "Strong", "Very strong"];
+    const colors = ["bg-destructive", "bg-destructive", "bg-[hsl(var(--warning))]", "bg-[hsl(var(--warning))]", "bg-[hsl(var(--success))]", "bg-[hsl(var(--success))]"];
+    return { score: s, label: labels[s], color: colors[s], tips };
+  }, [text]);
+
+  return (
+    <div className="space-y-1.5" role="status" aria-label={`Password strength: ${label}`}>
+      <div className="flex items-center gap-2">
+        <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden flex gap-0.5">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className={`flex-1 transition-colors ${i < score ? color : "bg-muted"}`} />
+          ))}
+        </div>
+        <span className="text-xs font-mono text-muted-foreground w-20 text-right">{label}</span>
+      </div>
+      {tips.length > 0 && score < 4 && (
+        <p className="text-[10px] text-muted-foreground">{tips.join(" • ")}</p>
+      )}
+    </div>
+  );
+}
 type OutputFmt = "hex" | "HEX" | "b64" | "b64u";
 
 function bufToHex(buf: ArrayBuffer, upper = false) {
