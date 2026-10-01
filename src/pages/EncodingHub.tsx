@@ -293,6 +293,13 @@ const EncodingHub = () => {
     toast.success("Copied to clipboard");
   };
 
+  const handleCopyDataUri = () => {
+    if (!output) return;
+    const mime = detectedContent?.mimeType || "text/plain";
+    navigator.clipboard.writeText(`data:${mime};base64,${output.replace(/\s+/g, "")}`);
+    toast.success("Copied as Data URI");
+  };
+
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -597,6 +604,9 @@ const EncodingHub = () => {
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy} disabled={!output} aria-label="Copy output" title="Copy"><Copy className="w-3 h-3" /></Button>
+                  {(mode === "base64" || mode === "base64url") && direction === "encode" && (
+                    <Button variant="ghost" size="sm" className="h-6 px-1.5 text-[10px]" onClick={handleCopyDataUri} disabled={!output} aria-label="Copy as Data URI" title="Copy as Data URI">data:</Button>
+                  )}
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleDownload} disabled={!output} aria-label="Download" title="Download"><Download className="w-3 h-3" /></Button>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSwap} disabled={!output} aria-label="Swap" title="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
                 </div>

@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Share2 } from "lucide-react";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 const encodeShare = (pattern: string, flags: string, text: string) =>
   btoa(unescape(encodeURIComponent(JSON.stringify({ p: pattern, f: flags, t: text }))));
@@ -54,19 +55,22 @@ const RegexPlayground = () => {
     toast.success("Shareable link copied to clipboard!");
   };
 
+  const debouncedPattern = useDebouncedValue(pattern, 300);
+  const debouncedText = useDebouncedValue(text, 300);
+
   const { matches, error, highlighted } = useMemo(() => {
-    if (!pattern) return { matches: [], error: "", highlighted: text };
+    if (!debouncedPattern) return { matches: [], error: "", highlighted: debouncedText };
     try {
-      const re = new RegExp(pattern, flags);
+      const re = new RegExp(debouncedPattern, flags);
       const m: { match: string; index: number; groups?: Record<string, string> }[] = [];
       let match;
       if (flags.includes("g")) {
-        while ((match = re.exec(text)) !== null) {
+        while ((match = re.exec(debouncedText)) !== null) {
           m.push({ match: match[0], index: match.index, groups: match.groups });
           if (match[0].length === 0) re.lastIndex++;
         }
       } else {
-        match = re.exec(text);
+        match = re.exec(debouncedText);
         if (match) m.push({ match: match[0], index: match.index, groups: match.groups });
       }
 
@@ -74,17 +78,17 @@ const RegexPlayground = () => {
       let hl = "";
       let last = 0;
       for (const mt of m) {
-        hl += text.slice(last, mt.index);
+        hl += debouncedText.slice(last, mt.index);
         hl += `【${mt.match}】`;
         last = mt.index + mt.match.length;
       }
-      hl += text.slice(last);
+      hl += debouncedText.slice(last);
 
       return { matches: m, error: "", highlighted: hl };
     } catch (e: any) {
-      return { matches: [], error: e.message, highlighted: text };
+      return { matches: [], error: e.message, highlighted: debouncedText };
     }
-  }, [pattern, flags, text]);
+  }, [debouncedPattern, flags, debouncedText]);
 
   const loadSnippet = (s: typeof snippets[0]) => {
     setPattern(s.pattern);
@@ -94,7 +98,7 @@ const RegexPlayground = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <ToolSEO title="Regex Playground" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
+      <ToolSEO title="Regex Playground" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Regex Playground</h1>
 
       <div>

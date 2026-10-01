@@ -94,3 +94,135 @@ Example queries this tool answers:
 - "What timestamp is embedded in this v1 UUID?"
 - "Generate a UUID v5 from this namespace and name"
 - "What is the difference between SHA-256 and SHA-512?"
+
+## JSON Formatter
+
+URL: https://toolzy.lovable.app/json
+Category: Data Formatting
+
+Format, validate, minify, and explore JSON entirely in the browser.
+
+Capabilities:
+- Pretty-print with 2-space, 4-space, or tab indentation; minify
+- Interactive tree view with click-to-copy JSONPath per node
+- Search/filter keys and values with match highlighting
+- Sort keys recursively
+- Export to JSON, CSV, XML, or YAML
+- JSON Schema generation and validation
+- Stats: size, depth, key counts
+- Shareable links with JSON encoded in the URL
+- File upload (.json) and 100% client-side processing
+
+Example queries this tool answers:
+- "Format this JSON with proper indentation"
+- "Validate this JSON and show me the error"
+- "Convert this JSON to CSV"
+- "Generate a JSON schema from this payload"
+
+## Color Converter
+
+URL: https://toolzy.lovable.app/color
+Category: Design & Color
+
+Convert colors between formats, build palettes, check accessibility contrast,
+and extract colors from images — all client-side.
+
+Capabilities:
+- Convert between HEX, RGB, HSL, HSV, CMYK, and CSS color names
+- Tailwind class suggestion for the nearest palette color
+- Palette generation: complementary, analogous, triadic, shades, tints
+- WCAG contrast checker with AA/AAA grades for normal and large text
+- Gradient builder with CSS output
+- Image color extraction via Canvas (drag and drop)
+- Batch conversion mode
+- Eyedropper: pick any color from the screen (where supported)
+- History and favorites, persisted locally
+
+Example queries this tool answers:
+- "Convert #3ecfcf to RGB and HSL"
+- "What is the contrast ratio between these two colors?"
+- "Generate a complementary palette for this color"
+- "Extract the dominant colors from this image"
+
+## API Diff
+
+URL: https://toolzy.lovable.app/diff
+Category: Testing & Debugging
+
+Compare two API responses or data payloads and see structural differences.
+
+Capabilities:
+- Structural diffing of JSON, XML, HTML, and plain text
+- Tree and table diff views
+- Ignore rules for volatile fields (timestamps, IDs)
+- Filtering: show only added, removed, or changed nodes
+- Export diff results
+
+Example queries this tool answers:
+- "Compare these two JSON API responses"
+- "What changed between these two payloads?"
+
+## Fake Data Generator
+
+URL: https://toolzy.lovable.app/fake-data
+Category: Testing & Debugging
+
+Generate realistic fake user data in JSON for testing and development.
+
+Capabilities:
+- Names, emails, phone numbers, addresses, ages, UUIDs
+- 1–100 records per generation
+- JSON output, copy or download
+- 100% client-side, no real personal data
+
+## Environment File Generator
+
+URL: https://toolzy.lovable.app/env
+Category: Configuration
+
+Build .env configuration files from framework templates.
+
+Capabilities:
+- Templates for Node.js, Laravel, Spring Boot, React, and Django
+- Custom key-value pairs
+- Copy to clipboard or download as .env
+- Runs entirely in the browser — secrets never leave the machine
+
+## Date & Time Toolkit
+
+URL: https://toolzy.lovable.app/datetime
+Category: Time & Scheduling
+
+Convert timestamps, compare timezones, calculate date differences, and build cron expressions.
+
+Capabilities:
+- Unix timestamp ↔ ISO 8601 conversion with relative time ("2h ago")
+- Timezone converter: 400+ IANA zones, searchable, with live UTC offsets
+- Date difference calculator (days, hours, minutes between two dates)
+- Cron expression builder with visual field breakdown and presets
+- Live UTC clock
+
+Example queries this tool answers:
+- "What date is Unix timestamp 1727740800?"
+- "How many days between these two dates?"
+- "Convert 3pm New York time to Tokyo time"
+- "Build a cron expression for every Monday at 9 AM"
+
+## Regex Playground
+
+URL: https://toolzy.lovable.app/regex
+Category: Testing & Debugging
+
+Test regular expressions live with match highlighting and capture groups.
+
+Capabilities:
+- Real-time matching with debounced processing
+- Match highlighting, positions, and named capture groups
+- Flag support (g, i, m, s, u, y)
+- Library of common patterns (email, URL, IPv4, phone, hex color, ISO date)
+- Shareable links with pattern and test text encoded in the URL
+
+Example queries this tool answers:
+- "Test this regex against my text"
+- "What does this regex match?"
+- "Regex to validate an email address"

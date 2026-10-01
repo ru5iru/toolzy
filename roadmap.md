@@ -1,8 +1,8 @@
-# Roadmap — Site-Wide Improvements
+# Toolzy Improvement Roadmap
 
-- [ ] 1. Route code-splitting + ToolPageLayout foundation
-- [ ] 2. UI/UX polish pass on all tools (semantic colors, empty states, mobile, focus)
-- [ ] 3. Performance fixes (debounce, memoization, large-input guards)
-- [ ] 4. New features per tool (syntax highlight, sample JWT, date diff, regex share link, homepage search, etc.)
-- [ ] 5. SEO/AEO/GEO audit + FAQ expansion + sitemap/llms.txt refresh
-- [ ] 6. Final build verification
+- [x] 1. Foundation: route code-splitting (lazy + Suspense), shared ToolPageLayout
+- [x] 2. UI/UX: semantic color tokens replace hardcoded classes, consistent shell
+- [x] 3. Performance: useDebouncedValue hook; debounced JSON parse + regex eval
+- [x] 4. Features: homepage search, regex share links, date-diff calculator, JSON syntax highlighting, JWT sample token, Encoding Hub data-URI copy, Crypto password strength, Color eyedropper
+- [x] 5. SEO/AEO: FAQ expansion (3-5 per page), sitemap lastmod refresh, llms.txt covers all 10 tools
+- [x] 6. Final verification: production build + preview check
