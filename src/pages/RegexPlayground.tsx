@@ -61,16 +61,16 @@ const RegexPlayground = () => {
   const { matches, error, highlighted } = useMemo(() => {
     if (!debouncedPattern) return { matches: [], error: "", highlighted: debouncedText };
     try {
-      const re = new RegExp(pattern, flags);
+      const re = new RegExp(debouncedPattern, flags);
       const m: { match: string; index: number; groups?: Record<string, string> }[] = [];
       let match;
       if (flags.includes("g")) {
-        while ((match = re.exec(text)) !== null) {
+        while ((match = re.exec(debouncedText)) !== null) {
           m.push({ match: match[0], index: match.index, groups: match.groups });
           if (match[0].length === 0) re.lastIndex++;
         }
       } else {
-        match = re.exec(text);
+        match = re.exec(debouncedText);
         if (match) m.push({ match: match[0], index: match.index, groups: match.groups });
       }
 
@@ -78,17 +78,17 @@ const RegexPlayground = () => {
       let hl = "";
       let last = 0;
       for (const mt of m) {
-        hl += text.slice(last, mt.index);
+        hl += debouncedText.slice(last, mt.index);
         hl += `【${mt.match}】`;
         last = mt.index + mt.match.length;
       }
-      hl += text.slice(last);
+      hl += debouncedText.slice(last);
 
       return { matches: m, error: "", highlighted: hl };
     } catch (e: any) {
-      return { matches: [], error: e.message, highlighted: text };
+      return { matches: [], error: e.message, highlighted: debouncedText };
     }
-  }, [pattern, flags, text]);
+  }, [debouncedPattern, flags, debouncedText]);
 
   const loadSnippet = (s: typeof snippets[0]) => {
     setPattern(s.pattern);
