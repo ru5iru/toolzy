@@ -340,9 +340,9 @@ function DecodeTab({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</Label>
-        <div className="flex items-center gap-1">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Label className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</Label>
+        <div className="flex flex-wrap items-center gap-1">
           <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
             <Sparkles className="w-3 h-3 mr-1" /> Sample
           </Button>
