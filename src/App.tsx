@@ -18,6 +18,7 @@ const FakeDataGenerator = lazy(() => import("./pages/FakeDataGenerator"));
 const EnvGenerator = lazy(() => import("./pages/EnvGenerator"));
 const DateTimeTool = lazy(() => import("./pages/DateTimeTool"));
 const RegexPlayground = lazy(() => import("./pages/RegexPlayground"));
+const ImageMetadataViewer = lazy(() => import("./pages/ImageMetadataViewer"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/env" element={<EnvGenerator />} />
               <Route path="/datetime" element={<DateTimeTool />} />
               <Route path="/regex" element={<RegexPlayground />} />
+              <Route path="/image-metadata" element={<ImageMetadataViewer />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
