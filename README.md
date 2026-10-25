@@ -1,6 +1,6 @@
 # Toolzy — Developer Tools Suite
 
-Toolzy is a fast, privacy-first collection of everyday developer utilities that run **entirely in the browser**. No backend, no tracking, no data ever leaves your machine. Built as a single-page React application optimized for performance, SEO/AEO/GEO discoverability, and a keyboard-friendly developer UX.
+Toolzy is a fast, privacy-first collection of everyday developer utilities that run **entirely in the browser**. Tool inputs are processed locally, without a processing backend. The website still loads its own static assets. Built as a single-page React application optimized for performance, SEO/AEO/GEO discoverability, and a keyboard-friendly developer UX.
 
 - **Live:** https://toolzy.lovable.app
 - **Stack:** React 18 · Vite 5 · TypeScript 5 · Tailwind CSS 3 · shadcn/ui · React Router 6
@@ -129,6 +129,22 @@ toolzy/
 ---
 
 ## Tools — Full Catalog & Capabilities
+
+### Image Metadata Viewer — `/image-metadata`
+
+Inspect JPEG, PNG, and classic TIFF locally with **exifr 7.1.3**. The new route follows the existing short tool URLs and appears in the sidebar and searchable homepage.
+
+- Select one file or drag and drop; signatures, not MIME types or extensions, determine support. Files are bounded to 25 MiB, parsing to 20 seconds, nesting to 12 levels, 5,000 tags, and 100,000 characters per value. A disposable worker keeps parsing off the UI thread and cancels obsolete requests.
+- Local JPEG/PNG preview, filename, byte size, detected and declared MIME types, last-modified date, decoded dimensions or available width/height tags. TIFF inspection does not require a native TIFF preview.
+- Search within Overview, Camera, Location, Dates, IPTC/XMP, and Other; each extracted field has a human-readable label, parser tag path, value, and copy action. EXIF camera/lens/exposure/ISO/flash/orientation/white-balance/software/serial fields, GPS coordinates/altitude/time/direction, and available IPTC/XMP rights/creator/title/keywords/location fields are displayed only when detected. ICC, JFIF, PNG IHDR and other supported tags are also inspected.
+- Evidence-based privacy findings for coordinates, capture timestamps, device identifiers, creator/owner fields, location names, and detectable EXIF thumbnails. No invented score or anonymity guarantee. Original EXIF dates are preserved because timezone information is often absent.
+- Copy GPS coordinates without contacting a mapping service. Export all normalized fields and findings as JSON or all field rows as CSV. CSV uses quoted/escaped fields and neutralizes formula prefixes. Export filenames are fixed rather than derived from untrusted input.
+- No images, metadata, or coordinates are uploaded or persistently stored. Selected image previews use local object URLs, released on switching/reset/unmount. Downloads release their temporary URLs after starting. Worker results cannot overwrite a newer selection.
+- Empty, oversized, unsupported, truncated, parse-failed, and preview-failed files have explicit states. No detected embedded metadata is distinct from failure and does not establish complete coverage. Parser diagnostics are not shown as raw untrusted errors.
+- **Limits:** WebP, HEIC/HEIF, AVIF, RAW and BigTIFF are intentionally not enabled. Proprietary maker notes and unsupported thumbnail types are not verified. A damaged file may yield partial metadata; success is not a full file-integrity check. PNG/ICC/XMP coverage depends on what exifr supports, not every possible ancillary field. TIFF dimensions depend on available tags.
+- **Create Clean Copy is deferred:** reliable, format-specific removal and re-parsing are needed before shipping it; canvas conversion could lose profiles, transparency, orientation, animation, or quality. Originals are never modified.
+
+Important files: `src/pages/ImageMetadataViewer.tsx` (shared UI/SEO), `src/components/image-metadata/metadataUtils.ts` (signature checks, extraction, normalization, privacy, exports), `inspectionSession.ts` (worker cancellation and object-URL lifecycle), `src/workers/imageMetadataWorker.ts` (local processing), and adjacent `*.test.ts` files (synthetic fixtures and lifecycle tests). Run `bun run test` and `bun run lint`; the normal Vite build also bundles the worker. No environment variables or backend configuration are needed.
 
 Every tool below is **100% client-side** (no network requests for data processing), uses native Web APIs where possible, and ships with SEO/AEO/GEO metadata (FAQ + HowTo JSON-LD).
 
