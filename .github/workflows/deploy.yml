@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - gh-pages
   workflow_dispatch:
 
 permissions:
@@ -14,7 +15,7 @@ permissions:
 
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -37,11 +38,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
-        run: npm run build
-
       - name: Configure Pages
+        id: pages
         uses: actions/configure-pages@v5
+
+      - name: Build application
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: npm run build -- --base "${PAGES_BASE_PATH}/"
+
+      # Pages serves this document for direct visits to client-side routes.
+      - name: Add SPA fallback
+        run: cp dist/index.html dist/404.html
 
       - name: Upload build
         uses: actions/upload-pages-artifact@v3

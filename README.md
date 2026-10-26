@@ -313,6 +313,14 @@ Toolzy is deployed via Lovable to https://toolzy.lovable.app. Because the app is
 
 Make sure to enable SPA fallback (redirect all unknown paths to `index.html`) so React Router routes resolve on direct visits.
 
+### GitHub Pages
+
+In the repository's **Settings > Pages**, select **GitHub Actions** as the build and deployment source. `.github/workflows/deploy.yml` deploys pushes to `main` or the current source-bearing `gh-pages` branch and can also be run manually. The workflow uploads a Pages artifact directly; it does not commit generated files to a branch.
+
+The workflow uses Node.js 22, installs from `package-lock.json` with `npm ci`, and uploads `dist/`. It reads the Pages base path before building, so both project URLs (such as `https://ru5iru.github.io/toolzy/`) and root/custom-domain URLs work. React Router uses the same Vite base path.
+
+The workflow copies `index.html` to `404.html` so direct visits and refreshes on tool routes load the app. GitHub Pages still returns HTTP 404 for these requests; use a host with SPA rewrites if HTTP 200 responses are required for search indexing. Canonical URLs and sitemap entries continue to identify `https://toolzy.lovable.app` as the primary site.
+
 ---
 
 ## Contributing a New Tool
