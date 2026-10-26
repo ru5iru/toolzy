@@ -10,6 +10,7 @@ import {
   KeyRound,
   Clock,
   Regex,
+  FileSearch,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -37,6 +38,7 @@ const tools = [
   { title: "Env Generator", url: "/env", icon: FileText },
   { title: "Date & Time", url: "/datetime", icon: Clock },
   { title: "Regex", url: "/regex", icon: Regex },
+  { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
 ];
 
 export function AppSidebar() {

@@ -1,6 +1,13 @@
 # Toolzy llms.txt — AI/LLM discovery file
 # https://toolzy.lovable.app
 
+## Image Metadata Viewer
+
+URL: https://toolzy.lovable.app/image-metadata
+Category: Images & Privacy
+
+Inspect JPEG, PNG, and classic TIFF metadata locally with exifr. Pick or drop a file up to 25 MiB; preview JPEG/PNG, inspect file details and available dimensions, search categorized EXIF/camera/GPS/date/IPTC/XMP/other tags, and copy values or coordinates. Export JSON or formula-safe CSV locally. Privacy findings explain detected timestamps, GPS, serial numbers, creator/owner fields, location descriptions, and EXIF thumbnails without inventing a score. Images and metadata are not uploaded or persistently stored. TIFF previews, WebP, HEIC/HEIF, RAW, BigTIFF, and metadata removal are not supported. No detected fields is not a guarantee of anonymity or complete parser coverage.
+
 ## Encoding Hub
 
 URL: https://toolzy.lovable.app/encode
