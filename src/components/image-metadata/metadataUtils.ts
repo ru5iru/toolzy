@@ -107,7 +107,9 @@ export async function inspectImage(buffer: ArrayBuffer, file: { name: string; si
 }
 export function jsonExport(result: Inspection): string { return JSON.stringify(result, null, 2); }
 export function csvCell(value: string): string {
-  const safe = /^[\s\u0000-\u001f]*[=+\-@]/.test(value) || /^[\t\r\n]/.test(value) ? `'${value}` : value;
+  let start = 0;
+  while (start < value.length && (value.charCodeAt(start) <= 32 || /\s/.test(value[start]))) start++;
+  const safe = "=+-@".includes(value[start] ?? "\uffff") || /^[\t\r\n]/.test(value) ? `'${value}` : value;
   return `"${safe.replace(/"/g, '""')}"`;
 }
 export function csvExport(rows: MetadataRow[]): string {
