@@ -39,7 +39,7 @@ export function formatValue(value: unknown, tag = ""): string {
 }
 function categoryFor(tag: string, group: string): Category {
   if (/gps|latitude|longitude/i.test(tag)) return "Location";
-  if (/date|time|offsettime/i.test(tag)) return "Dates";
+  if (/date|timestamp|offsettime|^timecreated$|^modifytime$/i.test(tag)) return "Dates";
   if (/iptc|xmp|dc|photoshop|iptcCore/i.test(group)) return "IPTC/XMP";
   if (/make|model|lens|exposure|aperture|fnumber|iso|focal|flash|orientation|balance|metering|serial|software/i.test(tag)) return "Camera";
   return "Other";
@@ -102,11 +102,14 @@ export async function inspectImage(buffer: ArrayBuffer, file: { name: string; si
     ...(file.type ? [["DeclaredMIMEType", file.type]] : []),
     ["LastModified", new Date(file.lastModified).toISOString()],
   ].map(([tag, value]) => ({ tag, label: tag.replace(/([a-z])([A-Z])/g, "$1 $2"), category: "Overview" as const, value }));
-  return { ...format, rows: [...overview, ...metadata], metadataCount: metadata.length, findings: analyzePrivacy(metadata, hasThumbnail), thumbnailStatus };
+  const embedded = metadata.filter(row => !/^(jfif|ihdr)\./i.test(row.tag));
+  return { ...format, rows: [...overview, ...metadata], metadataCount: embedded.length, findings: analyzePrivacy(embedded, hasThumbnail), thumbnailStatus };
 }
 export function jsonExport(result: Inspection): string { return JSON.stringify(result, null, 2); }
 export function csvCell(value: string): string {
-  const safe = /^[\s\u0000-\u001f]*[=+\-@]/.test(value) || /^[\t\r\n]/.test(value) ? `'${value}` : value;
+  let start = 0;
+  while (start < value.length && (value.charCodeAt(start) <= 32 || /\s/.test(value[start]))) start++;
+  const safe = "=+-@".includes(value[start] ?? "\uffff") || /^[\t\r\n]/.test(value) ? `'${value}` : value;
   return `"${safe.replace(/"/g, '""')}"`;
 }
 export function csvExport(rows: MetadataRow[]): string {

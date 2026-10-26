@@ -2,7 +2,7 @@ import { validateSize, type Inspection } from "./metadataUtils";
 
 export interface WorkerPort {
   onmessage: ((event: MessageEvent<{ result?: Inspection; error?: string }>) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: ErrorEvent) => void) | null;
   postMessage(file: File): void;
   terminate(): void;
 }
@@ -28,7 +28,7 @@ export class InspectionSession {
       this.worker = worker;
       this.publish({ status: "loading" });
       const finish = (state: InspectionState) => {
-        if (generation !== this.generation) return;
+        if (generation !== this.generation || this.worker !== worker) return;
         worker.terminate();
         this.worker = undefined;
         clearTimeout(this.timeout);

@@ -1,8 +1,6 @@
 # Toolzy llms.txt — AI/LLM discovery file
 # https://toolzy.lovable.app
 
-## Encoding Hub
-
 ## Image Metadata Viewer
 
 URL: https://toolzy.lovable.app/image-metadata
