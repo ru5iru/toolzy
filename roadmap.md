@@ -8,6 +8,6 @@
 - [x] 6. Final verification: production build + preview check
 
 ## Image Metadata Viewer
-- [ ] Add local parser, normalization, privacy analysis, safe exports, and lifecycle tests.
-- [ ] Add viewer using shared controls, route, listing, navigation, SEO, and documentation.
-- [ ] Verify synthetic uploads, exports, switching, mobile layout, and existing tools.
+- [x] Add local parser, normalization, privacy analysis, safe exports, and lifecycle tests.
+- [x] Add viewer using shared controls, route, listing, navigation, SEO, and documentation.
+- [x] Verify synthetic uploads, exports, switching, mobile layout, and existing tools.
