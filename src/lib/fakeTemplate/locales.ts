@@ -80,7 +80,7 @@ export const localeLoaders = {
 export type LocaleId = keyof typeof localeLoaders;
 export const localeIds = Object.keys(localeLoaders) as LocaleId[];
 export async function createFaker(locale: string = "en", seed?: number, refDate?: string): Promise<Faker> {
-  if (!Object.hasOwn(localeLoaders, locale)) throw new Error("Unsupported locale");
+  if (!Object.prototype.hasOwnProperty.call(localeLoaders, locale)) throw new Error("Unsupported locale");
   const loaded = await localeLoaders[locale as LocaleId]();
   const instance = new Faker({ locale: [loaded.faker.rawDefinitions, en, base] });
   if (seed !== undefined) instance.seed(seed);

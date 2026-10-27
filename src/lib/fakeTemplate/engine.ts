@@ -17,7 +17,7 @@ export function method(faker: Faker, path: string): (...args: unknown[]) => unkn
  const module = (faker as unknown as Record<string,unknown>)[parts[0]];
  if (!module || typeof module !== 'object') throw new Error(`Unknown module: ${parts[0]}`);
  const fn = (module as Record<string,unknown>)[parts[1]];
- if (!Object.hasOwn(module,parts[1]) || typeof fn !== 'function') throw new Error(`Unknown method: ${path}`);
+ if (!Object.prototype.hasOwnProperty.call(module,parts[1]) || typeof fn !== 'function') throw new Error(`Unknown method: ${path}`);
  return (...args) => Reflect.apply(fn,module,args) as unknown;
 }
 export function methods(faker: Faker): string[] {
@@ -76,10 +76,10 @@ export function validateTemplate(template: Json, faker: Faker): Issue[] {
    if(object(node)){
     const key=directive(node);
     if(key){const v=node[key];
-     if(key==='$repeat'){const s=spec(v,key);if(!Number.isInteger(s.min)||!Number.isInteger(s.max)||Number(s.min)<0||Number(s.max)>1000||Number(s.min)>Number(s.max)||!Object.hasOwn(s,'of'))throw new Error('Invalid $repeat: min/max must be 0–1000 and of is required');walk(s.of,`${path}.$repeat.of`,depth+1,siblings,prior);}
+     if(key==='$repeat'){const s=spec(v,key);if(!Number.isInteger(s.min)||!Number.isInteger(s.max)||Number(s.min)<0||Number(s.max)>1000||Number(s.min)>Number(s.max)||!Object.prototype.hasOwnProperty.call(s,'of'))throw new Error('Invalid $repeat: min/max must be 0–1000 and of is required');walk(s.of,`${path}.$repeat.of`,depth+1,siblings,prior);}
      if(key==='$pick'){if(!Array.isArray(v)||!v.length)throw new Error('$pick requires a nonempty array');v.forEach((x,i)=>walk(x,`${path}.$pick[${i}]`,depth+1,siblings,prior));}
-     if(key==='$weighted'){if(!Array.isArray(v)||!v.length||v.some(x=>!object(x)||typeof x.weight!=='number'||!Number.isFinite(x.weight)||x.weight<=0||!Object.hasOwn(x,'value')))throw new Error('$weighted requires positive weights and values');v.forEach((x,i)=>{if(object(x))walk(x.value,`${path}.$weighted[${i}].value`,depth+1,siblings,prior);});}
-     if(key==='$maybe'){const s=spec(v,key);if(typeof s.probability!=='number'||s.probability<0||s.probability>1||!Object.hasOwn(s,'value'))throw new Error('$maybe probability must be 0–1 with a value');walk(s.value,`${path}.$maybe.value`,depth+1,siblings,prior);}
+     if(key==='$weighted'){if(!Array.isArray(v)||!v.length||v.some(x=>!object(x)||typeof x.weight!=='number'||!Number.isFinite(x.weight)||x.weight<=0||!Object.prototype.hasOwnProperty.call(x,'value')))throw new Error('$weighted requires positive weights and values');v.forEach((x,i)=>{if(object(x))walk(x.value,`${path}.$weighted[${i}].value`,depth+1,siblings,prior);});}
+     if(key==='$maybe'){const s=spec(v,key);if(typeof s.probability!=='number'||s.probability<0||s.probability>1||!Object.prototype.hasOwnProperty.call(s,'value'))throw new Error('$maybe probability must be 0–1 with a value');walk(s.value,`${path}.$maybe.value`,depth+1,siblings,prior);}
      if(key==='$regex'){if(typeof v!=='string'||v.length>256||/\{\d{4,}/.test(v))throw new Error('Invalid or oversized $regex');try{new RegExp(v);}catch{throw new Error('Invalid $regex');}}
      if(key==='$value')walk(v,`${path}.$value`,depth+1,siblings,prior);
     }else {const names=Object.keys(node);const done:string[]=[];for(const k of names){walk(node[k],`${path}.${k}`,depth+1,names,done);done.push(k);}}
@@ -91,7 +91,8 @@ export function validateTemplate(template: Json, faker: Faker): Issue[] {
 }
 function normalize(value:unknown): Json {
  if(value instanceof Date)return value.toISOString();
- if(value===null||typeof value==='string'||typeof value==='boolean')return value;
+ if(value===null)return null;
+ if(typeof value==='string'||typeof value==='boolean')return value;
  if(typeof value==='number'&&Number.isFinite(value))return value;
  if(Array.isArray(value))return value.map(normalize);
  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,normalize(v)]));
@@ -106,7 +107,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
   if(typeof node==='string'){
    const list=tokens(node);const call=(body:string):Json=>{
     if(body==='$index')return index;if(body==='$index1')return index+1;
-    if(body.startsWith('$.')){const key=body.slice(2);if(!Object.hasOwn(siblings,key))throw new Error(`${path}: unresolved or cyclic reference ${key}`);return siblings[key];}
+    if(body.startsWith('$.')){const key=body.slice(2);if(!Object.prototype.hasOwnProperty.call(siblings,key))throw new Error(`${path}: unresolved or cyclic reference ${key}`);return siblings[key];}
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
    if(list.length===1&&list[0].start===0&&list[0].end===node.length)return call(list[0].body);
