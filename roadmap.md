@@ -11,3 +11,12 @@
 - [x] Add local parser, normalization, privacy analysis, safe exports, and lifecycle tests.
 - [x] Add viewer using shared controls, route, listing, navigation, SEO, and documentation.
 - [x] Verify synthetic uploads, exports, switching, mobile layout, and existing tools.
+
+## Fake Data Generator
+- [ ] 1. Engine and tests.
+- [ ] 2. Template editor, options, JSON generation/copy/download.
+- [ ] 3. Searchable method browser.
+- [ ] 4. Synchronized builder.
+- [ ] 5. NDJSON, CSV, SQL, YAML exports.
+- [ ] 6. Presets, saved templates, import/export/share.
+- [ ] 7. Worker, performance, SEO, and end-to-end verification.
