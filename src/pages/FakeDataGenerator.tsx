@@ -1,66 +1,94 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Shuffle, Download, Copy } from "lucide-react";
+import { createFaker, localeIds } from "@/lib/fakeTemplate/locales";
+import { validateTemplate, type Json, type Issue } from "@/lib/fakeTemplate/engine";
+import { presets } from "@/lib/fakeTemplate/presets";
+import { runGeneration } from "@/lib/fakeTemplate/run";
+import { downloadFile } from "@/components/json-formatter/jsonUtils";
 
-const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "Sarah", "Daniel", "Emma", "Chris", "Olivia", "Alex", "Sophia", "Liam", "Mia", "Noah"];
-const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "White", "Harris", "Clark", "Lewis"];
-const domains = ["example.com", "test.org", "demo.io", "mail.dev", "fake.net"];
-const streets = ["Main St", "Oak Ave", "Elm Blvd", "Pine Rd", "Cedar Ln", "Maple Dr", "Park Way", "Lake Ct"];
-const cities = ["New York", "London", "Tokyo", "Berlin", "Paris", "Sydney", "Toronto", "Mumbai", "São Paulo", "Cairo"];
-
-const rand = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
-const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-function generatePerson() {
-  const first = rand(firstNames);
-  const last = rand(lastNames);
-  return {
-    id: crypto.randomUUID(),
-    name: `${first} ${last}`,
-    email: `${first.toLowerCase()}.${last.toLowerCase()}@${rand(domains)}`,
-    phone: `+1-${randInt(200, 999)}-${randInt(100, 999)}-${randInt(1000, 9999)}`,
-    age: randInt(18, 80),
-    address: {
-      street: `${randInt(1, 9999)} ${rand(streets)}`,
-      city: rand(cities),
-      zip: String(randInt(10000, 99999)),
-    },
-    createdAt: new Date(Date.now() - randInt(0, 365 * 24 * 3600000)).toISOString(),
-  };
-}
+const labelStyle = "text-xs text-muted-foreground uppercase tracking-wider";
+const editorStyle = "font-mono text-sm bg-card border-border resize-none";
 
 const FakeDataGenerator = () => {
   const [count, setCount] = useState(5);
   const [output, setOutput] = useState("");
+  const [template, setTemplate] = useState(JSON.stringify(presets.User, null, 2));
+  const [locale, setLocale] = useState("en");
+  const [localeSearch, setLocaleSearch] = useState("");
+  const [seed, setSeed] = useState("");
+  const [refDate, setRefDate] = useState("");
+  const [errors, setErrors] = useState<Issue[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [stats, setStats] = useState({ count: 0, ms: 0 });
+  const revision = useRef(0);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  const generate = () => {
-    const data = Array.from({ length: Math.min(count, 100) }, generatePerson);
-    setOutput(JSON.stringify(data, null, 2));
-    toast.success(`Generated ${data.length} records`);
+  useEffect(() => {
+    let active = true;
+    const timer = window.setTimeout(async () => {
+      try {
+        const parsed = JSON.parse(template) as Json;
+        const faker = await createFaker(locale);
+        if (active) setErrors(validateTemplate(parsed, faker));
+      } catch (e) { if (active) setErrors([{ path: "$", message: e instanceof Error ? e.message : "Invalid JSON" }]); }
+    }, 250);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [template, locale]);
+  useEffect(() => () => { revision.current++; }, []);
+
+  const generate = async () => {
+    const id = ++revision.current;
+    setBusy(true);
+    const started = performance.now();
+    try {
+      const data = await runGeneration(JSON.parse(template) as Json, {count, locale, seed: seed === "" ? undefined : Number(seed), refDate: refDate || undefined});
+      if (id !== revision.current) return;
+      setOutput(JSON.stringify(data, null, 2));
+      setStats({count: data.length, ms: performance.now() - started});
+      setErrors([]);
+      toast.success(`Generated ${data.length} records`);
+    } catch(e) { if(id === revision.current) setErrors([{path: "$", message: e instanceof Error ? e.message : "Generation failed"}]); }
+    finally { if(id === revision.current) setBusy(false); }
   };
 
-  const copy = () => {
-    navigator.clipboard.writeText(output);
-    toast.success("Copied to clipboard");
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(output); toast.success("Copied to clipboard"); }
+    catch { toast.error("Clipboard unavailable"); }
   };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <ToolSEO title="Fake Data Generator" description="Generate realistic fake user data in JSON format for testing and development. Includes names, emails, addresses, and UUIDs." canonicalPath="/fake-data" keywords={["fake data generator", "mock data", "test data generator", "random user data", "JSON test data"]} faq={[{question:"What kind of fake data can I generate?",answer:"Generate realistic user profiles with names, emails, phone numbers, addresses, ages, and UUIDs — all in JSON format."},{question:"Can I control how many records are generated?",answer:"Yes, specify any count from 1 to 100 records per generation."},{question:"Is the generated data safe to use in tests?",answer:"Yes. All data is randomly generated in your browser and contains no real personal information."},{question:"What format is the output?",answer:"Output is JSON, ready to copy or use as fixtures in tests, seed scripts, and API mocking."}]} howToSteps={["Set the number of records to generate (1-100)","Click Generate to create fake user data","Click Copy to copy the JSON output"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Fake Data Generator</h1>
-      <div className="flex items-end gap-4">
+      <p className="text-xs text-muted-foreground">Templates and generated data stay in your browser. No data is sent for processing.</p>
+      <div className="flex flex-wrap items-end gap-4">
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Count (max 100)</label>
-          <Input type="number" value={count} onChange={(e) => setCount(Number(e.target.value))} min={1} max={100} className="w-32 bg-card border-border" />
+          <label htmlFor="fake-count" className={labelStyle}>Count (max 1000)</label>
+          <Input id="fake-count" type="number" value={count} onChange={(e) => setCount(Number(e.target.value))} min={1} max={1000} className="w-32 bg-card border-border" />
         </div>
-        <Button onClick={generate}>Generate</Button>
-        <Button variant="outline" onClick={copy} disabled={!output}>Copy</Button>
+        <div className="space-y-2">
+          <label className={labelStyle} id="fake-locale-label">Locale</label>
+          <Select value={locale} onValueChange={setLocale}><SelectTrigger aria-labelledby="fake-locale-label" className="w-40 bg-card border-border"><SelectValue /></SelectTrigger><SelectContent><Input aria-label="Search locales" placeholder="Search locales" value={localeSearch} onChange={e=>setLocaleSearch(e.target.value)} onKeyDown={e=>e.stopPropagation()} />{localeIds.filter(l=>l.toLowerCase().includes(localeSearch.toLowerCase())).map(l=><SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent></Select>
+        </div>
+        <div className="space-y-2"><label htmlFor="fake-seed" className={labelStyle}>Seed (optional)</label><div className="flex gap-2"><Input id="fake-seed" type="number" value={seed} onChange={e=>setSeed(e.target.value)} className="w-32 bg-card border-border" /><Button variant="outline" size="icon" title="Randomize seed" aria-label="Randomize seed" onClick={()=>setSeed(String(crypto.getRandomValues(new Uint32Array(1))[0]))}><Shuffle className="w-4 h-4" /></Button></div></div>
+        <div className="space-y-2"><label htmlFor="fake-refdate" className={labelStyle}>Reference date (optional)</label><Input id="fake-refdate" type="date" value={refDate} onChange={e=>setRefDate(e.target.value)} className="w-44 bg-card border-border" /></div>
+      </div>
+      <Tabs defaultValue="template"><TabsList><TabsTrigger value="template">Template</TabsTrigger></TabsList><TabsContent value="template"><Textarea ref={editorRef} aria-label="JSON template" value={template} onChange={e=>setTemplate(e.target.value)} spellCheck={false} className={`min-h-[300px] ${editorStyle}`} /></TabsContent></Tabs>
+      {errors.length > 0 && <div role="alert" className="text-sm text-destructive space-y-1">{errors.map((e,i)=><p key={i} className="break-words">{e.path}: {e.message}</p>)}</div>}
+      <div className="flex flex-wrap items-end gap-4">
+        <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
+        <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-2" />Copy</Button>
+        <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,"fake-data.json","application/json")}><Download className="w-4 h-4 mr-2" />Download</Button>
       </div>
       {output && (
-        <Textarea value={output} readOnly className="min-h-[400px] font-mono text-sm bg-card border-border resize-none" />
+        <div className="space-y-2"><Textarea aria-label="Generated output" value={output} readOnly className={`min-h-[400px] ${editorStyle}`} /><p className="text-xs text-muted-foreground">{stats.count} records · {new TextEncoder().encode(output).length.toLocaleString()} bytes · {stats.ms.toFixed(1)} ms</p></div>
       )}
     </div>
   );
