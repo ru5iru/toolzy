@@ -123,7 +123,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     if(key==='$pick')return resolve(faker.helpers.arrayElement(v as Json[]),path,index,siblings,depth+1);
     if(key==='$weighted')return resolve(faker.helpers.weightedArrayElement(v as {weight:number;value:Json}[]),path,index,siblings,depth+1);
     if(key==='$maybe'){const s=spec(v,key);return faker.helpers.maybe(()=>resolve(s.value,path,index,siblings,depth+1),{probability:Number(s.probability)})??null;}
-    if(key==='$regex')return faker.helpers.fromRegExp(v as string);
+    if(key==='$regex')return faker.helpers.fromRegExp((v as string).replace(/\\d/g,'[0-9]').replace(/\\w/g,'[A-Za-z0-9_]').replace(/\\s/g,'[ ]'));
    }
    const record:Record<string,Json>=Object.create(null) as Record<string,Json>;for(const [k,v]of Object.entries(node))record[k]=resolve(v,`${path}.${k}`,index,record,depth+1);return record;
   };
