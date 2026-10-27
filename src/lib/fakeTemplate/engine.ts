@@ -110,9 +110,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
    if(list.length===1&&list[0].start===0&&list[0].end===node.length)return call(list[0].body);
-   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);cursor=t.end;}out+=node.slice(cursor);
-   // Resolve validated tokens first, then use fake for mixed-string composition without reinterpreting untrusted returned braces.
-   if(list.length)out=faker.helpers.fake('{{helpers.arrayElement}}', { helpers: { arrayElement: () => out } });
+   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{out+=faker.helpers.fake(node.slice(t.start,t.end));}cursor=t.end;}out+=node.slice(cursor);
    return out;
   }
   if(Array.isArray(node))return node.map((v,i)=>resolve(v,`${path}[${i}]`,index,siblings,depth+1));

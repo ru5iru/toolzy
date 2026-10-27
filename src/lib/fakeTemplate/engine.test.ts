@@ -1,0 +1,20 @@
+import { describe, it, expect } from 'vitest';
+import { createFaker } from './locales';
+import { generateBatch, validateTemplate, type Json } from './engine';
+const run = async (template: Json, count = 1) => generateBatch(template,count,await createFaker('en',42,'2026-01-01'));
+describe('safe template engine',()=>{
+ it('preserves number, boolean, date, null and nested types',async()=>{const [v]=await run({age:'{{number.int({"min":18,"max":18})}}',active:'{{datatype.boolean}}',date:'{{date.past}}',nil:null});expect(v).toMatchObject({age:18,nil:null});expect(typeof (v as Record<string,Json>).active).toBe('boolean');expect((v as Record<string,Json>).date).toMatch(/^\d{4}-/);});
+ it('resolves mixed strings with JSON args',async()=>{expect(await run({v:'age={{number.int({"min":18,"max":18})}}'})).toEqual([{v:'age=18'}]);});
+ it('repeat',async()=>{expect(await run({v:{$repeat:{min:2,max:2,of:7}}})).toEqual([{v:[7,7]}]);});
+ it('pick',async()=>{expect(await run({v:{$pick:['x']}})).toEqual([{v:'x'}]);});
+ it('weighted',async()=>{expect(await run({v:{$weighted:[{weight:3,value:'x'}]}})).toEqual([{v:'x'}]);});
+ it('maybe',async()=>{expect(await run({v:{$maybe:{probability:0,value:1}},w:{$maybe:{probability:1,value:2}}})).toEqual([{v:null,w:2}]);});
+ it('regex',async()=>{const [v]=await run({v:{$regex:'[A-Z]{3}-\\d{4}'}});expect((v as Record<string,Json>).v).toMatch(/^[A-Z]{3}-\d{4}$/);});
+ it('indices and sibling references',async()=>{expect(await run({a:'{{$index}}',b:'{{$index1}}',c:'{{$.b}}'},2)).toEqual([{a:0,b:1,c:1},{a:1,b:2,c:2}]);});
+ it('rejects cycles with paths',async()=>{expect(validateTemplate({a:'{{$.b}}',b:'{{$.a}}'},await createFaker())).toContainEqual(expect.objectContaining({path:'$.a',message:expect.stringContaining('cyclic')}));});
+ it('uniqueness across batch and exhaustion',async()=>{expect(await run({id:{$value:'{{$index}}',$unique:true}},3)).toEqual([{id:0},{id:1},{id:2}]);await expect(run({id:{$pick:['x'],$unique:true}},2)).rejects.toThrow('exhausted');});
+ it('reproducibility',async()=>{const t={n:'{{person.fullName}}',d:'{{date.past}}'};expect(await run(t,5)).toEqual(await run(t,5));});
+ it('blocks unsafe paths and malformed args',async()=>{for(const token of ['{{seed}}','{{person.constructor}}','{{locale.name}}','{{number.int(alert(1))}}','{{helpers.fake}}'])expect(validateTemplate({v:token},await createFaker()).length).toBeGreaterThan(0);});
+ it('validates bad directives',async()=>{for(const v of [{$repeat:{min:2,max:1,of:1}},{$maybe:{probability:2,value:1}},{$pick:[]},{$weighted:[{weight:0,value:1}]},{$oops:1}])expect(validateTemplate({v},await createFaker()).length).toBeGreaterThan(0);});
+ it('enforces 1–1000 count',async()=>{await expect(run({},0)).rejects.toThrow('1–1000');await expect(run({},1001)).rejects.toThrow('1–1000');expect((await run({},1000)).length).toBe(1000);});
+});
