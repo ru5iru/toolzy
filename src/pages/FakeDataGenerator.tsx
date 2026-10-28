@@ -16,6 +16,9 @@ import { MethodBrowser } from "@/components/fake-data/MethodBrowser";
 import { TemplateBuilder } from "@/components/fake-data/TemplateBuilder";
 import { toBuilder, fromBuilder, type BuilderState } from "@/lib/fakeTemplate/builder";
 import { defaults } from "@/lib/fakeTemplate/engine";
+import { exportData, formats, type Format } from "@/lib/fakeTemplate/exports";
+import { SavedTemplates } from "@/components/fake-data/SavedTemplates";
+import { encodeShare, decodeShare, MAX_TEMPLATE } from "@/lib/fakeTemplate/storage";
 
 const labelStyle = "text-xs text-muted-foreground uppercase tracking-wider";
 const editorStyle = "font-mono text-sm bg-card border-border resize-none";
@@ -37,6 +40,23 @@ const FakeDataGenerator = () => {
   const [browserOpen, setBrowserOpen] = useState(false);
   const [targetField, setTargetField] = useState<string>();
   const [builder, setBuilder] = useState<BuilderState>(()=>toBuilder(presets.User));
+  const [format, setFormat] = useState<Format>("json");
+  const [table, setTable] = useState("records");
+  const [preset, setPreset] = useState("User");
+  const [records, setRecords] = useState<Json[]>([]);
+  const loadTemplate = async (value:Json) => {
+    if(JSON.stringify(value).length>MAX_TEMPLATE)throw new Error("Template exceeds 100 KB");
+    const issues=validateTemplate(value,await createFaker(locale));
+    if(issues.length)throw new Error(issues.map(e=>`${e.path}: ${e.message}`).join("\n"));
+    setTemplate(JSON.stringify(value,null,2));setBuilder(toBuilder(value));
+  };
+  useEffect(()=>{
+    try { const shared=decodeShare(window.location.hash);if(!shared)return;
+      if(!localeIds.some(l=>l===shared.options.locale))throw new Error("Unsupported shared locale");
+      setTemplate(JSON.stringify(shared.template,null,2));setCount(shared.options.count);setLocale(shared.options.locale);setSeed(shared.options.seed===undefined?"":String(shared.options.seed));setRefDate(shared.options.refDate?.slice(0,10)||"");
+    }catch(e){setErrors([{path:"$",message:e instanceof Error?e.message:"Invalid share link"}]);}
+  },[]);
+  useEffect(()=>{if(!records.length)return;try{setOutput(exportData(records,format,table));}catch(e){setOutput("");setErrors([{path:"$",message:e instanceof Error?e.message:"Export failed"}]);}},[records,format,table]);
 
   const changeBuilder = (state:BuilderState) => {
     setBuilder(state);
@@ -61,6 +81,7 @@ const FakeDataGenerator = () => {
     let active = true;
     const timer = window.setTimeout(async () => {
       try {
+        if(template.length>MAX_TEMPLATE)throw new Error("Template exceeds 100 KB");
         const parsed = JSON.parse(template) as Json;
         const faker = await createFaker(locale);
         if (active) { const issues=validateTemplate(parsed, faker);setErrors(issues);if(!issues.length)setBuilder(toBuilder(parsed)); }
@@ -77,7 +98,7 @@ const FakeDataGenerator = () => {
     try {
       const data = await runGeneration(JSON.parse(template) as Json, {count, locale, seed: seed === "" ? undefined : Number(seed), refDate: refDate || undefined});
       if (id !== revision.current) return;
-      setOutput(JSON.stringify(data, null, 2));
+      setOutput(exportData(data,format,table));setRecords(data);
       setStats({count: data.length, ms: performance.now() - started});
       setErrors([]);
       toast.success(`Generated ${data.length} records`);
@@ -107,14 +128,17 @@ const FakeDataGenerator = () => {
         <div className="space-y-2"><label htmlFor="fake-seed" className={labelStyle}>Seed (optional)</label><div className="flex gap-2"><Input id="fake-seed" type="number" value={seed} onChange={e=>setSeed(e.target.value)} className="w-32 bg-card border-border" /><Button variant="outline" size="icon" title="Randomize seed" aria-label="Randomize seed" onClick={()=>setSeed(String(crypto.getRandomValues(new Uint32Array(1))[0]))}><Shuffle className="w-4 h-4" /></Button></div></div>
         <div className="space-y-2"><label htmlFor="fake-refdate" className={labelStyle}>Reference date (optional)</label><Input id="fake-refdate" type="date" value={refDate} onChange={e=>setRefDate(e.target.value)} className="w-44 bg-card border-border" /></div>
       </div>
-      <div className="flex flex-wrap gap-4"><Button variant="outline" onClick={()=>{setTargetField(undefined);setBrowserOpen(true);}}>Method Browser</Button></div>
+      <div className="flex flex-wrap gap-4 items-end"><div className="space-y-2"><label className={labelStyle} id="fake-preset-label">Preset</label><Select value={preset} onValueChange={name=>{void loadTemplate(presets[name]).then(()=>setPreset(name)).catch(e=>toast.error(String(e)));}}><SelectTrigger aria-labelledby="fake-preset-label" className="w-48 bg-card border-border"><SelectValue/></SelectTrigger><SelectContent>{Object.keys(presets).map(name=><SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></div><Button variant="outline" onClick={()=>{setTargetField(undefined);setBrowserOpen(true);}}>Method Browser</Button></div>
       <MethodBrowser locale={locale} open={browserOpen} onOpenChange={setBrowserOpen} onInsert={insertToken} onRow={addMethod}/>
       <Tabs value={tab} onValueChange={setTab}><TabsList><TabsTrigger value="template">Template</TabsTrigger><TabsTrigger value="builder">Builder</TabsTrigger></TabsList><TabsContent value="template"><Textarea ref={editorRef} aria-label="JSON template" value={template} onChange={e=>setTemplate(e.target.value)} spellCheck={false} className={`min-h-[300px] ${editorStyle}`} /></TabsContent><TabsContent value="builder"><TemplateBuilder state={builder} onChange={changeBuilder} onBrowse={id=>{setTargetField(id);setBrowserOpen(true);}}/></TabsContent></Tabs>
       {errors.length > 0 && <div role="alert" className="text-sm text-destructive space-y-1">{errors.map((e,i)=><p key={i} className="break-words">{e.path}: {e.message}</p>)}</div>}
+      <SavedTemplates template={template} onLoad={loadTemplate} onShare={()=>{void (async()=>{try{const hash=encodeShare({template:JSON.parse(template) as Json,options:{count,locale,seed:seed===""?undefined:Number(seed),refDate:refDate||undefined}});await navigator.clipboard.writeText(`${window.location.origin}/fake-data${hash}`);toast.success("Share link copied");}catch(e){toast.error(e instanceof Error?e.message:"Unable to copy share link");}})();}}/>
       <div className="flex flex-wrap items-end gap-4">
+        <div className="space-y-2"><label className={labelStyle} id="fake-format-label">Output format</label><Select value={format} onValueChange={v=>setFormat(v as Format)}><SelectTrigger aria-labelledby="fake-format-label" className="w-40 bg-card border-border"><SelectValue/></SelectTrigger><SelectContent>{Object.keys(formats).map(f=><SelectItem key={f} value={f}>{f==='sql'?'SQL INSERT':f.toUpperCase()}</SelectItem>)}</SelectContent></Select></div>
+        {format==='sql'&&<div className="space-y-2"><label htmlFor="fake-table" className={labelStyle}>Table name</label><Input id="fake-table" value={table} onChange={e=>setTable(e.target.value)} className="w-40 bg-card border-border"/></div>}
         <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
         <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-2" />Copy</Button>
-        <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,"fake-data.json","application/json")}><Download className="w-4 h-4 mr-2" />Download</Button>
+        <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,`fake-data.${formats[format].extension}`,formats[format].mime)}><Download className="w-4 h-4 mr-2" />Download</Button>
       </div>
       {output && (
         <div className="space-y-2"><Textarea aria-label="Generated output" value={output} readOnly className={`min-h-[400px] ${editorStyle}`} /><p className="text-xs text-muted-foreground">{stats.count} records · {new TextEncoder().encode(output).length.toLocaleString()} bytes · {stats.ms.toFixed(1)} ms</p></div>
