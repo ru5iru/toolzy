@@ -7,7 +7,7 @@ export function flatten(value:Json,prefix='',out:Record<string,Json>=Object.crea
  return out;
 }
 const cell=(value:Json):string=>value===null?'':typeof value==='object'?JSON.stringify(value):String(value);
-export function csvCell(value:Json):string {const raw=cell(value);const safe=/^[\s\u0000-\u001f]*[=+@-]/.test(raw)?`'${raw}`:raw;return `"${safe.replace(/"/g,'""')}"`;}
+export function csvCell(value:Json):string {const raw=cell(value);const first=[...raw].find(c=>c.charCodeAt(0)>32&&!/\s/.test(c));const safe=first&&'=+@-'.includes(first)?`'${raw}`:raw;return `"${safe.replace(/"/g,'""')}"`;}
 function sqlValue(value:Json):string {
  if(value===null)return 'NULL';if(typeof value==='number')return String(value);if(typeof value==='boolean')return value?'TRUE':'FALSE';
  return `'${cell(value).replace(/'/g,"''")}'`;

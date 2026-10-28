@@ -59,7 +59,7 @@ function parse(body:string): {path:string;args:unknown[]} {
  if(match[2]?.trim()){try{args=JSON.parse(`[${match[2]}]`) as unknown[];}catch{throw new Error('Arguments must be valid JSON');}}
  const serialized=JSON.stringify(args);
  if(serialized.length>10000)throw new Error('Arguments too large');
- if(/"(?:length|max|count|repeat)"\s*:\s*(\d{5,})/.test(serialized) || args.some(v=>typeof v==='number'&&Math.abs(v)>10000))throw new Error('Argument resource limit exceeded');
+ if(/"(?:length|count|repeat)"\s*:\s*(\d{5,})/.test(serialized) || args.some(v=>typeof v==='number'&&Math.abs(v)>10000))throw new Error('Argument resource limit exceeded');
  return {path:match[1],args};
 }
 function object(value: Json): value is {[key:string]:Json} {return value!==null&&typeof value==='object'&&!Array.isArray(value);}

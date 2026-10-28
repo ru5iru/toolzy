@@ -5,7 +5,7 @@ import { Command, CommandInput, CommandList, CommandGroup, CommandItem, CommandE
 import { createFaker } from '@/lib/fakeTemplate/locales';
 import { defaults, methods, generateBatch, MODULES } from '@/lib/fakeTemplate/engine';
 import { Plus } from 'lucide-react';
-export function methodToken(path:string):string {return `{{${path}${defaults[path]?`(${defaults[path]})`:''}}}`;}
+function methodToken(path:string):string {return `{{${path}${defaults[path]?`(${defaults[path]})`:''}}}`;}
 export function MethodBrowser({locale,onInsert,onRow,open,onOpenChange}:{locale:string;onInsert:(token:string)=>void;onRow:(path:string)=>void;open:boolean;onOpenChange:(open:boolean)=>void}) {
  const [entries,setEntries]=useState<{path:string;sample:string}[]>([]);
  useEffect(()=>{if(!open)return;let active=true;
