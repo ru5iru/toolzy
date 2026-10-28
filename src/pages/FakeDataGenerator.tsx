@@ -12,6 +12,10 @@ import { validateTemplate, type Json, type Issue } from "@/lib/fakeTemplate/engi
 import { presets } from "@/lib/fakeTemplate/presets";
 import { runGeneration } from "@/lib/fakeTemplate/run";
 import { downloadFile } from "@/components/json-formatter/jsonUtils";
+import { MethodBrowser } from "@/components/fake-data/MethodBrowser";
+import { TemplateBuilder } from "@/components/fake-data/TemplateBuilder";
+import { toBuilder, fromBuilder, type BuilderState } from "@/lib/fakeTemplate/builder";
+import { defaults } from "@/lib/fakeTemplate/engine";
 
 const labelStyle = "text-xs text-muted-foreground uppercase tracking-wider";
 const editorStyle = "font-mono text-sm bg-card border-border resize-none";
@@ -29,6 +33,29 @@ const FakeDataGenerator = () => {
   const [stats, setStats] = useState({ count: 0, ms: 0 });
   const revision = useRef(0);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const [tab, setTab] = useState("template");
+  const [browserOpen, setBrowserOpen] = useState(false);
+  const [targetField, setTargetField] = useState<string>();
+  const [builder, setBuilder] = useState<BuilderState>(()=>toBuilder(presets.User));
+
+  const changeBuilder = (state:BuilderState) => {
+    setBuilder(state);
+    try { setTemplate(JSON.stringify(fromBuilder(state),null,2)); }
+    catch(e) { setErrors([{path:"$",message:e instanceof Error?e.message:"Invalid builder"}]); }
+  };
+  const addMethod = (path:string) => {
+    const field = {id:crypto.randomUUID(),name:`field${builder.fields.length+1}`,method:path,params:defaults[path]||"",nullable:0,unique:false,value:null};
+    changeBuilder({...builder,fields:targetField?builder.fields.map(f=>f.id===targetField?{...f,method:path,params:defaults[path]||""}:f):[...builder.fields,field]});
+    setTargetField(undefined);setTab("builder");
+  };
+  const insertToken = (token:string) => {
+    if(targetField || tab === "builder") { const match=/^\{\{([^({]+)/.exec(token);if(match)addMethod(match[1]);return; }
+    const editor=editorRef.current;
+    const start=editor?.selectionStart??template.length,end=editor?.selectionEnd??start;
+    const escaped=JSON.stringify(token).slice(1,-1);
+    setTemplate(template.slice(0,start)+escaped+template.slice(end));
+    requestAnimationFrame(()=>{editor?.focus();editor?.setSelectionRange(start+escaped.length,start+escaped.length);});
+  };
 
   useEffect(() => {
     let active = true;
@@ -36,7 +63,7 @@ const FakeDataGenerator = () => {
       try {
         const parsed = JSON.parse(template) as Json;
         const faker = await createFaker(locale);
-        if (active) setErrors(validateTemplate(parsed, faker));
+        if (active) { const issues=validateTemplate(parsed, faker);setErrors(issues);if(!issues.length)setBuilder(toBuilder(parsed)); }
       } catch (e) { if (active) setErrors([{ path: "$", message: e instanceof Error ? e.message : "Invalid JSON" }]); }
     }, 250);
     return () => { active = false; window.clearTimeout(timer); };
@@ -80,7 +107,9 @@ const FakeDataGenerator = () => {
         <div className="space-y-2"><label htmlFor="fake-seed" className={labelStyle}>Seed (optional)</label><div className="flex gap-2"><Input id="fake-seed" type="number" value={seed} onChange={e=>setSeed(e.target.value)} className="w-32 bg-card border-border" /><Button variant="outline" size="icon" title="Randomize seed" aria-label="Randomize seed" onClick={()=>setSeed(String(crypto.getRandomValues(new Uint32Array(1))[0]))}><Shuffle className="w-4 h-4" /></Button></div></div>
         <div className="space-y-2"><label htmlFor="fake-refdate" className={labelStyle}>Reference date (optional)</label><Input id="fake-refdate" type="date" value={refDate} onChange={e=>setRefDate(e.target.value)} className="w-44 bg-card border-border" /></div>
       </div>
-      <Tabs defaultValue="template"><TabsList><TabsTrigger value="template">Template</TabsTrigger></TabsList><TabsContent value="template"><Textarea ref={editorRef} aria-label="JSON template" value={template} onChange={e=>setTemplate(e.target.value)} spellCheck={false} className={`min-h-[300px] ${editorStyle}`} /></TabsContent></Tabs>
+      <div className="flex flex-wrap gap-4"><Button variant="outline" onClick={()=>{setTargetField(undefined);setBrowserOpen(true);}}>Method Browser</Button></div>
+      <MethodBrowser locale={locale} open={browserOpen} onOpenChange={setBrowserOpen} onInsert={insertToken} onRow={addMethod}/>
+      <Tabs value={tab} onValueChange={setTab}><TabsList><TabsTrigger value="template">Template</TabsTrigger><TabsTrigger value="builder">Builder</TabsTrigger></TabsList><TabsContent value="template"><Textarea ref={editorRef} aria-label="JSON template" value={template} onChange={e=>setTemplate(e.target.value)} spellCheck={false} className={`min-h-[300px] ${editorStyle}`} /></TabsContent><TabsContent value="builder"><TemplateBuilder state={builder} onChange={changeBuilder} onBrowse={id=>{setTargetField(id);setBrowserOpen(true);}}/></TabsContent></Tabs>
       {errors.length > 0 && <div role="alert" className="text-sm text-destructive space-y-1">{errors.map((e,i)=><p key={i} className="break-words">{e.path}: {e.message}</p>)}</div>}
       <div className="flex flex-wrap items-end gap-4">
         <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
