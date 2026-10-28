@@ -10,7 +10,7 @@ import { Shuffle, Download, Copy } from "lucide-react";
 import { createFaker, localeIds } from "@/lib/fakeTemplate/locales";
 import { validateTemplate, type Json, type Issue } from "@/lib/fakeTemplate/engine";
 import { presets } from "@/lib/fakeTemplate/presets";
-import { runGeneration } from "@/lib/fakeTemplate/run";
+import { generateAsync } from "@/lib/fakeTemplate/workerClient";
 import { downloadFile } from "@/components/json-formatter/jsonUtils";
 import { MethodBrowser } from "@/components/fake-data/MethodBrowser";
 import { TemplateBuilder } from "@/components/fake-data/TemplateBuilder";
@@ -35,6 +35,7 @@ const FakeDataGenerator = () => {
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState({ count: 0, ms: 0 });
   const revision = useRef(0);
+  const abortRef = useRef<AbortController>();
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const [tab, setTab] = useState("template");
   const [browserOpen, setBrowserOpen] = useState(false);
@@ -89,14 +90,16 @@ const FakeDataGenerator = () => {
     }, 250);
     return () => { active = false; window.clearTimeout(timer); };
   }, [template, locale]);
-  useEffect(() => () => { revision.current++; }, []);
+  useEffect(() => () => { revision.current++;abortRef.current?.abort(); }, []);
+  useEffect(()=>{revision.current++;abortRef.current?.abort();setBusy(false);},[template,count,locale,seed,refDate]);
 
   const generate = async () => {
     const id = ++revision.current;
+    abortRef.current?.abort();const controller=new AbortController();abortRef.current=controller;
     setBusy(true);
     const started = performance.now();
     try {
-      const data = await runGeneration(JSON.parse(template) as Json, {count, locale, seed: seed === "" ? undefined : Number(seed), refDate: refDate || undefined});
+      const data = await generateAsync(JSON.parse(template) as Json, {count, locale, seed: seed === "" ? undefined : Number(seed), refDate: refDate || undefined},controller.signal);
       if (id !== revision.current) return;
       setOutput(exportData(data,format,table));setRecords(data);
       setStats({count: data.length, ms: performance.now() - started});
@@ -113,7 +116,7 @@ const FakeDataGenerator = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <ToolSEO title="Fake Data Generator" description="Generate realistic fake user data in JSON format for testing and development. Includes names, emails, addresses, and UUIDs." canonicalPath="/fake-data" keywords={["fake data generator", "mock data", "test data generator", "random user data", "JSON test data"]} faq={[{question:"What kind of fake data can I generate?",answer:"Generate realistic user profiles with names, emails, phone numbers, addresses, ages, and UUIDs — all in JSON format."},{question:"Can I control how many records are generated?",answer:"Yes, specify any count from 1 to 100 records per generation."},{question:"Is the generated data safe to use in tests?",answer:"Yes. All data is randomly generated in your browser and contains no real personal information."},{question:"What format is the output?",answer:"Output is JSON, ready to copy or use as fixtures in tests, seed scripts, and API mocking."}]} howToSteps={["Set the number of records to generate (1-100)","Click Generate to create fake user data","Click Copy to copy the JSON output"]} />
+      <ToolSEO title="Fake Data Generator" description="Generate 1–1000 records locally with Faker v10 JSON templates, a visual builder, locales, reproducible seeds, and JSON, NDJSON, CSV, SQL or YAML exports." canonicalPath="/fake-data" keywords={["fake data generator", "faker templates", "seeded mock data", "faker locales", "CSV SQL YAML test data", "JSON template builder"]} faq={[{question:"How do templates work?",answer:"Use JSON objects or arrays with Faker tokens, nested repeat, pick, weighted and maybe directives, unique values and ordered sibling references. Single tokens preserve their return types."},{question:"How many records can I generate?",answer:"Generate 1–1000 records per batch, with a 10 MiB output limit. Batches above 100 records run in a browser worker."},{question:"How do I reproduce generated data?",answer:"Use the same template, locale, seed, count and reference date. An omitted reference date defaults to January 1, 2026."},{question:"Which export formats are available?",answer:"Download JSON, NDJSON, CSV with flattened dot paths and formula-safe quoting, standard SQL INSERT statements, or YAML."},{question:"Is data transmitted or stored?",answer:"Generation runs locally. Templates persist only when explicitly saved in browser storage. Share links encode the template and options in a URL fragment; anyone given the link can read them. Static locale assets may be downloaded, but templates and generated records are not sent for processing."}]} howToSteps={["Choose a preset or define a JSON template using the Template or Builder tab","Set count from 1–1000, locale, optional seed and reference date","Click Generate and select JSON, NDJSON, CSV, SQL INSERT or YAML","Copy or download the output, or save and share the template"]} />
       <h1 className="text-2xl font-mono font-bold text-foreground">Fake Data Generator</h1>
       <p className="text-xs text-muted-foreground">Templates and generated data stay in your browser. No data is sent for processing.</p>
       <div className="flex flex-wrap items-end gap-4">
@@ -137,6 +140,7 @@ const FakeDataGenerator = () => {
         <div className="space-y-2"><label className={labelStyle} id="fake-format-label">Output format</label><Select value={format} onValueChange={v=>setFormat(v as Format)}><SelectTrigger aria-labelledby="fake-format-label" className="w-40 bg-card border-border"><SelectValue/></SelectTrigger><SelectContent>{Object.keys(formats).map(f=><SelectItem key={f} value={f}>{f==='sql'?'SQL INSERT':f.toUpperCase()}</SelectItem>)}</SelectContent></Select></div>
         {format==='sql'&&<div className="space-y-2"><label htmlFor="fake-table" className={labelStyle}>Table name</label><Input id="fake-table" value={table} onChange={e=>setTable(e.target.value)} className="w-40 bg-card border-border"/></div>}
         <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
+        {busy&&<Button variant="outline" onClick={()=>{revision.current++;abortRef.current?.abort();setBusy(false);}}>Cancel</Button>}
         <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-2" />Copy</Button>
         <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,`fake-data.${formats[format].extension}`,formats[format].mime)}><Download className="w-4 h-4 mr-2" />Download</Button>
       </div>
