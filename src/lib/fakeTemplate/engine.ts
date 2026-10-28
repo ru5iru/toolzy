@@ -4,6 +4,17 @@ export interface Issue { path: string; message: string }
 export const MODULES = ['airline','animal','book','color','commerce','company','database','datatype','date','finance','food','git','hacker','helpers','internet','location','lorem','music','number','person','phone','science','string','system','vehicle','word'] as const;
 export const MAX_BYTES = 10 * 1024 * 1024;
 const BLOCKED = new Set(['constructor','__proto__','prototype','seed','setDefaultRefDate','locale','fake','uniqueArray','shuffle','multiple']);
+function guardArgs(value:unknown,depth=0,key=''):void {
+ if(depth>10)throw new Error('Argument nesting limit exceeded');
+ if(typeof value==='number'&&(!Number.isFinite(value)||(['length','count','repeat'].includes(key)&&value>1000)))throw new Error('Argument resource limit exceeded');
+ if(typeof value==='string'&&value.length>10000)throw new Error('Argument string too large');
+ if(Array.isArray(value)){if(value.length>1000)throw new Error('Argument array too large');value.forEach(v=>guardArgs(v,depth+1));}
+ else if(value&&typeof value==='object')for(const [k,v]of Object.entries(value))guardArgs(v,depth+1,k);
+}
+function guardRegex(pattern:string):void {
+ if(pattern.length>256||/[()*+?|]/.test(pattern)||/\{\d{4,}/.test(pattern)||/\{\d+,\d{4,}/.test(pattern))throw new Error('Regex supports bounded character classes and quantifiers only');
+ try{new RegExp(pattern);}catch{throw new Error('Invalid $regex');}
+}
 export const defaults: Record<string,string> = {
  'number.int':'{"min":18,"max":65}', 'number.float':'{"min":0,"max":100,"fractionDigits":2}',
  'date.between':'{"from":"2025-01-01","to":"2026-01-01"}', 'date.past':'{"years":1}',
@@ -18,7 +29,7 @@ export function method(faker: Faker, path: string): (...args: unknown[]) => unkn
  if (!module || typeof module !== 'object') throw new Error(`Unknown module: ${parts[0]}`);
  const fn = (module as Record<string,unknown>)[parts[1]];
  if (!Object.prototype.hasOwnProperty.call(module,parts[1]) || typeof fn !== 'function') throw new Error(`Unknown method: ${path}`);
- return (...args) => Reflect.apply(fn,module,args) as unknown;
+ return (...args) => {args.forEach(v=>guardArgs(v));if(path==='helpers.fromRegExp'&&typeof args[0]==='string')guardRegex(args[0]);return Reflect.apply(fn,module,args) as unknown;};
 }
 export function methods(faker: Faker): string[] {
  return MODULES.flatMap(m => Object.keys((faker as unknown as Record<string,object>)[m] || {}).map(k=>`${m}.${k}`).filter(p=>{try {method(faker,p);return true;} catch{return false;}}));
@@ -48,7 +59,7 @@ function parse(body:string): {path:string;args:unknown[]} {
  if(match[2]?.trim()){try{args=JSON.parse(`[${match[2]}]`) as unknown[];}catch{throw new Error('Arguments must be valid JSON');}}
  const serialized=JSON.stringify(args);
  if(serialized.length>10000)throw new Error('Arguments too large');
- if(/"(?:length|max|count|repeat)"\s*:\s*(\d{5,})/.test(serialized) || args.some(v=>typeof v==='number'&&Math.abs(v)>10000))throw new Error('Argument resource limit exceeded');
+ if(/"(?:length|count|repeat)"\s*:\s*(\d{5,})/.test(serialized) || args.some(v=>typeof v==='number'&&Math.abs(v)>10000))throw new Error('Argument resource limit exceeded');
  return {path:match[1],args};
 }
 function object(value: Json): value is {[key:string]:Json} {return value!==null&&typeof value==='object'&&!Array.isArray(value);}
@@ -64,13 +75,17 @@ function directive(node:{[key:string]:Json}): string|undefined {
 }
 export function validateTemplate(template: Json, faker: Faker): Issue[] {
  const errors:Issue[]=[];
+ let visited=0;
+ if(JSON.stringify(template).length>100000)return [{path:'$',message:'Template exceeds 100 KB'}];
  function walk(node:Json,path:string,depth:number,siblings?:string[],prior?:string[]){
+  if(visited>10000)return;
   try{
+   if(++visited>10000)throw new Error('Template node limit exceeded');
    if(depth>20)throw new Error('Maximum nesting depth is 20');
    if(typeof node==='string')for(const t of tokens(node)){
     if(t.body==='$index'||t.body==='$index1')continue;
     if(t.body.startsWith('$.')){const field=t.body.slice(2);if(!prior?.includes(field))throw new Error(siblings?.includes(field)?`Forward or cyclic reference: ${field}; fields resolve in declaration order`:`Missing sibling: ${field}`);continue;}
-    const p=parse(t.body);method(faker,p.path);
+    const p=parse(t.body);p.args.forEach(v=>guardArgs(v));method(faker,p.path);
    }
    if(Array.isArray(node))node.forEach((v,i)=>walk(v,`${path}[${i}]`,depth+1,siblings,prior));
    if(object(node)){
@@ -80,7 +95,7 @@ export function validateTemplate(template: Json, faker: Faker): Issue[] {
      if(key==='$pick'){if(!Array.isArray(v)||!v.length)throw new Error('$pick requires a nonempty array');v.forEach((x,i)=>walk(x,`${path}.$pick[${i}]`,depth+1,siblings,prior));}
      if(key==='$weighted'){if(!Array.isArray(v)||!v.length||v.some(x=>!object(x)||typeof x.weight!=='number'||!Number.isFinite(x.weight)||x.weight<=0||!Object.prototype.hasOwnProperty.call(x,'value')))throw new Error('$weighted requires positive weights and values');v.forEach((x,i)=>{if(object(x))walk(x.value,`${path}.$weighted[${i}].value`,depth+1,siblings,prior);});}
      if(key==='$maybe'){const s=spec(v,key);if(typeof s.probability!=='number'||s.probability<0||s.probability>1||!Object.prototype.hasOwnProperty.call(s,'value'))throw new Error('$maybe probability must be 0–1 with a value');walk(s.value,`${path}.$maybe.value`,depth+1,siblings,prior);}
-     if(key==='$regex'){if(typeof v!=='string'||v.length>256||/\{\d{4,}/.test(v))throw new Error('Invalid or oversized $regex');try{new RegExp(v);}catch{throw new Error('Invalid $regex');}}
+     if(key==='$regex'){if(typeof v!=='string')throw new Error('$regex requires a string');guardRegex(v);}
      if(key==='$value')walk(v,`${path}.$value`,depth+1,siblings,prior);
     }else {const names=Object.keys(node);const done:string[]=[];for(const k of names){walk(node[k],`${path}.${k}`,depth+1,names,done);done.push(k);}}
    }
@@ -101,7 +116,8 @@ function normalize(value:unknown): Json {
 export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
  if(!Number.isInteger(count)||count<1||count>1000)throw new Error('Count must be 1–1000');
  const issues=validateTemplate(template,faker);if(issues.length)throw new Error(issues.map(e=>`${e.path}: ${e.message}`).join('\n'));
- const sets=new Map<string,Set<string>>();let nodes=0;
+ const sets=new Map<string,Set<string>>();let nodes=0;let leafBytes=0;
+ const budget=(value:Json):Json=>{leafBytes+=new TextEncoder().encode(JSON.stringify(value)).length;if(leafBytes>MAX_BYTES)throw new Error('Maximum output size is 10 MiB');return value;};
  const resolve=(node:Json,path:string,index:number,siblings:Record<string,Json>={},depth=0):Json=>{
   if(++nodes>500000||depth>20)throw new Error(`${path}: generation resource limit exceeded`);
   if(typeof node==='string'){
@@ -110,12 +126,12 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     if(body.startsWith('$.')){const key=body.slice(2);if(!Object.prototype.hasOwnProperty.call(siblings,key))throw new Error(`${path}: unresolved or cyclic reference ${key}`);return siblings[key];}
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
-   if(list.length===1&&list[0].start===0&&list[0].end===node.length)return call(list[0].body);
+   if(list.length===1&&list[0].start===0&&list[0].end===node.length)return budget(call(list[0].body));
    let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{out+=faker.helpers.fake(node.slice(t.start,t.end));}cursor=t.end;}out+=node.slice(cursor);
-   return out;
+   return budget(out);
   }
   if(Array.isArray(node))return node.map((v,i)=>resolve(v,`${path}[${i}]`,index,siblings,depth+1));
-  if(!object(node))return node;
+  if(!object(node))return budget(node);
   const key=directive(node);
   const run=():Json=>{
    if(key){const v=node[key];
@@ -124,7 +140,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     if(key==='$pick')return resolve(faker.helpers.arrayElement(v as Json[]),path,index,siblings,depth+1);
     if(key==='$weighted')return resolve(faker.helpers.weightedArrayElement(v as {weight:number;value:Json}[]),path,index,siblings,depth+1);
     if(key==='$maybe'){const s=spec(v,key);return faker.helpers.maybe(()=>resolve(s.value,path,index,siblings,depth+1),{probability:Number(s.probability)})??null;}
-    if(key==='$regex')return faker.helpers.fromRegExp((v as string).replace(/\\d/g,'[0-9]').replace(/\\w/g,'[A-Za-z0-9_]').replace(/\\s/g,'[ ]'));
+    if(key==='$regex')return budget(faker.helpers.fromRegExp((v as string).replace(/\\d/g,'[0-9]').replace(/\\w/g,'[A-Za-z0-9_]').replace(/\\s/g,'[ ]')));
    }
    const record:Record<string,Json>=Object.create(null) as Record<string,Json>;for(const [k,v]of Object.entries(node))record[k]=resolve(v,`${path}.${k}`,index,record,depth+1);return record;
   };

@@ -13,10 +13,10 @@
 - [x] Verify synthetic uploads, exports, switching, mobile layout, and existing tools.
 
 ## Fake Data Generator
-- [ ] 1. Engine and tests.
-- [ ] 2. Template editor, options, JSON generation/copy/download.
-- [ ] 3. Searchable method browser.
-- [ ] 4. Synchronized builder.
-- [ ] 5. NDJSON, CSV, SQL, YAML exports.
-- [ ] 6. Presets, saved templates, import/export/share.
+- [x] 1. Engine and tests.
+- [x] 2. Template editor, options, JSON generation/copy/download.
+- [x] 3. Searchable method browser.
+- [x] 4. Synchronized builder.
+- [x] 5. NDJSON, CSV, SQL, YAML exports.
+- [x] 6. Presets, saved templates, import/export/share.
 - [ ] 7. Worker, performance, SEO, and end-to-end verification.
