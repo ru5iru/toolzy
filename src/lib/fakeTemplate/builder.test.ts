@@ -1,0 +1,4 @@
+import { it,expect } from 'vitest';
+import { toBuilder,fromBuilder } from './builder';
+it('round trips nested custom JSON, arrays and method parameters',()=>{const value={name:'{{person.fullName}}',age:'{{number.int({"min":18})}}',nested:{a:[1,null,true]}};expect(fromBuilder(toBuilder(value))).toEqual(value);expect(fromBuilder(toBuilder([1,'{{string.uuid}}']))).toEqual([1,'{{string.uuid}}']);});
+it('nullable and unique remain synchronized',()=>{const state=toBuilder({id:'{{string.uuid}}'});state.fields[0].nullable=30;state.fields[0].unique=true;const result=fromBuilder(state);const restored=toBuilder(result);expect(restored.fields[0].nullable).toBe(30);expect(restored.fields[0].unique).toBe(true);expect(fromBuilder(restored)).toEqual(result);});
