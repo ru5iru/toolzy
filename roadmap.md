@@ -19,4 +19,4 @@
 - [x] 4. Synchronized builder.
 - [x] 5. NDJSON, CSV, SQL, YAML exports.
 - [x] 6. Presets, saved templates, import/export/share.
-- [ ] 7. Worker, performance, SEO, and end-to-end verification.
+- [x] 7. Worker, performance, SEO, and end-to-end verification.
