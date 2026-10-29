@@ -133,7 +133,27 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
    if(list.length===1&&list[0].start===0&&list[0].end===node.length)return budget(call(list[0].body));
-   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{const p=parse(t.body);checkCall(p.path,p.args);const args=p.args.map(v=>JSON.stringify(v).replace(/"(?:\\.|[^"\\])*"/g,s=>s.replace(/\{/g,'\\u007b').replace(/\}/g,'\\u007d'))).join(',');out+=faker.helpers.fake(`{{${p.path}${p.args.length?`(${args})`:''}}}`);}cursor=t.end;}out+=node.slice(cursor);
+   // Faker's fake() recursively parses its return value. Encode argument string
+   // braces before interpolation, and reject returned nested tokens before
+   // fake() can invoke an unvalidated method.
+   const protect=(value:unknown):unknown=>{if(typeof value==='string'&&/\{\{[a-z]/.test(value))throw new Error('Generated nested Faker tokens are not allowed');if(Array.isArray(value))return value.map(protect);if(value instanceof Date)return value;if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,protect(v)]));return value;};
+   let out='',cursor=0;
+   for(const t of list){
+    out+=node.slice(cursor,t.start);
+    if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}
+    else{
+     const p=parse(t.body);checkCall(p.path,p.args);
+     const args=p.args.map(v=>JSON.stringify(v).replace(/"(?:\\.|[^"\\])*"/g,s=>s.replace(/\{/g,'\\u007b').replace(/\}/g,'\\u007d'))).join(',');
+     const [moduleName,methodName]=p.path.split('.');
+     const module=(faker as unknown as Record<string,Record<string,unknown>>)[moduleName];
+     const original=module[methodName];const invoke=method(faker,p.path);
+     module[methodName]=(...values:unknown[])=>protect(invoke(...values));
+     try{out+=faker.helpers.fake(`{{${p.path}${p.args.length?`(${args})`:''}}}`);}
+     finally{module[methodName]=original;}
+    }
+    cursor=t.end;
+   }
+   out+=node.slice(cursor);
    return budget(out);
   }
   if(Array.isArray(node))return node.map((v,i)=>resolve(v,`${path}[${i}]`,index,siblings,depth+1));
