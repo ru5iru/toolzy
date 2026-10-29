@@ -12,7 +12,7 @@ function guardArgs(value:unknown,depth=0,key=''):void {
  else if(value&&typeof value==='object')for(const [k,v]of Object.entries(value))guardArgs(v,depth+1,k);
 }
 function guardRegex(pattern:string):void {
- if(pattern.length>256||/[()*+?|]/.test(pattern)||/\{\d{4,}/.test(pattern)||/\{\d+,\d{4,}/.test(pattern))throw new Error('Regex supports bounded character classes and quantifiers only');
+ if(pattern.length>256||/[()*+?|]/.test(pattern)||/\{\d{4,}/.test(pattern)||/\{\d+,\d{4,}/.test(pattern)||/\{\d+,\}/.test(pattern))throw new Error('Regex supports bounded character classes and quantifiers only');
  try{new RegExp(pattern);}catch{throw new Error('Invalid $regex');}
 }
 export const defaults: Record<string,string> = {
@@ -29,7 +29,13 @@ export function method(faker: Faker, path: string): (...args: unknown[]) => unkn
  if (!module || typeof module !== 'object') throw new Error(`Unknown module: ${parts[0]}`);
  const fn = (module as Record<string,unknown>)[parts[1]];
  if (!Object.prototype.hasOwnProperty.call(module,parts[1]) || typeof fn !== 'function') throw new Error(`Unknown method: ${path}`);
- return (...args) => {args.forEach(v=>guardArgs(v));if(path==='helpers.fromRegExp'&&typeof args[0]==='string')guardRegex(args[0]);return Reflect.apply(fn,module,args) as unknown;};
+ return (...args) => {checkCall(path,args);return Reflect.apply(fn,module,args) as unknown;};
+}
+function checkCall(path:string,args:unknown[]):void {
+ args.forEach(v=>guardArgs(v));
+ const sized=/^(string\.(alphanumeric|alpha|numeric|binary|octal|hexadecimal|sample)|lorem\.(words|sentences|paragraphs|lines|slug)|date\.betweens)$/.test(path);
+ if(sized)for(const arg of args){if(typeof arg==='number'&&(arg<0||arg>1000))throw new Error('Method length/count must be 0–1000');if(arg&&typeof arg==='object'){const values=arg as Record<string,unknown>;for(const key of ['min','max','length','count'])if(typeof values[key]==='number'&&Number(values[key])>1000)throw new Error('Method length/count must be 0–1000');if(values.length&&typeof values.length==='object')for(const value of Object.values(values.length))if(typeof value==='number'&&value>1000)throw new Error('Method length/count must be 0–1000');}}
+ if(path==='helpers.fromRegExp'&&typeof args[0]==='string')guardRegex(args[0]);
 }
 export function methods(faker: Faker): string[] {
  return MODULES.flatMap(m => Object.keys((faker as unknown as Record<string,object>)[m] || {}).map(k=>`${m}.${k}`).filter(p=>{try {method(faker,p);return true;} catch{return false;}}));
@@ -85,7 +91,7 @@ export function validateTemplate(template: Json, faker: Faker): Issue[] {
    if(typeof node==='string')for(const t of tokens(node)){
     if(t.body==='$index'||t.body==='$index1')continue;
     if(t.body.startsWith('$.')){const field=t.body.slice(2);if(!prior?.includes(field))throw new Error(siblings?.includes(field)?`Forward or cyclic reference: ${field}; fields resolve in declaration order`:`Missing sibling: ${field}`);continue;}
-    const p=parse(t.body);p.args.forEach(v=>guardArgs(v));method(faker,p.path);
+    const p=parse(t.body);checkCall(p.path,p.args);method(faker,p.path);
    }
    if(Array.isArray(node))node.forEach((v,i)=>walk(v,`${path}[${i}]`,depth+1,siblings,prior));
    if(object(node)){
@@ -127,7 +133,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
    if(list.length===1&&list[0].start===0&&list[0].end===node.length)return budget(call(list[0].body));
-   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{out+=faker.helpers.fake(node.slice(t.start,t.end));}cursor=t.end;}out+=node.slice(cursor);
+   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{const p=parse(t.body);checkCall(p.path,p.args);out+=faker.helpers.fake(`{{${p.path}${p.args.length?`(${p.args.map(v=>JSON.stringify(v)).join(',')})`:''}}}`);}cursor=t.end;}out+=node.slice(cursor);
    return budget(out);
   }
   if(Array.isArray(node))return node.map((v,i)=>resolve(v,`${path}[${i}]`,index,siblings,depth+1));
