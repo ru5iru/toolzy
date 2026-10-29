@@ -133,7 +133,7 @@ export function generateBatch(template:Json,count:number,faker:Faker):Json[] {
     const p=parse(body);return normalize(method(faker,p.path)(...p.args));
    };
    if(list.length===1&&list[0].start===0&&list[0].end===node.length)return budget(call(list[0].body));
-   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{const p=parse(t.body);checkCall(p.path,p.args);out+=faker.helpers.fake(`{{${p.path}${p.args.length?`(${p.args.map(v=>JSON.stringify(v)).join(',')})`:''}}}`);}cursor=t.end;}out+=node.slice(cursor);
+   let out='',cursor=0;for(const t of list){out+=node.slice(cursor,t.start);if(t.body.startsWith('$')){const value=call(t.body);out+=typeof value==='object'?JSON.stringify(value):String(value);}else{const p=parse(t.body);checkCall(p.path,p.args);out+=faker.helpers.fake(`{{${p.path}${p.args.length?`(${p.args.map(v=>JSON.stringify(v).replace(/\{/g,'\\u007b').replace(/\}/g,'\\u007d')).join(',')})`:''}}}`);}cursor=t.end;}out+=node.slice(cursor);
    return budget(out);
   }
   if(Array.isArray(node))return node.map((v,i)=>resolve(v,`${path}[${i}]`,index,siblings,depth+1));
