@@ -20,3 +20,6 @@
 - [x] 5. NDJSON, CSV, SQL, YAML exports.
 - [x] 6. Presets, saved templates, import/export/share.
 - [x] 7. Worker, performance, SEO, and end-to-end verification.
+
+## Image Metadata Removal
+- [x] Lossless JPEG/PNG cleaner, verification report, comparison, safe download, tests, browser check.
