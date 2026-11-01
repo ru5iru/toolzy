@@ -28,7 +28,8 @@ function jpeg(opts: { exif?: boolean; xmp?: boolean; iptc?: boolean; trailer?: b
   if (opts.exif) bytes.push(...seg(0xe1, [...enc("Exif\0\0"), ...tiff()]));
   if (opts.xmp) bytes.push(...seg(0xe1, enc("http://ns.adobe.com/xap/1.0/\0" + XMP)));
   if (opts.iptc) bytes.push(...seg(0xed, [...enc("Photoshop 3.0\0"), ...enc("8BIM"), 4, 4, 0, 0, 0, 0, 0, 8, 0x1c, 2, 0x50, 0, 3, ...enc("Syn"), 0]));
-  bytes.push(...seg(0xe2, [...enc("ICC_PROFILE\0"), 1, 1, 9, 9]));
+  const icc = new Array(132).fill(0); icc[3] = 132; icc.splice(36, 4, ...enc("acsp"));
+  bytes.push(...seg(0xe2, [...enc("ICC_PROFILE\0"), 1, 1, ...icc]));
   bytes.push(...seg(0xfe, enc("synthetic comment")));
   bytes.push(...seg(0xdb, new Array(65).fill(1)));
   bytes.push(...seg(0xc0, [8, 0, 3, 0, 5, 1, 1, 0x11, 0]));

@@ -179,14 +179,15 @@ export interface VerificationReport {
   fields: { tag: string; label: string; status: FieldStatus; original: string; cleaned?: string }[];
   imageDataIdentical: boolean; dimensionsMatch: boolean; orientationKept: boolean;
 }
-export function kindOfTag(tag: string, format: CleanFormat): BlockKind | "essential" | undefined {
+export function kindOfTag(tag: string, format: CleanFormat, hasXmp = false): BlockKind | "essential" | undefined {
   const g = tag.split(".")[0].toLowerCase();
   if (["ifd0", "exif", "gps", "interop", "ifd1", "thumbnail"].includes(g)) return "exif";
   if (g === "xmp") return "xmp";
   if (g === "iptc" || g === "photoshop") return "iptc";
   if (g === "icc" || g === "jfif") return "essential";
-  if (g === "ihdr") return format === "PNG" && !/^ihdr\.(ImageWidth|ImageHeight|BitDepth|ColorType|Compression|Filter|Interlace)$/.test(tag) ? "text" : "essential";
-  return undefined;
+  if (g === "ihdr") return format === "PNG" && !/^ihdr\.(ImageWidth|ImageHeight|BitDepth|ColorType|Compression|Filter|Interlace|ProfileName)$/.test(tag) ? "text" : "essential";
+  // exifr reports XMP fields under their namespace prefix (dc, xmpRights, Iptc4xmpCore, ...).
+  return hasXmp ? "xmp" : undefined;
 }
 const essentialBytes = (b: Uint8Array, s: Structure) => s.segments.filter(x => x.kind === "essential").map(x => b.subarray(x.start, x.end));
 function sameBytes(a: Uint8Array[], b: Uint8Array[]) {
@@ -225,7 +226,7 @@ export function verifyClean(args: {
   }
   const outRows = new Map((cleaned.rows ? embedded(cleaned.rows) : []).map(r => [r.tag, r.value]));
   const fields = embedded(original.rows).map(row => {
-    const kind = kindOfTag(row.tag, format);
+    const kind = kindOfTag(row.tag, format, origKinds.has("xmp"));
     const after = outRows.get(row.tag);
     let status: FieldStatus;
     if (!cleaned.rows) status = "Not verified";
