@@ -110,7 +110,7 @@ describe("metadata removal", () => {
   });
   it("rejects corrupt and unsupported files without output", () => {
     expect(() => cleanBytes(jpeg().slice(0, 40), { mode: "all", remove: [], keepOrientation: true })).toThrow(/truncated|corrupted/);
-    const bad = png(); bad[bad.length - 20] ^= 0xff;
+    const bad = png(); bad[bad.length - 19] ^= 0xff;
     expect(() => cleanBytes(bad, { mode: "all", remove: [], keepOrientation: true })).toThrow(/checksum/);
     expect(() => cleanBytes(new Uint8Array([73, 73, 42, 0, 8, 0, 0, 0]), { mode: "all", remove: [], keepOrientation: true })).toThrow(/TIFF/);
   });
