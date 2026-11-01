@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Copy, Download, FileSearch, ImagePlus, Loader2, MapPin, Search, X } from "lucide-react";
+import { Copy, Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CATEGORIES, csvExport, gpsCoordinates, jsonExport, type Category } from "@/components/image-metadata/metadataUtils";
 import { InspectionSession, localObjectUrl, type InspectionState } from "@/components/image-metadata/inspectionSession";
+import { CleanCopyPanel } from "@/components/image-metadata/CleanCopyPanel";
 import ImageMetadataWorker from "@/workers/imageMetadataWorker?worker";
 
 const ImageMetadataViewer = () => {
@@ -17,6 +18,7 @@ const ImageMetadataViewer = () => {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<Category>("Overview");
   const [dragging, setDragging] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
   const session = useRef<InspectionSession>();
   useEffect(() => {
@@ -35,6 +37,7 @@ const ImageMetadataViewer = () => {
   }, [file, state.status, state.result]);
   const select = (selected: File) => {
     setFile(selected);
+    setCleaning(false);
     setQuery("");
     setCategory("Overview");
     setPreview(undefined);
@@ -43,6 +46,7 @@ const ImageMetadataViewer = () => {
   const reset = () => {
     session.current?.clear();
     setFile(undefined);
+    setCleaning(false);
     setPreview(undefined);
     setQuery("");
     if (picker.current) picker.current.value = "";
@@ -69,7 +73,7 @@ const ImageMetadataViewer = () => {
       <ToolSEO title="Image Metadata Viewer" canonicalPath="/image-metadata" description="Inspect EXIF, GPS, camera details, timestamps, and other image metadata privately in your browser." keywords={["image metadata viewer", "EXIF viewer", "GPS metadata", "IPTC", "XMP"]} faq={[
         { question: "Are my images uploaded?", answer: "No. Image contents and extracted metadata are processed locally in your browser and are not transmitted for processing. The website still loads its own static assets." },
         { question: "Which image formats are supported?", answer: "JPEG, PNG, and classic TIFF are inspected by their file signatures. Detected tags vary by file. TIFF previews are not available. WebP, HEIC, HEIF, RAW, and BigTIFF are not supported in this tool." },
-        { question: "Can this tool remove metadata?", answer: "Not in this version. Clean-copy generation is deferred to avoid misleading removal claims or losing animation, orientation, transparency, or color profiles." },
+        { question: "Can this tool remove metadata?", answer: "Yes, for JPEG and PNG. Create clean copy drops whole metadata blocks (EXIF, XMP, IPTC, comments, PNG text and time chunks, and other ancillary data) without re-encoding, keeps colour profiles, transparency, and animation, then re-checks the result before allowing download. TIFF removal is not supported." },
         { question: "Does no detected metadata mean my image is anonymous?", answer: "No. Parser coverage is limited, and the image itself can reveal identifying information. The privacy summary lists only detected fields, not a privacy score." },
       ]} />
       <p className="text-xs text-muted-foreground mb-4">Image contents and extracted metadata stay in your browser. Nothing is uploaded for processing or saved persistently.</p>
@@ -102,9 +106,12 @@ const ImageMetadataViewer = () => {
               {result.findings.map(finding => <li key={finding.title} className="border-l-2 border-primary pl-3"><h3 className="text-sm font-medium">{finding.title}</h3><p className="text-xs text-muted-foreground mt-1">{finding.reason}</p><p className="text-xs font-mono text-muted-foreground break-all mt-1">{finding.tags.join(", ")}</p></li>)}
             </ul>
             <p className="text-xs text-muted-foreground mt-3">{result.thumbnailStatus}</p>
-            {coords && <Button variant="outline" size="sm" className="mt-3 max-w-full" onClick={() => copy(coords)} aria-label="Copy GPS coordinates"><MapPin />Copy coordinates</Button>}
+            <div className="flex flex-wrap gap-2 mt-3">{file && !cleaning && <Button size="sm" onClick={() => setCleaning(true)} disabled={!!result.removal?.error} title={result.removal?.error}><Eraser />Create clean copy</Button>}
+            {coords && <Button variant="outline" size="sm" className="max-w-full" onClick={() => copy(coords)} aria-label="Copy GPS coordinates"><MapPin />Copy coordinates</Button>}</div>
+            {result.removal?.error && <p className="text-xs text-muted-foreground mt-2">{result.removal.error}</p>}
           </section>
         </div>
+        {cleaning && file && <CleanCopyPanel key={file.name + file.lastModified + file.size} file={file} inspection={result} originalPreviewUrl={preview && !preview.failed ? preview.url : undefined} onClose={() => setCleaning(false)} />}
         {result.metadataCount === 0 && <p role="status" className="text-sm text-muted-foreground mb-4">No embedded metadata detected in supported blocks. Basic file and image information is shown; unsupported tags are not verified.</p>}
         <section aria-labelledby="metadata-heading" className="min-w-0">
           <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
