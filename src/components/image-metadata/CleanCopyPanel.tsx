@@ -39,7 +39,10 @@ export const CleanCopyPanel = ({ file, inspection, originalPreviewUrl, onClose }
     return r.release;
   }, [state]);
   useEffect(() => {
-    if (state.status === "ready") state.result?.report.verified ? toast.success("Clean copy created and verified") : toast.error("Verification failed; the copy is not presented as clean");
+    if (state.status === "ready") {
+      if (state.result?.report.verified) toast.success("Clean copy created and verified");
+      else toast.error("Verification failed; the copy is not presented as clean");
+    }
     if (state.status === "error") toast.error(state.error ?? "Clean copy failed");
   }, [state]);
 
