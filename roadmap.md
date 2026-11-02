@@ -23,3 +23,8 @@
 
 ## Image Metadata Removal
 - [x] Lossless JPEG/PNG cleaner, verification report, comparison, safe download, tests, browser check.
+
+## Image Viewer Improvements
+- [ ] Improve processing status, cancellation/retry, and clean-worker startup handling.
+- [ ] Add cross-category search and matched-result counts without changing the shared look.
+- [ ] Run targeted tests and verify inspection, search, cleaning, and downloads in the browser.

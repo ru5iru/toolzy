@@ -6,7 +6,7 @@ export interface WorkerPort {
   postMessage(file: File): void;
   terminate(): void;
 }
-export type InspectionState = { status: "idle" | "loading" | "ready" | "error"; result?: Inspection; error?: string };
+export type InspectionState = { status: "idle" | "loading" | "ready" | "error"; phase?: "starting" | "inspecting"; result?: Inspection; error?: string };
 export class InspectionSession {
   private generation = 0;
   private worker?: WorkerPort;
@@ -26,7 +26,7 @@ export class InspectionSession {
       validateSize(file.size);
       const worker = this.factory();
       this.worker = worker;
-      this.publish({ status: "loading" });
+      this.publish({ status: "loading", phase: "starting" });
       const finish = (state: InspectionState) => {
         if (generation !== this.generation || this.worker !== worker) return;
         worker.terminate();
@@ -38,6 +38,7 @@ export class InspectionSession {
         if (data.ready) {
           if (generation !== this.generation || this.worker !== worker) return;
           clearTimeout(this.timeout);
+          this.publish({ status: "loading", phase: "inspecting" });
           this.timeout = setTimeout(() => finish({ status: "error", error: "Processing exceeded 20 seconds and was stopped. Try a smaller image." }), 20000);
           return;
         }
