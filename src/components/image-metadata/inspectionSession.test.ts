@@ -27,7 +27,7 @@ describe("inspection lifecycle", () => {
     expect(workers[0].terminate).toHaveBeenCalledOnce(); expect(publish.mock.lastCall?.[0]).toEqual({ status: "idle" });
   });
   it("stops processing at the exact time limit", () => {
-    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file());
+    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file()); workers[0].onmessage?.({ data: { ready: true } } as MessageEvent);
     vi.advanceTimersByTime(19999); expect(publish.mock.lastCall?.[0].status).toBe("loading");
     vi.advanceTimersByTime(1); expect(workers[0].terminate).toHaveBeenCalledOnce(); expect(publish.mock.lastCall?.[0].status).toBe("error");
     session.clear();
