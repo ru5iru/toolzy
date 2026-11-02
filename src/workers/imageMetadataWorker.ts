@@ -4,6 +4,7 @@ import { presentKinds, scanStructure } from "@/components/image-metadata/cleanUt
 self.onmessage = async (event: MessageEvent<File>) => {
   try {
     const file = event.data;
+    self.postMessage({ ready: true });
     const buffer = await file.arrayBuffer();
     const result = await inspectImage(buffer, file);
     let removal: RemovalInfo;
