@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Copy, Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, Search, X } from "lucide-react";
+import { Copy, Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, RotateCcw, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -9,6 +9,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CATEGORIES, csvExport, gpsCoordinates, jsonExport, type Category } from "@/components/image-metadata/metadataUtils";
 import { InspectionSession, localObjectUrl, type InspectionState } from "@/components/image-metadata/inspectionSession";
 import { CleanCopyPanel } from "@/components/image-metadata/CleanCopyPanel";
+import { searchMetadata } from "@/components/image-metadata/searchUtils";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import ImageMetadataWorker from "@/workers/imageMetadataWorker?worker";
 
 const ImageMetadataViewer = () => {
@@ -16,7 +18,8 @@ const ImageMetadataViewer = () => {
   const [state, setState] = useState<InspectionState>({ status: "idle" });
   const [preview, setPreview] = useState<{ url: string; failed: boolean; dimensions?: string }>();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<Category>("Overview");
+  const [category, setCategory] = useState<Category | "All">("All");
+  const debouncedQuery = useDebouncedValue(query, 200);
   const [dragging, setDragging] = useState(false);
   const [cleaning, setCleaning] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
@@ -39,7 +42,7 @@ const ImageMetadataViewer = () => {
     setFile(selected);
     setCleaning(false);
     setQuery("");
-    setCategory("Overview");
+    setCategory("All");
     setPreview(undefined);
     session.current?.select(selected);
   };
@@ -57,7 +60,8 @@ const ImageMetadataViewer = () => {
   };
   const result = state.result;
   const coords = result ? gpsCoordinates(result.rows) : undefined;
-  const rows = result?.rows.filter(row => row.category === category && `${row.label} ${row.tag} ${row.value}`.toLowerCase().includes(query.toLowerCase())) ?? [];
+  const search = searchMetadata(result?.rows ?? [], debouncedQuery, category);
+  const rows = search.rows;
   const download = (kind: "json" | "csv") => {
     if (!result) return;
     const resource = localObjectUrl(new Blob([kind === "json" ? jsonExport(result) : csvExport(result.rows)], { type: kind === "json" ? "application/json" : "text/csv;charset=utf-8" }));
@@ -87,8 +91,9 @@ const ImageMetadataViewer = () => {
         </div>
         <p className="text-xs text-muted-foreground mt-3">Drop one JPEG, PNG, or TIFF here · Maximum 25 MiB</p>
       </div>
-      {state.status === "loading" && <div role="status" className="flex items-center gap-2 text-sm text-muted-foreground py-4"><Loader2 className="h-4 w-4 animate-spin" />Inspecting image locally…</div>}
-      {state.status === "error" && <p role="alert" className="text-sm text-destructive break-words py-3">{state.error}</p>}
+      {state.status === "loading" && <div className="flex flex-wrap items-center gap-3 py-4"><p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />{state.phase === "starting" ? "Starting local image processor…" : "Inspecting image locally…"}</p><Button size="sm" variant="outline" onClick={() => session.current?.clear()}><X />Cancel inspection</Button></div>}
+      {state.status === "idle" && file && <div className="flex flex-wrap items-center gap-3 py-3"><p role="status" className="text-sm text-muted-foreground">Inspection cancelled.</p><Button size="sm" variant="outline" onClick={() => session.current?.select(file)}><RotateCcw />Inspect again</Button></div>}
+      {state.status === "error" && <div className="py-3 space-y-2"><p role="alert" className="text-sm text-destructive break-words">{state.error}</p>{file && <Button size="sm" variant="outline" onClick={() => session.current?.select(file)}><RotateCcw />Retry inspection</Button>}</div>}
       {result && <>
         <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)] gap-5 mb-5">
           <section aria-label="Image preview" className="min-w-0">
@@ -100,7 +105,7 @@ const ImageMetadataViewer = () => {
             <p className="text-xs text-muted-foreground mt-1">{preview?.dimensions ?? "Dimensions: see extracted width/height tags when available"}</p>
           </section>
           <section aria-labelledby="privacy-heading" className="min-w-0">
-            <h2 id="privacy-heading" className="font-mono font-semibold text-sm mb-3">Privacy summary</h2>
+            <h2 id="privacy-heading" className="font-mono font-semibold text-sm mb-3">Privacy summary · {result.findings.length} detected {result.findings.length === 1 ? "category" : "categories"}</h2>
             {!result.findings.length && <p className="text-sm text-muted-foreground">No sensitive fields detected by this parser. This is not a guarantee of anonymity.</p>}
             <ul className="space-y-3">
               {result.findings.map(finding => <li key={finding.title} className="border-l-2 border-primary pl-3"><h3 className="text-sm font-medium">{finding.title}</h3><p className="text-xs text-muted-foreground mt-1">{finding.reason}</p><p className="text-xs font-mono text-muted-foreground break-all mt-1">{finding.tags.join(", ")}</p></li>)}
@@ -118,12 +123,14 @@ const ImageMetadataViewer = () => {
             <h2 id="metadata-heading" className="font-mono text-sm font-semibold flex items-center gap-2"><FileSearch className="h-4 w-4" />Extracted metadata</h2>
             <div className="flex gap-2 flex-wrap"><Button size="sm" variant="outline" onClick={() => download("json")}><Download />JSON</Button><Button size="sm" variant="outline" onClick={() => download("csv")}><Download />CSV</Button></div>
           </div>
-          <label className="relative block mb-3"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" /><Input className="pl-9" aria-label="Search metadata in selected category" placeholder="Search labels, tags, and values…" value={query} onChange={e => setQuery(e.target.value)} /></label>
-          <Tabs value={category} onValueChange={value => setCategory(value as Category)}>
+          <label className="relative block mb-3"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" /><Input className="pl-9 pr-10" aria-label="Search metadata" placeholder="Search labels, tags, and values…" value={query} onChange={e => setQuery(e.target.value)} />{query && <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8" aria-label="Clear metadata search" onClick={() => setQuery("")}><X /></Button>}</label>
+          <Tabs value={category} onValueChange={value => setCategory(value as Category | "All")}>
             <TabsList className="flex flex-wrap justify-start h-auto gap-1 mb-3">
-              {CATEGORIES.map(value => <TabsTrigger key={value} value={value} aria-controls="metadata-results">{value} ({result.rows.filter(row => row.category === value).length})</TabsTrigger>)}
+              <TabsTrigger value="All" aria-controls="metadata-results">All ({search.total})</TabsTrigger>
+              {CATEGORIES.map(value => <TabsTrigger key={value} value={value} aria-controls="metadata-results">{value} ({search.counts[value]})</TabsTrigger>)}
             </TabsList>
           </Tabs>
+          <p role="status" className="text-xs text-muted-foreground mb-2">{rows.length} of {result.rows.length} fields{debouncedQuery.trim() ? " matching search" : ""}</p>
           <div id="metadata-results" role="tabpanel" aria-label={`${category} metadata`} tabIndex={0} className="border border-border rounded-lg overflow-hidden">
             {rows.length ? rows.map(row => <div key={row.tag} className="grid grid-cols-[minmax(0,1fr)_36px] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_36px] gap-3 p-3 border-b border-border last:border-b-0 items-start">
               <div className="min-w-0 col-start-1 row-start-1"><div className="text-sm font-medium break-words">{row.label}</div><div className="text-xs text-muted-foreground font-mono break-all mt-1">{row.tag}</div></div>

@@ -52,7 +52,7 @@ export const CleanCopyPanel = ({ file, inspection, originalPreviewUrl, onClose }
   const canRun = !unsupported && (mode === "all" || selected.length > 0) && state.status !== "loading";
   const run = () => session.current?.run(file, { mode, remove: mode === "all" ? present : selected, keepOrientation });
   const download = () => {
-    const r = state.result; if (!r) return;
+    const r = state.result; if (!r?.report.verified) return;
     const resource = localObjectUrl(new Blob([r.output], { type: r.mime }));
     const a = document.createElement("a"); a.href = resource.url; a.download = r.filename; a.click();
     setTimeout(resource.release, 1000);
@@ -82,9 +82,9 @@ export const CleanCopyPanel = ({ file, inspection, originalPreviewUrl, onClose }
         </ul>
         {exifRemoved && orientation !== undefined && orientation > 1 && <div className="flex items-start gap-2 mb-4"><Checkbox id="keep-orientation" className="mt-0.5" checked={keepOrientation} onCheckedChange={c => setKeepOrientation(c === true)} /><Label htmlFor="keep-orientation" className="font-normal leading-snug"><span className="font-medium">Keep orientation tag</span><span className="block text-xs text-muted-foreground">This image relies on an EXIF rotation flag. Keeping it writes a new EXIF block containing only orientation, so the photo displays the right way up. Unchecking it may show the image rotated.</span></Label></div>}
         <p className="text-xs text-muted-foreground mb-3">Not removed: colour profiles and required image structures. Text visible inside the picture itself, and metadata in formats these parsers don't recognise, cannot be removed or verified.</p>
-        <Button size="sm" onClick={run} disabled={!canRun}>{state.status === "loading" ? <Loader2 className="animate-spin" /> : <Eraser />}Generate clean copy</Button>
+        <div className="flex flex-wrap gap-2"><Button size="sm" onClick={run} disabled={!canRun}>{state.status === "loading" ? <Loader2 className="animate-spin" /> : <Eraser />}Generate clean copy</Button>{state.status === "loading" && <Button size="sm" variant="outline" onClick={() => session.current?.clear()}>Cancel clean copy</Button>}</div>
       </>}
-      {state.status === "loading" && <p role="status" className="text-sm text-muted-foreground mt-3">Removing metadata and re-checking the result locally…</p>}
+      {state.status === "loading" && <p role="status" className="text-sm text-muted-foreground mt-3">{state.phase === "starting" ? "Starting local clean-copy processor…" : "Removing metadata and re-checking the result locally…"}</p>}
       {state.status === "error" && <p role="alert" className="text-sm text-destructive mt-3 break-words">{state.error}</p>}
       {r && <div className="mt-5 space-y-4">
         <div role="status" className={`flex items-start gap-2 text-sm ${r.report.verified ? "text-success" : "text-destructive"}`}>
@@ -112,7 +112,7 @@ export const CleanCopyPanel = ({ file, inspection, originalPreviewUrl, onClose }
           {r.report.fields.length ? <div className="border border-border rounded-lg max-h-72 overflow-auto">{r.report.fields.map(f => <div key={f.tag} className="flex justify-between gap-3 p-2 border-b border-border last:border-b-0 text-xs"><span className="font-mono break-all min-w-0">{f.tag}</span><span className={`shrink-0 ${statusClass[f.status]}`}>{f.status}</span></div>)}</div> : <p className="text-xs text-muted-foreground">No embedded fields were detected in the original.</p>}
         </div>
         <p className="text-xs text-muted-foreground">Verification re-parses the cleaned file with the same local parser and a structural scan of its {r.format === "PNG" ? "chunks" : "segments"}. It covers only fields and structures these checks recognise and is not a guarantee against forensic recovery or unknown proprietary metadata.</p>
-        <Button size="sm" onClick={download} disabled={!r.report.verified}><Download />Download {r.filename}</Button>
+        <Button size="sm" className="max-w-full" onClick={download} disabled={!r.report.verified} title={r.filename}><Download /><span className="truncate">Download {r.filename}</span></Button>
       </div>}
     </section>
   );
