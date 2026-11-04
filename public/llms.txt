@@ -1,6 +1,13 @@
 # Toolzy llms.txt — AI/LLM discovery file
 # https://toolzy.lovable.app
 
+## Document Signer
+
+URL: https://toolzy.lovable.app/document-signer
+Category: Cryptography & Privacy
+
+Sign files and verify detached digital signatures locally with the Web Crypto API. Generate RSA-PSS (2048, 3072) and ECDSA (P-256, P-384) key pairs, import and export PEM (PKCS#8, SPKI) and JWK keys, and sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512. Downloads the original, a detached .sig file (ECDSA signatures are DER-encoded and RSA-PSS uses a salt equal to the hash length, so OpenSSL can verify them) and a JSON manifest. Verification recalculates the document hash from the bytes provided and reports Valid, Invalid, Modified, Missing or Error. The Inspector marks each manifest field as self-declared or verified. Documents and keys are not uploaded; keys are held in memory only and are lost on reload. A valid signature does not establish the signer's real-world identity. Not supported yet: password-encrypted private keys, Ed25519, RSA-4096, PKCS#1/SEC1 keys, PDF-embedded signatures, certificates.
+
 ## Image Metadata Viewer
 
 URL: https://toolzy.lovable.app/image-metadata

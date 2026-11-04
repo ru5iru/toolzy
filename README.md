@@ -130,6 +130,22 @@ toolzy/
 
 ## Tools — Full Catalog & Capabilities
 
+### Document Signer — `/document-signer`
+
+Sign files and verify **detached** digital signatures with the browser's Web Crypto API; no new dependencies. Four tabs (`?tab=sign|verify|keys|inspector`), registered like the other tools.
+
+- **Algorithms:** RSA-PSS (2048, 3072) and ECDSA (P-256, P-384), each with SHA-256, SHA-384 or SHA-512. RSA-PSS uses a salt equal to the hash length. ECDSA signatures are written DER-encoded so OpenSSL can verify the `.sig` file, and verification accepts DER or raw `r||s`.
+- **Sign:** any file up to 256 MiB; shows name, MIME type, size and SHA-256. Downloads the unchanged original, `<name>.sig` and `<name>.signature.json`.
+- **Verify:** document, signature and/or manifest, and a public key (from this session or pasted). The document hash is always recalculated from the bytes provided; the manifest's hash is only compared against it. Results: Valid, Invalid, Modified (the document no longer matches the manifest and the signature fails), Missing, Error. A valid signature with a stale manifest verifies with a warning.
+- **Keys:** generate, import and export PEM (PKCS#8 / SPKI) and JWK, SHA-256 fingerprints of the SPKI, and a key-pair match check. Importing a private key derives its public key. PKCS#1, SEC1, encrypted and unsupported keys get an explanatory error. Private-key export is unencrypted and sits behind a confirmation dialog.
+- **Inspector:** labels each manifest field *self-declared* or *verified* (confirmed by the latest successful verification of the same signature).
+- **Privacy:** keys are held in memory only: no `localStorage`, IndexedDB, URL or network use. Files of 5 MiB or more are processed in a disposable, cancellable worker. Hashing and HMAC are in [Crypto Suite](#4-crypto-suite--crypto), not duplicated here.
+- **Limits:** no password-encrypted private keys, Ed25519, RSA-4096, batch operations, PDF-embedded (PAdES) signatures or certificates yet. A valid signature does not prove who owns the key. The manifest is a Toolzy-specific format, not a standard; use JWS or CMS when other software must consume it.
+
+**Delivery validation:** `npx vitest run` passed all 98 tests (53 new: encoding/PEM/ECDSA helpers, key import/export, every algorithm and hash round trip, tamper and wrong-key cases, OpenSSL-made fixtures verified by Toolzy, Toolzy signatures verified by Node's OpenSSL, session cancellation). `tsc -p tsconfig.app.json` and ESLint on the new and touched files are clean, and `vite build` succeeds. A Playwright run against the production build passed 63 checks: sign/verify for ECDSA P-256, RSA-PSS 2048 and ECDSA P-384; `openssl dgst` verifying the downloaded `.sig` files and rejecting a tampered file; a 6 MiB file through the worker; private-key export, import and delete; no storage use and no requests after load; no horizontal overflow at 390 px; and JWT Hub still verifying HS256, RS256 and ES256. Whole-project lint was not re-run (the existing errors are unrelated).
+
+Important files: `src/pages/DocumentSigner.tsx`, `src/components/document-signer/` (`algorithms`, `keyUtils`, `signingUtils`, `verifyUtils`, `manifest`, `inspectorUtils`, `signerJobs`, `signerSession`, the four tab components, and `__fixtures__/` with OpenSSL-generated **test-only** keys), `src/workers/signerWorker.ts`, and shared helpers in `src/lib/crypto/` (also used by JWT Hub) and `src/components/FileDropzone.tsx`.
+
 ### Image Metadata Viewer — `/image-metadata`
 
 Inspect JPEG, PNG, and classic TIFF locally with **exifr 7.1.3**. The new route follows the existing short tool URLs and appears in the sidebar and searchable homepage.
@@ -295,6 +311,7 @@ When you add a new tool, **always** include a `<ToolSEO />` call at the top of t
 ## Testing
 
 - **Unit tests:** [Vitest](https://vitest.dev) + Testing Library, jsdom environment. Configured in `vitest.config.ts`. Setup file: `src/test/setup.ts`. Example: `src/test/example.test.ts`.
+  Tests that need Web Crypto (`src/lib/crypto`, `src/components/document-signer`) opt into Node with a `// @vitest-environment node` first line.
   ```bash
   npm run test           # single run
   npm run test:watch     # watch mode
