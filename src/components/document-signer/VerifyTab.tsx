@@ -136,7 +136,7 @@ export const VerifyTab = ({ keys, session, onResult }: VerifyTabProps) => {
               {result.keyFingerprint && <MetaRow label="Public key fingerprint" value={result.keyFingerprint} />}
               {manifest && <MetaRow label="Manifest key fingerprint" value={manifest.signer.publicKeyFingerprint} />}
               {result.documentSize !== undefined && <MetaRow label="Document size" value={`${result.documentSize} bytes`} copyable={false} />}
-              {manifest && <MetaRow label="Declared algorithm" value={`${manifest.signature.algorithm} · ${manifest.signature.hashAlgorithm}`} copyable={false} />}
+              {manifest && <MetaRow label="Declared algorithm" value={manifest.signature.hashAlgorithm ? `${manifest.signature.algorithm} · ${manifest.signature.hashAlgorithm}` : manifest.signature.algorithm} copyable={false} />}
               {keys.find((k) => k.fingerprint === result.keyFingerprint) && <MetaRow label="Key algorithm" value={algorithmById(keys.find((k) => k.fingerprint === result.keyFingerprint)!.algorithm).label} copyable={false} />}
             </div>
             <p className="text-xs text-muted-foreground">A valid signature shows the document matches the signature for this key. It does not show who owns the key or that the signer is trusted.</p>

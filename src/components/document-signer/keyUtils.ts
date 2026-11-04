@@ -1,7 +1,7 @@
 import { spkiFingerprint } from "@/lib/crypto/fingerprint";
 import { derToPem, parseSupportedKeyPem } from "@/lib/crypto/pem";
 import { toArrayBuffer } from "@/lib/crypto/base64";
-import { ALGORITHMS, algorithmById, keyAlgorithm, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
+import { ALGORITHMS, algorithmById, isEd25519Supported, keyAlgorithm, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 
 /**
  * A key held in memory only. Plain bytes (no CryptoKey) so records can be posted to a worker
@@ -49,10 +49,13 @@ async function buildRecord(
 
 export async function generateKeyRecord(algorithmId: AlgorithmId, name = ""): Promise<KeyRecord> {
   const info = algorithmById(algorithmId);
+  if (info.family === "Ed25519" && !(await isEd25519Supported())) {
+    throw new Error("This browser does not support Ed25519. Choose ECDSA or RSA-PSS instead.");
+  }
   const params = info.family === "RSA-PSS"
     ? { name: "RSA-PSS", modulusLength: info.modulusLength!, publicExponent: new Uint8Array([1, 0, 1]), hash: DEFAULT_HASH }
-    : { name: "ECDSA", namedCurve: info.namedCurve! };
-  const pair = await crypto.subtle.generateKey(params, true, ["sign", "verify"]);
+    : info.family === "ECDSA" ? { name: "ECDSA", namedCurve: info.namedCurve! } : { name: "Ed25519" };
+  const pair = (await crypto.subtle.generateKey(params, true, ["sign", "verify"])) as CryptoKeyPair;
   const spki = new Uint8Array(await crypto.subtle.exportKey("spki", pair.publicKey));
   const pkcs8 = new Uint8Array(await crypto.subtle.exportKey("pkcs8", pair.privateKey));
   return buildRecord(info, spki, pkcs8, name, "generated");
@@ -68,15 +71,21 @@ async function detectAlgorithm(format: "spki" | "pkcs8", der: Uint8Array): Promi
       return info;
     } catch { /* try the next curve */ }
   }
+  if (await isEd25519Supported()) {
+    try {
+      await crypto.subtle.importKey(format, buffer, keyAlgorithm(algorithmById("Ed25519"), DEFAULT_HASH), true, usages);
+      return algorithmById("Ed25519");
+    } catch { /* not an Ed25519 key */ }
+  }
   try {
     const key = await crypto.subtle.importKey(format, buffer, keyAlgorithm(algorithmById("RSA-PSS-2048"), DEFAULT_HASH), true, usages);
     const bits = (key.algorithm as RsaHashedKeyAlgorithm).modulusLength;
     const match = ALGORITHMS.find((a) => a.family === "RSA-PSS" && a.modulusLength === bits);
-    if (!match) throw new Error(`RSA ${bits}-bit keys are not supported. Use 2048 or 3072 bits.`);
+    if (!match) throw new Error(`RSA ${bits}-bit keys are not supported. Use 2048, 3072 or 4096 bits.`);
     return match;
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("RSA ")) throw error;
-    throw new Error("This key is not a supported type. Supported: RSA 2048/3072 (used with RSA-PSS) and ECDSA P-256/P-384.");
+    throw new Error("This key is not a supported type. Supported: RSA 2048/3072/4096 (used with RSA-PSS), ECDSA P-256/P-384 and Ed25519.");
   }
 }
 
@@ -112,10 +121,14 @@ async function recordFromJwk(jwk: Record<string, unknown>, name: string): Promis
   if (clean.kty === "EC") {
     info = ALGORITHMS.find((a) => a.namedCurve === clean.crv);
     if (!info) throw new Error(`Curve "${String(clean.crv)}" is not supported. Use P-256 or P-384.`);
+  } else if (clean.kty === "OKP") {
+    if (clean.crv !== "Ed25519") throw new Error(`Curve "${String(clean.crv)}" is not supported. Only Ed25519 is supported for OKP keys.`);
+    if (!(await isEd25519Supported())) throw new Error("This browser does not support Ed25519.");
+    info = algorithmById("Ed25519");
   } else if (clean.kty === "RSA") {
     info = algorithmById("RSA-PSS-2048");
   } else {
-    throw new Error(`JWK key type "${String(clean.kty)}" is not supported. Use RSA or EC.`);
+    throw new Error(`JWK key type "${String(clean.kty)}" is not supported. Use RSA, EC or OKP (Ed25519).`);
   }
   let der: Uint8Array;
   try {

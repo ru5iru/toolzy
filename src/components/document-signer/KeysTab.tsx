@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Copy, Download, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ALGORITHMS, algorithmById, type AlgorithmId } from "./algorithms";
+import { ALGORITHMS, algorithmById, supportedAlgorithms, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 import { copyText, downloadBytes } from "./browserUtils";
 import { exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, keysMatch, type KeyRecord } from "./keyUtils";
 import { KeySelect, MetaRow } from "./SignerControls";
@@ -26,6 +26,9 @@ type PrivateExport = { key: KeyRecord; format: "pem" | "jwk" };
 
 export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
   const [algorithm, setAlgorithm] = useState<AlgorithmId>("ECDSA-P256");
+  // Ed25519 support varies by browser, so it only appears once detected.
+  const [available, setAvailable] = useState<AlgorithmInfo[]>(ALGORITHMS.filter((a) => a.family !== "Ed25519"));
+  useEffect(() => { void supportedAlgorithms().then(setAvailable); }, []);
   const [genName, setGenName] = useState("");
   const [generating, setGenerating] = useState(false);
   const [importText, setImportText] = useState("");
@@ -97,7 +100,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
               <Label htmlFor="gen-algorithm" className="text-xs text-muted-foreground">Algorithm</Label>
               <Select value={algorithm} onValueChange={(v) => setAlgorithm(v as AlgorithmId)}>
                 <SelectTrigger id="gen-algorithm" className="font-mono text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>{ALGORITHMS.map((a) => <SelectItem key={a.id} value={a.id} className="font-mono text-xs">{a.label}</SelectItem>)}</SelectContent>
+                <SelectContent>{available.map((a) => <SelectItem key={a.id} value={a.id} className="font-mono text-xs">{a.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">

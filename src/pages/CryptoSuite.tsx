@@ -21,6 +21,7 @@ import {
 import {
   Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText
 } from "lucide-react";
+import { SecretsTab } from "@/components/secrets/SecretsTab";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
 
@@ -122,10 +123,13 @@ type ExportFormat = "txt" | "csv" | "json" | "sql";
 const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
+type CryptoTab = "hash" | "uuid" | "secrets";
+
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
-  const initialTab = params.get("tab") === "uuid" ? "uuid" : "hash";
-  const [tab, setTab] = useState<"hash" | "uuid">(initialTab);
+  const requestedTab = params.get("tab");
+  const initialTab: CryptoTab = requestedTab === "uuid" || requestedTab === "secrets" ? requestedTab : "hash";
+  const [tab, setTab] = useState<CryptoTab>(initialTab);
   useEffect(() => {
     const next = new URLSearchParams(params);
     next.set("tab", tab);
@@ -136,16 +140,18 @@ const CryptoSuite = () => {
   return (
     <div className="space-y-6">
       <ToolSEO
-        title="Crypto Suite — Hash Generator & UUID Generator"
-        description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, and create UUID v1/v3/v4/v5 tokens in bulk — all via the native Web Crypto API, nothing leaves your browser."
+        title="Crypto Suite — Hash, UUID & Secret Generator"
+        description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, create UUID v1/v3/v4/v5 tokens in bulk, and generate random secrets and keys (JWT secrets, AES keys, API tokens) — all via the native Web Crypto API, nothing leaves your browser."
         canonicalPath="/crypto"
-        keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator"]}
+        keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator", "random secret generator", "jwt secret generator", "random key generator", "api token generator"]}
         faq={[
           { question: "What is the difference between SHA-256 and SHA-512?", answer: "Both are SHA-2 family hashes. SHA-256 produces a 256-bit (32-byte) digest and is faster on 32-bit hardware; SHA-512 produces a 512-bit (64-byte) digest and is generally faster on 64-bit hardware. SHA-512 offers a larger security margin against brute-force attacks." },
           { question: "What is HMAC and when should I use it?", answer: "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash with a secret key to produce a tag that proves both integrity and authenticity. Use it whenever you need to verify a message came from a party that knows the shared secret — e.g. signing API requests or webhook payloads." },
           { question: "Is it safe to hash files in the browser?", answer: "Yes. All hashing in Crypto Suite happens locally via the Web Crypto API (crypto.subtle.digest). The file bytes never leave your machine and no network requests are made." },
           { question: "What is the difference between UUID v4 and v5?", answer: "v4 is fully random (122 bits of entropy from crypto.getRandomValues). v5 is deterministic: it derives the UUID from a namespace UUID plus a name string using SHA-1, so the same inputs always yield the same UUID — useful for stable IDs derived from URLs, DNS names, or other natural keys." },
           { question: "How do I generate cryptographically secure UUIDs?", answer: "Use v4. Crypto Suite uses crypto.getRandomValues (or crypto.randomUUID when available), the browser's CSPRNG, which is suitable for security-sensitive identifiers." },
+          { question: "How long should a JWT HS256 secret be?", answer: "At least 32 random bytes (256 bits), the length of the SHA-256 output, as RFC 7518 requires. The Secrets tab has presets for HS256, HS384 and HS512 secrets, AES keys and API tokens, generated with crypto.getRandomValues." },
+          { question: "Are the generated secrets stored or sent anywhere?", answer: "No. Secrets are generated in your browser with its secure random source, shown only on the page, and never stored or transmitted. Once you copy one, protect it like any other credential." },
           { question: "Why is MD5 not supported?", answer: "MD5 is cryptographically broken — practical collisions can be generated in seconds. The Web Crypto API deliberately omits it. We only expose it indirectly inside UUID v3 generation, where collision resistance is not a security requirement." },
         ]}
         howToSteps={[
@@ -155,6 +161,8 @@ const CryptoSuite = () => {
           "UUID: pick a version (v1, v3, v4, or v5) in the UUID Generator tab",
           "UUID: set the quantity (1–10,000) and generate",
           "UUID: copy individual UUIDs or export the batch as CSV/JSON/SQL/TXT",
+          "Secrets: pick a preset (JWT secret, AES key, API token) or set a length and encoding",
+          "Secrets: generate one or many values and copy them",
         ]}
       />
 
@@ -162,20 +170,24 @@ const CryptoSuite = () => {
         <KeyRound className="h-6 w-6 text-primary" aria-hidden />
         <div>
           <h1 className="text-2xl font-mono font-bold text-foreground">Crypto Suite</h1>
-          <p className="text-sm text-muted-foreground">Hashing &amp; UUID generation — 100% browser-side</p>
+          <p className="text-sm text-muted-foreground">Hashing, UUID &amp; secret generation — 100% browser-side</p>
         </div>
       </header>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as "hash" | "uuid")} className="space-y-6">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as CryptoTab)} className="space-y-6">
         <TabsList>
           <TabsTrigger value="hash">Hashing</TabsTrigger>
           <TabsTrigger value="uuid">UUID Generator</TabsTrigger>
+          <TabsTrigger value="secrets">Secrets</TabsTrigger>
         </TabsList>
         <TabsContent value="hash" forceMount className={tab === "hash" ? "space-y-6" : "hidden"}>
           <HashTab />
         </TabsContent>
         <TabsContent value="uuid" forceMount className={tab === "uuid" ? "space-y-6" : "hidden"}>
           <UuidTab />
+        </TabsContent>
+        <TabsContent value="secrets" className="space-y-6">
+          <SecretsTab />
         </TabsContent>
       </Tabs>
     </div>

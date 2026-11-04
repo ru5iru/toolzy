@@ -1,7 +1,7 @@
 import { base64ToBytes, bytesToBase64, toArrayBuffer } from "@/lib/crypto/base64";
 import { ecdsaDerToRaw, ecdsaRawToDer } from "@/lib/crypto/ecdsa";
 import { digestHex } from "@/lib/crypto/fingerprint";
-import { algorithmById, HASH_BYTES, keyAlgorithm, signParams, type AlgorithmId, type HashName } from "./algorithms";
+import { algorithmById, HASH_BYTES, keyAlgorithm, signParams, usesSigningHash, type AlgorithmId, type HashName } from "./algorithms";
 import type { KeyRecord } from "./keyUtils";
 import { manifestToText, type Manifest } from "./manifest";
 
@@ -17,6 +17,7 @@ export async function signBytes(data: Uint8Array, pkcs8: Uint8Array, algorithm: 
   const info = algorithmById(algorithm);
   const key = await crypto.subtle.importKey("pkcs8", toArrayBuffer(pkcs8), keyAlgorithm(info, hash), false, ["sign"]);
   const raw = new Uint8Array(await crypto.subtle.sign(signParams(info, hash), key, toArrayBuffer(data)));
+  // RSA-PSS and Ed25519 signatures are the same bytes OpenSSL produces; ECDSA needs DER.
   return info.family === "ECDSA" ? ecdsaRawToDer(raw) : raw;
 }
 
@@ -57,9 +58,11 @@ export async function signDocument({ data, filename, key, hash }: SignDocumentIn
     document: { filename, size: data.length, hashAlgorithm: hash, hash: documentHash },
     signature: {
       algorithm: info.family,
-      hashAlgorithm: hash,
-      ...(info.family === "RSA-PSS" ? { modulusLength: info.modulusLength, saltLength: HASH_BYTES[hash] } : { curve: info.namedCurve }),
-      format: info.family === "RSA-PSS" ? "rsa-pss" : "ecdsa-der",
+      // Ed25519 hashes internally as part of the algorithm, so no signing hash is recorded for it.
+      ...(usesSigningHash(info) ? { hashAlgorithm: hash } : {}),
+      ...(info.family === "RSA-PSS" ? { modulusLength: info.modulusLength, saltLength: HASH_BYTES[hash] } : {}),
+      ...(info.family === "ECDSA" ? { curve: info.namedCurve } : {}),
+      format: info.family === "RSA-PSS" ? "rsa-pss" : info.family === "ECDSA" ? "ecdsa-der" : "ed25519",
       encoding: "base64",
       value: bytesToBase64(signature),
     },

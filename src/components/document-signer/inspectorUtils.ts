@@ -27,7 +27,7 @@ export function inspectManifest(text: string, verification?: VerifyResult): { ma
     ...(sig.modulusLength ? [row("RSA modulus", `${sig.modulusLength} bits`, true)] : []),
     ...(sig.curve ? [row("ECDSA curve", sig.curve, true)] : []),
     ...(sig.saltLength !== undefined ? [row("PSS salt length", `${sig.saltLength} bytes`, true)] : []),
-    row("Signature hash algorithm", sig.hashAlgorithm, true),
+    ...(sig.hashAlgorithm ? [row("Signature hash algorithm", sig.hashAlgorithm, true)] : []),
     row("Signature format", sig.format),
     row("Signature encoding", sig.encoding),
     row("Signature length", `${atobLength(sig.value)} bytes`, true),

@@ -1,15 +1,18 @@
 // @vitest-environment node
 import { constants, verify as nodeVerify } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { derToPem } from "@/lib/crypto/pem";
 import { bytesToBase64 } from "@/lib/crypto/base64";
-import { ALGORITHMS, HASHES, HASH_BYTES, type AlgorithmId, type HashName } from "./algorithms";
+import { ALGORITHMS, HASHES, HASH_BYTES, isEd25519Supported, supportedAlgorithms, type AlgorithmId, type HashName } from "./algorithms";
 import { exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, keysMatch, type KeyRecord } from "./keyUtils";
 import { manifestToText, parseManifest } from "./manifest";
 import { inspectManifest } from "./inspectorUtils";
 import { signBytes, signDocument, verifyBytes } from "./signingUtils";
 import { verifyDocument } from "./verifyUtils";
+
+// RSA-4096 key generation can take several seconds.
+vi.setConfig({ testTimeout: 60_000 });
 
 const fixture = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, import.meta.url));
 const text = (name: string) => fixture(name).toString("utf8");
@@ -188,6 +191,15 @@ describe("interoperability with OpenSSL", () => {
     const key = await importKeyText(text("rsa2048-public.pem"));
     expect(await verifyBytes(data, bytes("rsa2048-pss-sha256.sig"), key.spki, key.algorithm, "SHA-256")).toBe(true);
   });
+  it("verifies OpenSSL Ed25519 and RSA-PSS 4096 (SHA-512, salt 64) signatures", async () => {
+    const ed = await importKeyText(text("ed25519-public.pem"));
+    expect(ed.algorithm).toBe("Ed25519");
+    expect(await verifyBytes(data, bytes("ed25519.sig"), ed.spki, ed.algorithm, "SHA-256")).toBe(true);
+    const rsa = await importKeyText(text("rsa4096-public.pem"));
+    expect(rsa.algorithm).toBe("RSA-PSS-4096");
+    expect(await verifyBytes(data, bytes("rsa4096-pss-sha512.sig"), rsa.spki, rsa.algorithm, "SHA-512")).toBe(true);
+    expect(await verifyBytes(data, bytes("rsa4096-pss-sha512.sig"), rsa.spki, rsa.algorithm, "SHA-256")).toBe(false);
+  });
   it("verifies OpenSSL ECDSA P-256 and P-384 DER signatures", async () => {
     const p256 = await importKeyText(text("ec-p256-public.pem"));
     expect(p256.algorithm).toBe("ECDSA-P256");
@@ -201,6 +213,8 @@ describe("interoperability with OpenSSL", () => {
       ["rsa2048-private.pem", "rsa2048-public.pem", "SHA-256", "RSA-PSS-2048"],
       ["ec-p256-private.pem", "ec-p256-public.pem", "SHA-256", "ECDSA-P256"],
       ["ec-p384-private.pem", "ec-p384-public.pem", "SHA-384", "ECDSA-P384"],
+      ["ed25519-private.pem", "ed25519-public.pem", "SHA-256", "Ed25519"],
+      ["rsa4096-private.pem", "rsa4096-public.pem", "SHA-512", "RSA-PSS-4096"],
     ] as const) {
       const key = await importKeyText(text(file));
       expect(key.algorithm).toBe(id);
@@ -209,9 +223,38 @@ describe("interoperability with OpenSSL", () => {
       const options = id.startsWith("RSA")
         ? { key: text(pub), padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: HASH_BYTES[hash] }
         : { key: text(pub) };
-      expect(nodeVerify(hash.replace("SHA-", "sha"), data, options, sig)).toBe(true);
-      expect(nodeVerify(hash.replace("SHA-", "sha"), Buffer.from("tampered"), options, sig)).toBe(false);
+      const digest = id === "Ed25519" ? null : hash.replace("SHA-", "sha"); // Ed25519 signs the message itself
+      expect(nodeVerify(digest, data, options, sig)).toBe(true);
+      expect(nodeVerify(digest, Buffer.from("tampered"), options, sig)).toBe(false);
     }
+  });
+});
+
+describe("Ed25519", () => {
+  it("is feature-detected and listed only when supported", async () => {
+    expect(await isEd25519Supported()).toBe(true); // Node 22 supports it; browsers are detected the same way
+    expect((await supportedAlgorithms()).map((a) => a.id)).toContain("Ed25519");
+  });
+  it("records no signing hash in the manifest and still verifies, including raw 64-byte signatures", async () => {
+    const key = await keyFor("Ed25519");
+    const signed = await signDocument({ data: doc, filename: "doc.txt", key, hash: "SHA-512" });
+    expect(signed.manifest.signature.hashAlgorithm).toBeUndefined();
+    expect(signed.manifest.signature).toMatchObject({ algorithm: "Ed25519", format: "ed25519" });
+    expect(signed.manifest.document.hashAlgorithm).toBe("SHA-512");
+    expect(signed.signature.length).toBe(64);
+    expect(parseManifest(signed.manifestText)).toEqual(signed.manifest);
+    expect((await verifyDocument({ data: doc, signature: signed.signature, manifest: signed.manifest, key })).status).toBe("valid");
+    const tampered = Uint8Array.from(doc); tampered[1] ^= 1;
+    expect((await verifyDocument({ data: tampered, signature: signed.signature, manifest: signed.manifest, key })).status).toBe("modified");
+    const rows = inspectManifest(signed.manifestText).rows.map((r) => r.label);
+    expect(rows).not.toContain("Signature hash algorithm");
+  });
+  it("imports Ed25519 JWK (OKP) keys and rejects other OKP curves", async () => {
+    const key = await keyFor("Ed25519");
+    const jwk = JSON.parse(await exportJwk(key, true));
+    expect(jwk).toMatchObject({ kty: "OKP", crv: "Ed25519" });
+    expect((await importKeyText(JSON.stringify(jwk))).fingerprint).toBe(key.fingerprint);
+    await expect(importKeyText(JSON.stringify({ kty: "OKP", crv: "X25519", x: "AAAA" }))).rejects.toThrow("Only Ed25519");
   });
 });
 

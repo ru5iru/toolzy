@@ -5,7 +5,7 @@ import { FileDropzone } from "@/components/FileDropzone";
 import { Button } from "@/components/ui/button";
 import { digestHex } from "@/lib/crypto/fingerprint";
 import { formatBytes } from "@/lib/formatBytes";
-import { algorithmById, type HashName } from "./algorithms";
+import { algorithmById, usesSigningHash, type HashName } from "./algorithms";
 import { downloadBytes, readFileBytes } from "./browserUtils";
 import type { KeyRecord } from "./keyUtils";
 import { manifestFileName, signatureFileName } from "./manifest";
@@ -29,7 +29,7 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
   const [hash, setHash] = useState<HashName>("SHA-256");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  const [result, setResult] = useState<{ data: SignDocumentResult; filename: string; keyName: string }>();
+  const [result, setResult] = useState<{ data: SignDocumentResult; filename: string; keyName: string; algorithmLabel: string }>();
   const generation = useRef(0);
 
   // Keep a valid key selected as the keyring changes.
@@ -67,7 +67,7 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
       const data = await readFileBytes(file);
       const out = await session.run({ op: "sign", input: { data, filename: file.name, key, hash } });
       if (out.op === "sign" && current === generation.current) {
-        setResult({ data: out.result, filename: file.name, keyName: key.name });
+        setResult({ data: out.result, filename: file.name, keyName: key.name, algorithmLabel: algorithmById(key.algorithm).label });
         toast.success("Document signed");
       }
     } catch (e) {
@@ -110,7 +110,7 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_160px] gap-3">
             <KeySelect id="sign-key" label="Private key" keys={privateKeys} value={keyId} onChange={(id) => { invalidate(); setKeyId(id); }} placeholder="Choose a key" />
-            <HashSelect id="sign-hash" value={hash} onChange={(next) => { invalidate(); setHash(next); }} />
+            <HashSelect id="sign-hash" value={hash} label={key && !usesSigningHash(algorithmById(key.algorithm)) ? "Document hash (Ed25519 signs the data itself)" : "Hash algorithm"} onChange={(next) => { invalidate(); setHash(next); }} />
           </div>
         )}
         {key && <p className="text-xs text-muted-foreground">Algorithm follows the key: {algorithmById(key.algorithm).label}. Need another type? <button type="button" className="underline hover:text-foreground" onClick={onOpenKeys}>Manage keys</button></p>}
@@ -135,8 +135,8 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
           <div role="status" className="space-y-3">
             <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-mono ${toneClass.success}`}>Signed with {result.keyName}</div>
             <div className="border border-border rounded-lg px-3">
-              <MetaRow label="Signature algorithm" value={`${result.data.manifest.signature.algorithm}${result.data.manifest.signature.curve ? ` ${result.data.manifest.signature.curve}` : ` ${result.data.manifest.signature.modulusLength}`}`} copyable={false} />
-              <MetaRow label="Hash algorithm" value={result.data.manifest.signature.hashAlgorithm} copyable={false} />
+              <MetaRow label="Signature algorithm" value={result.algorithmLabel} copyable={false} />
+              <MetaRow label="Hash algorithm" value={result.data.manifest.signature.hashAlgorithm ?? "none (Ed25519 hashes internally)"} copyable={false} />
               <MetaRow label="Document hash" value={result.data.documentHash} />
               <MetaRow label="Public key fingerprint" value={result.data.manifest.signer.publicKeyFingerprint} />
               <MetaRow label="Signature (Base64)" value={result.data.manifest.signature.value} />

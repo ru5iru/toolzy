@@ -15,13 +15,14 @@ export const manifestSchema = z.object({
     hash: z.string().regex(/^[0-9a-f]+$/, "Document hash must be lowercase hex."),
   }),
   signature: z.object({
-    algorithm: z.enum(["RSA-PSS", "ECDSA"]),
-    hashAlgorithm: z.enum(HASHES as [string, ...string[]]),
+    algorithm: z.enum(["RSA-PSS", "ECDSA", "Ed25519"]),
+    /** Absent for Ed25519, which signs the message directly. */
+    hashAlgorithm: z.enum(HASHES as [string, ...string[]]).optional(),
     modulusLength: z.number().int().positive().optional(),
     curve: z.enum(["P-256", "P-384"]).optional(),
     saltLength: z.number().int().nonnegative().optional(),
-    /** rsa-pss: raw signature bytes. ecdsa-der: ASN.1 DER, the form OpenSSL uses. */
-    format: z.enum(["rsa-pss", "ecdsa-der"]),
+    /** rsa-pss and ed25519: raw signature bytes. ecdsa-der: ASN.1 DER, the form OpenSSL uses. */
+    format: z.enum(["rsa-pss", "ecdsa-der", "ed25519"]),
     encoding: z.literal("base64"),
     value: z.string().min(1),
   }),
