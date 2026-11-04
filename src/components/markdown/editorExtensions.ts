@@ -92,17 +92,17 @@ export function markdownExtensions(): Extension[] {
       const armed = openingPairs.get(view);
       if (from === to && next === text && (text === '*' || text === '~') && armed?.position === from && armed.char === text) {
         openingPairs.delete(view);
-        view.dispatch({ changes: { from, insert: text + text }, selection: { anchor: from + 1 } }); return true;
+        view.dispatch({ changes: { from, insert: text + text }, selection: { anchor: from + 1 }, userEvent: "input.type" }); return true;
       }
       openingPairs.delete(view);
       if (text === '`' && from === to && /^\s*``$/.test(view.state.sliceDoc(view.state.doc.lineAt(from).from, from))) {
-        view.dispatch({ changes: { from, to, insert: text }, selection: { anchor: from + 1 } }); return true;
+        view.dispatch({ changes: { from, to, insert: text }, selection: { anchor: from + 1 }, userEvent: "input.type" }); return true;
       }
       if (from === to && next === text) { view.dispatch({ selection: { anchor: to + 1 } }); return true; }
       const close = pairs[text]; if (!close) return false;
       const selected = view.state.sliceDoc(from, to);
       if (!selected) openingPairs.set(view, { position: from + 1, char: text });
-      view.dispatch({ changes: { from, to, insert: text + selected + close }, selection: selected ? EditorSelection.range(from + 1, to + 1) : { anchor: from + 1 } }); return true;
+      view.dispatch({ changes: { from, to, insert: text + selected + close }, selection: selected ? EditorSelection.range(from + 1, to + 1) : { anchor: from + 1 }, userEvent: "input.type" }); return true;
     }),
     EditorView.domEventHandlers({
       paste(event, view) {
