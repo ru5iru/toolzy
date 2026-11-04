@@ -1,4 +1,4 @@
-import { autocompletion, acceptCompletion, completionStatus, type CompletionContext } from "@codemirror/autocomplete";
+import { autocompletion, acceptCompletion, completionStatus, type CompletionContext, type CompletionResult } from "@codemirror/autocomplete";
 import { EditorSelection, Prec, type Extension } from "@codemirror/state";
 import { EditorView, keymap, type Command } from "@codemirror/view";
 import { indentLess, indentMore } from "@codemirror/commands";
@@ -27,7 +27,7 @@ function inFence(context: CompletionContext) {
   }
   return Boolean(open);
 }
-export function markdownCompletions(context: CompletionContext) {
+export function markdownCompletions(context: CompletionContext): CompletionResult | null {
   const fence = context.matchBefore(/^\s*```\w*$/);
   if (fence && !inFence(context)) return { from: fence.from + fence.text.indexOf("```") + 3, options: languages.map(label => ({ label, type: "keyword" })) };
   if (inFence(context)) return null;
