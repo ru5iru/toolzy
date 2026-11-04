@@ -1,6 +1,13 @@
 # Toolzy llms.txt — AI/LLM discovery file
 # https://toolzy.lovable.app
 
+## Markdown Editor
+
+URL: https://toolzy.lovable.app/markdown
+Category: Writing & Documentation
+
+Browser-only CodeMirror Markdown editor with editor/split/preview/compare modes, local autosave after 500 ms, file open/drop, Markdown and standalone HTML downloads, clipboard exports, and printing. Includes a slash menu, formatting, list continuation, pairing, language/emoji/heading suggestions, table navigation/alignment, find/replace, synchronized scrolling, and focus mode. GitHub-flavored Markdown and raw HTML are sanitized; external images never load automatically. Text is stored only on this device and is not sent in requests or analytics.
+
 ## Image Metadata Viewer
 
 URL: https://toolzy.lovable.app/image-metadata
