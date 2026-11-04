@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { memo, useMemo, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -17,7 +17,7 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   }}><Copy className="h-3 w-3" /></Button><pre>{children}</pre></div>;
 }
 
-export function MarkdownPreview({ text }: { text: string }) {
+export const MarkdownPreview = memo(function MarkdownPreview({ text }: { text: string }) {
   const anchors = useMemo(() => headingAnchors(text), [text]);
   let headingIndex = 0;
   return <div className="markdown-rendered"><ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeSanitize, [rehypeHighlight, { detect: false, ignoreMissing: true }]]} components={{
@@ -31,4 +31,4 @@ export function MarkdownPreview({ text }: { text: string }) {
     h5: ({ children }) => <h5 id={anchors[headingIndex++]?.slug}>{children}</h5>,
     h6: ({ children }) => <h6 id={anchors[headingIndex++]?.slug}>{children}</h6>,
   }}>{text}</ReactMarkdown></div>;
-}
+});

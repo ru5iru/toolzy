@@ -1,5 +1,5 @@
-import { autocompletion, type CompletionContext } from "@codemirror/autocomplete";
-import { EditorSelection, type Extension } from "@codemirror/state";
+import { autocompletion, acceptCompletion, completionStatus, type CompletionContext } from "@codemirror/autocomplete";
+import { EditorSelection, Prec, type Extension } from "@codemirror/state";
 import { EditorView, keymap, type Command } from "@codemirror/view";
 import { indentLess, indentMore } from "@codemirror/commands";
 import { headingAnchors, alignTables } from "./documentUtils";
@@ -54,7 +54,7 @@ export function insertLink(view: EditorView) {
   const start = from + selected.length + 3;
   view.dispatch({ changes: { from, to, insert }, selection: EditorSelection.range(start, start + 3) }); view.focus();
 }
-const listEnter: Command = view => {
+export const listEnter: Command = view => {
   const { from, to } = view.state.selection.main;
   if (from !== to) return false;
   const line = view.state.doc.lineAt(from);
@@ -65,7 +65,7 @@ const listEnter: Command = view => {
   const insert = `\n${prefix[1]}${marker} ${prefix[4] ? "[ ] " : ""}`;
   view.dispatch({ changes: { from, to, insert }, selection: { anchor: from + insert.length } }); return true;
 };
-const tableTab = (reverse: boolean): Command => view => {
+export const tableTab = (reverse: boolean): Command => view => {
   const pos = view.state.selection.main.head;
   const line = view.state.doc.lineAt(pos);
   if (!line.text.trim().startsWith("|")) return false;
@@ -81,20 +81,27 @@ const tableTab = (reverse: boolean): Command => view => {
   return false;
 };
 export function markdownExtensions(): Extension[] {
+  const openingPairs = new WeakMap<EditorView, { position: number; char: string }>();
   return [
-    autocompletion({ override: [markdownCompletions], icons: true, activateOnTyping: true }),
-    keymap.of([{ key: "Enter", run: listEnter }, { key: "Tab", run: tableTab(false) }, { key: "Shift-Tab", run: tableTab(true) }, { key: "Tab", run: indentMore }, { key: "Shift-Tab", run: indentLess }]),
+    autocompletion({ override: [markdownCompletions], icons: true, activateOnTyping: true, interactionDelay: 0 }),
+    Prec.highest(keymap.of([{ key: "Tab", run: view => completionStatus(view.state) === "active" ? acceptCompletion(view) : false }, { key: "Enter", run: view => completionStatus(view.state) === "active" ? acceptCompletion(view) : listEnter(view) }, { key: "Tab", run: tableTab(false) }, { key: "Shift-Tab", run: tableTab(true) }, { key: "Tab", run: indentMore }, { key: "Shift-Tab", run: indentLess }])),
     EditorView.inputHandler.of((view, from, to, text) => {
       if (!['*', '_', '~', '`', '[', '(', '"', ']', ')'].includes(text)) return false;
       const pairs: Record<string, string> = { '*': '*', '_': '_', '~': '~', '`': '`', '[': ']', '(': ')', '"': '"' };
       const next = view.state.sliceDoc(to, to + 1);
-      const previous = view.state.sliceDoc(Math.max(0, from - 1), from);
-      if (from === to && next === text && (text === '*' || text === '~') && previous === text) {
+      const armed = openingPairs.get(view);
+      if (from === to && next === text && (text === '*' || text === '~') && armed?.position === from && armed.char === text) {
+        openingPairs.delete(view);
         view.dispatch({ changes: { from, insert: text + text }, selection: { anchor: from + 1 } }); return true;
+      }
+      openingPairs.delete(view);
+      if (text === '`' && from === to && /^\s*``$/.test(view.state.sliceDoc(view.state.doc.lineAt(from).from, from))) {
+        view.dispatch({ changes: { from, to, insert: text }, selection: { anchor: from + 1 } }); return true;
       }
       if (from === to && next === text) { view.dispatch({ selection: { anchor: to + 1 } }); return true; }
       const close = pairs[text]; if (!close) return false;
       const selected = view.state.sliceDoc(from, to);
+      if (!selected) openingPairs.set(view, { position: from + 1, char: text });
       view.dispatch({ changes: { from, to, insert: text + selected + close }, selection: selected ? EditorSelection.range(from + 1, to + 1) : { anchor: from + 1 } }); return true;
     }),
     EditorView.domEventHandlers({
