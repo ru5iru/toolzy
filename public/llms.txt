@@ -1,6 +1,13 @@
 # Toolzy llms.txt — AI/LLM discovery file
 # https://toolzy.lovable.app
 
+## Document Signer
+
+URL: https://toolzy.lovable.app/document-signer
+Category: Cryptography & Privacy
+
+Sign files and verify detached digital signatures locally with the Web Crypto API. Generate RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384) and Ed25519 (when the browser supports it) key pairs, import and export PEM (PKCS#8, SPKI) and JWK keys, and sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512 (Ed25519 signs the data directly). Downloads the original, a detached .sig file (ECDSA signatures are DER-encoded and RSA-PSS uses a salt equal to the hash length, so OpenSSL can verify them) and a JSON manifest. Verification recalculates the document hash from the bytes provided and reports Valid, Invalid, Modified, Missing or Error. The Inspector marks each manifest field as self-declared or verified. Documents and keys are not uploaded; keys are held in memory only and are lost on reload. A valid signature does not establish the signer's real-world identity. Not supported yet: password-encrypted private keys, batch operations, PKCS#1/SEC1 keys, PDF-embedded signatures, certificates.
+
 ## Image Metadata Viewer
 
 URL: https://toolzy.lovable.app/image-metadata
@@ -66,8 +73,8 @@ Example queries this tool answers:
 URL: https://toolzy.lovable.app/crypto
 Category: Cryptography & Identifiers
 
-Generate cryptographic hashes and universally unique identifiers entirely
-in the browser using the native Web Crypto API.
+Generate cryptographic hashes, universally unique identifiers and random
+secrets entirely in the browser using the native Web Crypto API.
 
 Capabilities — Hashing tab:
 - Compute SHA-1, SHA-256, SHA-384, SHA-512 hashes from text, files, or hex
@@ -101,6 +108,13 @@ Example queries this tool answers:
 - "What timestamp is embedded in this v1 UUID?"
 - "Generate a UUID v5 from this namespace and name"
 - "What is the difference between SHA-256 and SHA-512?"
+
+Capabilities — Secrets tab (/crypto?tab=secrets):
+- Generate random secrets and keys with crypto.getRandomValues: 1-1,024
+  bytes, 1-50 at a time, as hex, Base64 or Base64URL
+- Presets: JWT HS256/HS384/HS512 secrets, AES-128 and AES-256 keys, API
+  token, session secret
+- Values are shown only on the page and are never stored or sent
 
 ## JSON Formatter
 

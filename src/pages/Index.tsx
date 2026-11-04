@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -17,6 +17,7 @@ const tools = [
   { title: "Date & Time", description: "Timestamps, timezones & cron builder", url: "/datetime", icon: Clock },
   { title: "Regex Playground", description: "Live regex tester with match highlighting", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", description: "Inspect EXIF, GPS, camera details, timestamps, and other image metadata privately in your browser.", url: "/image-metadata", icon: FileSearch },
+  { title: "Document Signer", description: "Sign files and verify detached signatures with RSA-PSS or ECDSA keys, privately in your browser.", url: "/document-signer", icon: FileSignature },
 ];
 
 const Index = () => {

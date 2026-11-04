@@ -23,6 +23,8 @@ import {
 import {
   ALGORITHMS, getAlgorithmFamily, signHMAC, signRSA, signECDSA,
 } from "@/components/jwt-encoder/encoderUtils";
+import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
+import { pemToBuf } from "@/lib/crypto/pem";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -110,16 +112,8 @@ function pushHistory(token: string, label: string) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
 }
 
-// base64url helpers (for verification) — returns ArrayBuffer for crypto.subtle compatibility
-function b64uToBuf(s: string): ArrayBuffer {
-  const padded = s.replace(/-/g, "+").replace(/_/g, "/");
-  const pad = padded.length % 4;
-  const final = pad ? padded + "=".repeat(4 - pad) : padded;
-  const bin = atob(final);
-  const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return out.buffer;
-}
+// base64url helper (for verification) — returns ArrayBuffer for crypto.subtle compatibility
+const b64uToBuf = (s: string): ArrayBuffer => toArrayBuffer(base64UrlToBytes(s));
 
 async function verifyHmacToken(token: string, secret: string, hashAlg: string): Promise<boolean> {
   const parts = token.split(".");
@@ -130,14 +124,6 @@ async function verifyHmacToken(token: string, secret: string, hashAlg: string): 
     { name: "HMAC", hash: hashAlg }, false, ["verify"]
   );
   return crypto.subtle.verify("HMAC", key, b64uToBuf(parts[2]), data);
-}
-
-function pemToBuf(pem: string): ArrayBuffer {
-  const lines = pem.replace(/-----[^-]+-----/g, "").replace(/\s/g, "");
-  const bin = atob(lines);
-  const buf = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-  return buf.buffer;
 }
 
 async function verifyRsaToken(token: string, pubKeyPem: string, hashAlg: string): Promise<boolean> {

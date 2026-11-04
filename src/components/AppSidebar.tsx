@@ -11,6 +11,7 @@ import {
   Clock,
   Regex,
   FileSearch,
+  FileSignature,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -39,6 +40,7 @@ const tools = [
   { title: "Date & Time", url: "/datetime", icon: Clock },
   { title: "Regex", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
+  { title: "Document Signer", url: "/document-signer", icon: FileSignature },
 ];
 
 export function AppSidebar() {
