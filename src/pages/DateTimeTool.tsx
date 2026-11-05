@@ -227,8 +227,8 @@ const DateTimeTool = () => {
             <label className="text-xs text-muted-foreground font-medium">Unix Timestamp (seconds)</label>
             <div className="flex gap-1.5">
               <Input value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="bg-background border-border font-mono text-sm" />
-              <Button variant="secondary" size="sm" className="h-10 px-3 shrink-0" onClick={nowTs}>Now</Button>
-              <Button variant="ghost" size="sm" className="h-10 px-2 shrink-0" onClick={() => copyText(timestamp, "Timestamp")}>
+              <Button variant="secondary" size="sm" className="h-9 px-3 shrink-0" onClick={nowTs}>Now</Button>
+              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(timestamp, "Timestamp")}>
                 <Copy className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -242,8 +242,8 @@ const DateTimeTool = () => {
             <label className="text-xs text-muted-foreground font-medium">ISO 8601 Date</label>
             <div className="flex gap-1.5">
               <Input value={dateStr} onChange={(e) => setDateStr(e.target.value)} className="bg-background border-border font-mono text-sm" />
-              <Button variant="outline" size="sm" className="h-10 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
-              <Button variant="ghost" size="sm" className="h-10 px-2 shrink-0" onClick={() => copyText(dateStr, "Date")}>
+              <Button variant="outline" size="sm" className="h-9 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
+              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(dateStr, "Date")}>
                 <Copy className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -272,7 +272,7 @@ const DateTimeTool = () => {
           <Calendar className="h-4 w-4 text-primary" />
           <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
             Timezone Converter
-            <span className="ml-2 text-[10px] font-normal opacity-60">({allTimezones.length} timezones)</span>
+            <span className="ml-2 text-xs font-normal opacity-60">({allTimezones.length} timezones)</span>
           </h2>
         </div>
 
@@ -293,14 +293,14 @@ const DateTimeTool = () => {
           <div className="border border-border rounded-lg p-3 bg-background">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground font-medium">{tz1}</span>
-              <span className="text-[10px] text-primary font-mono">{utcOffset(tz1)}</span>
+              <span className="text-xs text-primary font-mono">{utcOffset(tz1)}</span>
             </div>
             <div className="font-mono text-sm text-foreground">{convertedTz1}</div>
           </div>
           <div className="border border-border rounded-lg p-3 bg-background">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground font-medium">{tz2}</span>
-              <span className="text-[10px] text-primary font-mono">{utcOffset(tz2)}</span>
+              <span className="text-xs text-primary font-mono">{utcOffset(tz2)}</span>
             </div>
             <div className="font-mono text-sm text-foreground">{convertedTz2}</div>
           </div>
@@ -331,7 +331,7 @@ const DateTimeTool = () => {
         <div className="grid grid-cols-5 gap-1.5">
           {cron.trim().split(/\s+/).slice(0, 5).map((part, i) => (
             <div key={i} className="border border-border rounded p-2 bg-background text-center">
-              <div className="text-[10px] text-muted-foreground mb-1">{cronFields[i]}</div>
+              <div className="text-xs text-muted-foreground mb-1">{cronFields[i]}</div>
               <div className="font-mono text-sm text-primary font-semibold">{part}</div>
             </div>
           ))}

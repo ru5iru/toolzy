@@ -430,15 +430,15 @@ const EncodingHub = () => {
             role="tab"
             aria-selected={mode === m}
             onClick={() => setMode(m)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+            className={`shrink-0 h-8 px-3 rounded-md text-xs font-medium border transition-colors duration-150 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               mode === m
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-card text-muted-foreground border-border hover:bg-muted"
+                ? "border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
+                : "border-input text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-[hsl(var(--border-hover))]"
             }`}
           >
             {MODE_LABELS[m]}
             {mode === "auto" && m === "auto" && detectExplain && (
-              <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded bg-background/20 text-[10px]">
+              <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded bg-background/20 text-xs">
                 {MODE_LABELS[detectedSubMode]}
               </span>
             )}
@@ -485,7 +485,7 @@ const EncodingHub = () => {
           </Tabs>
         )}
 
-        <div className="ml-auto flex items-center gap-2 text-[10px] text-muted-foreground">
+        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           {processing && <><Loader2 className="w-3 h-3 animate-spin" /> Processing…</>}
           <kbd className="px-1.5 py-0.5 rounded border border-border bg-card font-mono">Ctrl+Enter</kbd>
         </div>
@@ -523,10 +523,10 @@ const EncodingHub = () => {
       {mode === "url" && detection && input.trim() && (
         <div className="p-2 rounded-lg bg-card border border-border flex items-center gap-2 text-xs">
           <span className="text-muted-foreground">Detected:</span>
-          {detection.isDoubleEncoded && <Badge variant="destructive" className="text-[10px] h-5">Double Encoded</Badge>}
-          {detection.isPartiallyEncoded && <Badge variant="secondary" className="text-[10px] h-5">Partially Encoded</Badge>}
-          {detection.isEncoded && !detection.isDoubleEncoded && !detection.isPartiallyEncoded && <Badge variant="secondary" className="text-[10px] h-5">Encoded</Badge>}
-          {!detection.isEncoded && <Badge variant="outline" className="text-[10px] h-5">Plain Text</Badge>}
+          {detection.isDoubleEncoded && <Badge variant="destructive" className="text-xs h-5">Double Encoded</Badge>}
+          {detection.isPartiallyEncoded && <Badge variant="secondary" className="text-xs h-5">Partially Encoded</Badge>}
+          {detection.isEncoded && !detection.isDoubleEncoded && !detection.isPartiallyEncoded && <Badge variant="secondary" className="text-xs h-5">Encoded</Badge>}
+          {!detection.isEncoded && <Badge variant="outline" className="text-xs h-5">Plain Text</Badge>}
           <span className="text-muted-foreground">→ {detection.suggestion}</span>
         </div>
       )}
@@ -560,13 +560,13 @@ const EncodingHub = () => {
                 className={`flex-1 min-h-[200px] font-mono text-sm border-0 rounded-none resize-none focus-visible:ring-0 ${dragOver ? "bg-primary/5" : "bg-card"} ${error ? "text-destructive" : ""}`}
               />
               {fileMeta && (
-                <div className="px-3 py-1 border-t border-border bg-muted/20 text-[10px] text-muted-foreground flex gap-3">
+                <div className="px-3 py-1 border-t border-border bg-muted/20 text-xs text-muted-foreground flex gap-3">
                   <span><FileText className="w-3 h-3 inline mr-1" />{fileMeta.name}</span>
                   <span>{formatBytes(fileMeta.size)}</span>
                   <span>{fileMeta.type || "unknown"}</span>
                 </div>
               )}
-              <div className="px-3 py-1 border-t border-border bg-muted/20 text-[10px] text-muted-foreground">
+              <div className="px-3 py-1 border-t border-border bg-muted/20 text-xs text-muted-foreground">
                 {input.length.toLocaleString()} chars
                 {dragOver && <span className="ml-2 text-primary">Drop file to encode</span>}
               </div>
@@ -586,16 +586,16 @@ const EncodingHub = () => {
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Output</span>
-                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5">{outputBadgeText}</Badge>
-                  {detectedContent && <Badge variant="outline" className="text-[10px] h-4 px-1.5">{detectedContent.mimeType || detectedContent.type}</Badge>}
+                  <Badge variant="secondary" className="text-xs h-4 px-1.5">{outputBadgeText}</Badge>
+                  {detectedContent && <Badge variant="outline" className="text-xs h-4 px-1.5">{detectedContent.mimeType || detectedContent.type}</Badge>}
                   {dataUrlParsed && mode === "dataurl" && (
-                    <Badge variant="outline" className="text-[10px] h-4 px-1.5">{dataUrlParsed.mime} • {formatBytes(dataUrlParsed.size)}</Badge>
+                    <Badge variant="outline" className="text-xs h-4 px-1.5">{dataUrlParsed.mime} • {formatBytes(dataUrlParsed.size)}</Badge>
                   )}
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy} disabled={!output} aria-label="Copy output" title="Copy"><Copy className="w-3 h-3" /></Button>
                   {(mode === "base64" || mode === "base64url") && direction === "encode" && (
-                    <Button variant="ghost" size="sm" className="h-6 px-1.5 text-[10px]" onClick={handleCopyDataUri} disabled={!output} aria-label="Copy as Data URI" title="Copy as Data URI">data:</Button>
+                    <Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs" onClick={handleCopyDataUri} disabled={!output} aria-label="Copy as Data URI" title="Copy as Data URI">data:</Button>
                   )}
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleDownload} disabled={!output} aria-label="Download" title="Download"><Download className="w-3 h-3" /></Button>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSwap} disabled={!output} aria-label="Swap" title="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
@@ -626,7 +626,7 @@ const EncodingHub = () => {
                 readOnly
                 className="flex-1 min-h-[160px] font-mono text-sm border-0 rounded-none resize-none focus-visible:ring-0 bg-card"
               />
-              <div className="px-3 py-1 border-t border-border bg-muted/20 text-[10px] text-muted-foreground">
+              <div className="px-3 py-1 border-t border-border bg-muted/20 text-xs text-muted-foreground">
                 {output.length.toLocaleString()} chars
               </div>
             </div>
@@ -734,7 +734,7 @@ const EncodingHub = () => {
           <Collapsible>
             <CollapsibleTrigger className="flex items-center gap-2 text-xs font-medium text-muted-foreground p-2 rounded-lg bg-card border border-border w-full hover:bg-muted/30">
               <ChevronDown className="w-3 h-3" /> Security scanner
-              {securityWarnings.length > 0 && <Badge variant="destructive" className="ml-1 text-[10px] h-4">{securityWarnings.length}</Badge>}
+              {securityWarnings.length > 0 && <Badge variant="destructive" className="ml-1 text-xs h-4">{securityWarnings.length}</Badge>}
             </CollapsibleTrigger>
             <CollapsibleContent className="p-3 rounded-b-lg bg-card border-x border-b border-border space-y-1">
               {securityWarnings.length === 0 ? (

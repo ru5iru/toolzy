@@ -182,7 +182,7 @@ function TokenPreview({ token }: { token: string }) {
         <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet — paste, encode, or verify a JWT.</p>
       )}
       {token && (
-        <Button variant="ghost" size="sm" className="h-6 text-[10px] w-full" onClick={() => copyPart(token, "Full JWT")}>
+        <Button variant="ghost" size="sm" className="h-6 text-xs w-full" onClick={() => copyPart(token, "Full JWT")}>
           <Copy className="w-3 h-3 mr-1" /> Copy full token
         </Button>
       )}
@@ -209,10 +209,10 @@ function SecurityCard({ result }: { result: SecurityResult }) {
           {result.findings.map((f, i) => (
             <div key={i} className="rounded-md border border-border p-2 space-y-1">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`text-[10px] ${SEVERITY_COLOR[f.severity]}`}>{f.severity}</Badge>
+                <Badge variant="outline" className={`text-xs ${SEVERITY_COLOR[f.severity]}`}>{f.severity}</Badge>
                 <span className="text-xs text-foreground">{f.message}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground pl-1">→ {f.fix}</p>
+              <p className="text-xs text-muted-foreground pl-1">→ {f.fix}</p>
             </div>
           ))}
         </div>
@@ -266,8 +266,8 @@ function JsonBlock({ title, data, accent }: { title: string; data: any; accent: 
   return (
     <div className={`rounded-md border ${cls} bg-card`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
-        <span className={`text-[10px] uppercase tracking-wider font-semibold ${titleCls}`}>{title}</span>
-        <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5" onClick={() => { navigator.clipboard.writeText(text); toast.success(`${title} copied`); }}>
+        <span className={`text-xs uppercase tracking-wider font-semibold ${titleCls}`}>{title}</span>
+        <Button variant="ghost" size="sm" className="h-5 text-xs px-1.5" onClick={() => { navigator.clipboard.writeText(text); toast.success(`${title} copied`); }}>
           <Copy className="w-2.5 h-2.5 mr-1" /> Copy
         </Button>
       </div>
@@ -329,11 +329,11 @@ function DecodeTab({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Label className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</Label>
         <div className="flex flex-wrap items-center gap-1">
-          <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
+          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
             <Sparkles className="w-3 h-3 mr-1" /> Sample
           </Button>
           <div className="relative">
-            <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => setShowHistory(v => !v)}>
+            <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setShowHistory(v => !v)}>
               <History className="w-3 h-3 mr-1" /> History ({history.length})
             </Button>
             {showHistory && history.length > 0 && (
@@ -345,13 +345,13 @@ function DecodeTab({
                     className="w-full text-left px-3 py-2 text-xs hover:bg-muted border-b border-border last:border-0"
                   >
                     <div className="font-mono truncate">{h.label}</div>
-                    <div className="text-[10px] text-muted-foreground">{new Date(h.ts).toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(h.ts).toLocaleString()}</div>
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <Button variant="ghost" size="sm" className="h-6 text-[10px] text-destructive" onClick={() => { setInput(""); run(""); }}>
+          <Button variant="ghost" size="sm" className="h-6 text-xs text-destructive" onClick={() => { setInput(""); run(""); }}>
             <Trash2 className="w-3 h-3 mr-1" /> Clear
           </Button>
         </div>
@@ -387,7 +387,7 @@ function DecodeTab({
           <CollapsibleContent className="pt-2 space-y-2">
             <JsonBlock title="Payload" data={shared.decodedPayload} accent="green" />
             {(shared.decodedPayload.iat || shared.decodedPayload.exp || shared.decodedPayload.nbf) && (
-              <div className="flex flex-wrap gap-2 text-[10px] font-mono">
+              <div className="flex flex-wrap gap-2 text-xs font-mono">
                 {["iat", "nbf", "exp"].map(k => {
                   const v = shared.decodedPayload?.[k];
                   if (typeof v !== "number") return null;
@@ -522,7 +522,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
             </Button>
           </div>
         ) : (
-          <Textarea value={pkey} onChange={e => setPkey(e.target.value)} placeholder={`-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----`} className="min-h-[90px] font-mono text-[10px] bg-card resize-none" />
+          <Textarea value={pkey} onChange={e => setPkey(e.target.value)} placeholder={`-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----`} className="min-h-[90px] font-mono text-xs bg-card resize-none" />
         )}
       </div>
 
@@ -537,11 +537,11 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="flex flex-wrap gap-1">
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("exp", now() + 3600)}><Plus className="w-3 h-3" />exp (1h)</Button>
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("nbf", now())}><Plus className="w-3 h-3" />nbf</Button>
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("iss", "https://example.com")}><Plus className="w-3 h-3" />iss</Button>
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("aud", "my-api")}><Plus className="w-3 h-3" />aud</Button>
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("jti", crypto.randomUUID())}><Plus className="w-3 h-3" />jti</Button>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("exp", now() + 3600)}><Plus className="w-3 h-3" />exp (1h)</Button>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("nbf", now())}><Plus className="w-3 h-3" />nbf</Button>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("iss", "https://example.com")}><Plus className="w-3 h-3" />iss</Button>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("aud", "my-api")}><Plus className="w-3 h-3" />aud</Button>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("jti", crypto.randomUUID())}><Plus className="w-3 h-3" />jti</Button>
       </div>
 
       <Button onClick={sign} disabled={signing} className="w-full">
@@ -549,7 +549,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </Button>
 
       {shared.signatureStatus === "unsigned" && (
-        <p className="text-[10px] text-[hsl(var(--warning-foreground))] flex items-center gap-1">
+        <p className="text-xs text-[hsl(var(--warning-foreground))] flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" /> Unsigned preview — click Sign to generate signature
         </p>
       )}
@@ -627,7 +627,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
         {family === "HMAC" || !family ? (
           <Input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs h-8" />
         ) : (
-          <Textarea value={secret} onChange={e => setSecret(e.target.value)} placeholder={`-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----`} className="min-h-[90px] font-mono text-[10px] bg-card resize-none" />
+          <Textarea value={secret} onChange={e => setSecret(e.target.value)} placeholder={`-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----`} className="min-h-[90px] font-mono text-xs bg-card resize-none" />
         )}
       </div>
 
@@ -665,7 +665,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
               <button
                 key={k}
                 onClick={() => setCodeLang(k)}
-                className={`px-2 py-1 rounded text-[10px] font-mono ${codeLang === k ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                className={`px-2 py-1 rounded text-xs font-mono ${codeLang === k ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground hover:text-foreground"}`}
               >
                 {k}
               </button>
@@ -748,7 +748,7 @@ const JwtHub = () => {
             <TokenPreview token={shared.activeToken} />
             <SecurityCard result={security} />
             {shared.signatureStatus !== "unverified" && (
-              <div className="text-[10px] text-muted-foreground text-center">
+              <div className="text-xs text-muted-foreground text-center">
                 Signature status: <span className="font-mono text-foreground">{shared.signatureStatus}</span>
               </div>
             )}

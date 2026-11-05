@@ -214,8 +214,8 @@ const JsonFormatter = () => {
         </div>
 
         <div className="flex rounded-md border border-border overflow-hidden ml-auto">
-          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
-          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
+          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
+          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
         </div>
       </div>
 
@@ -230,7 +230,7 @@ const JsonFormatter = () => {
       <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border min-h-[500px]">
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-10 shrink-0 flex items-center px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
             </div>
             <Textarea
@@ -244,12 +244,12 @@ const JsonFormatter = () => {
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-10 shrink-0 flex items-center justify-between px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
               {viewMode === "tree" && parsedData !== null && (
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
-                  <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
+                  <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-xs gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
+                  <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-xs gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
                 </div>
               )}
             </div>
