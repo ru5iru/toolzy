@@ -21,10 +21,10 @@ import {
   decodeJwt, formatTimestamp, extractJwtFromInput, type DecodedJwt,
 } from "@/components/jwt-decoder/jwtUtils";
 import {
-  ALGORITHMS, getAlgorithmFamily, signHMAC, signRSA, signECDSA,
+  ALGORITHMS, getAlgorithmFamily, signHMAC, signRSA, signRSAPSS, signECDSA,
 } from "@/components/jwt-encoder/encoderUtils";
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
-import { pemToBuf } from "@/lib/crypto/pem";
+import { importKeyInput } from "@/lib/crypto/keyInput";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -130,11 +130,16 @@ async function verifyRsaToken(token: string, pubKeyPem: string, hashAlg: string)
   const parts = token.split(".");
   if (parts.length !== 3) return false;
   const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
-  const key = await crypto.subtle.importKey(
-    "spki", pemToBuf(pubKeyPem),
-    { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, false, ["verify"]
-  );
+  const key = await importKeyInput(pubKeyPem, { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, "verify");
   return crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64uToBuf(parts[2]), data);
+}
+
+async function verifyRsaPssToken(token: string, pubKeyPem: string, hashAlg: string): Promise<boolean> {
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+  const key = await importKeyInput(pubKeyPem, { name: "RSA-PSS", hash: hashAlg }, "verify");
+  return crypto.subtle.verify({ name: "RSA-PSS", saltLength: Number(hashAlg.slice(4)) / 8 }, key, b64uToBuf(parts[2]), data);
 }
 
 async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: string, alg: string): Promise<boolean> {
@@ -142,10 +147,7 @@ async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: strin
   if (parts.length !== 3) return false;
   const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
   const namedCurve = alg === "ES384" ? "P-384" : "P-256";
-  const key = await crypto.subtle.importKey(
-    "spki", pemToBuf(pubKeyPem),
-    { name: "ECDSA", namedCurve }, false, ["verify"]
-  );
+  const key = await importKeyInput(pubKeyPem, { name: "ECDSA", namedCurve }, "verify");
   return crypto.subtle.verify({ name: "ECDSA", hash: hashAlg }, key, b64uToBuf(parts[2]), data);
 }
 
@@ -479,6 +481,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       let token: string;
       if (family === "HMAC") token = await signHMAC(JSON.stringify(h), JSON.stringify(p), secret, opt.webCryptoAlg);
       else if (family === "RSA") token = await signRSA(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg);
+      else if (family === "RSA-PSS") token = await signRSAPSS(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg);
       else token = await signECDSA(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg, alg);
       setShared({
         activeToken: token,
@@ -502,7 +505,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
         <Select value={alg} onValueChange={setAlg}>
           <SelectTrigger className="w-[140px] h-7 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            {ALGORITHMS.filter(a => ["HS256","HS384","HS512","RS256","ES256"].includes(a.value)).map(a => (
+            {ALGORITHMS.filter(a => ["HS256","HS384","HS512","RS256","PS256","ES256"].includes(a.value)).map(a => (
               <SelectItem key={a.value} value={a.value} className="text-xs">{a.label} <span className="text-muted-foreground ml-1">({a.family})</span></SelectItem>
             ))}
           </SelectContent>
@@ -511,7 +514,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="space-y-1">
         <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-          {family === "HMAC" ? "Secret" : "Private Key (PEM)"}
+          {family === "HMAC" ? "Secret" : "Private Key (PEM or JWK)"}
         </Label>
         {family === "HMAC" ? (
           <div className="relative">
@@ -578,7 +581,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
   }, [token]);
 
   const alg: string = (parsed?.header.alg || "").toUpperCase();
-  const family = alg.startsWith("HS") ? "HMAC" : alg.startsWith("RS") ? "RSA" : alg.startsWith("ES") ? "ECDSA" : "";
+  const family = alg.startsWith("HS") ? "HMAC" : alg.startsWith("RS") ? "RSA" : alg.startsWith("PS") ? "RSA-PSS" : alg.startsWith("ES") ? "ECDSA" : "";
 
   const verify = async () => {
     if (!parsed) { toast.error("Paste a valid JWT first"); return; }
@@ -591,6 +594,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       let ok = false;
       if (family === "HMAC") ok = await verifyHmacToken(token, secret, hash);
       else if (family === "RSA") ok = await verifyRsaToken(token, secret, hash);
+      else if (family === "RSA-PSS") ok = await verifyRsaPssToken(token, secret, hash);
       else if (family === "ECDSA") ok = await verifyEcdsaToken(token, secret, hash, alg);
       setResult(ok ? "valid" : "invalid");
       setShared({ signatureStatus: ok ? "valid" : "invalid", activeToken: token, decodedHeader: parsed.header, decodedPayload: parsed.payload });
@@ -620,7 +624,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="space-y-1">
         <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-          {family === "HMAC" ? "Secret" : "Public Key (PEM)"}
+          {family === "HMAC" ? "Secret" : "Public Key (PEM or JWK)"}
         </Label>
         {family === "HMAC" || !family ? (
           <Input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs h-8" />
@@ -712,14 +716,14 @@ const JwtHub = () => {
         faq={[
           { question: "What is a JSON Web Token (JWT)?", answer: "A JWT is a compact, URL-safe token format used for authentication and authorization. It has three Base64URL-encoded sections joined by dots: header, payload, and signature." },
           { question: "Can I decode a JWT without knowing the secret?", answer: "Yes. The header and payload are only Base64URL-encoded (not encrypted), so any JWT can be decoded and inspected without a secret. The secret is only required to verify the signature." },
-          { question: "How does signature verification work here?", answer: "JWT Hub uses the browser's native Web Crypto API (crypto.subtle) to verify HMAC (HS256/384/512), RSA (RS256), and ECDSA (ES256) signatures locally. No data is transmitted." },
+          { question: "How does signature verification work here?", answer: "JWT Hub uses the browser's native Web Crypto API (crypto.subtle) to verify HMAC (HS256/384/512), RSA (RS256/384/512), RSA-PSS (PS256/384/512), and ECDSA (ES256/384) signatures locally. No data is transmitted." },
           { question: "What does the security score check?", answer: "It flags algorithm 'none', weak HS256 secrets (< 32 chars), preference for RS256/ES256 on public APIs, missing exp/iss/sub claims, and overly long expiry windows. Grade ranges from A (best) to F (critical issue)." },
         ]}
         howToSteps={[
           "Paste a JWT in the Decode tab to auto-parse the header and payload",
           "Inspect claims (exp, nbf, iat, iss, aud, sub) in the live validator",
           "Switch to Verify, provide your secret or public key, and confirm the signature",
-          "Use Encode to build and sign a new token with HS256/RS256/ES256",
+          "Use Encode to build and sign a new token with HS256/RS256/PS256/ES256 using PEM or JWK keys",
         ]}
       />
 
