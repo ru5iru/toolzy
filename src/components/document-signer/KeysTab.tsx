@@ -12,7 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { ALGORITHMS, algorithmById, supportedAlgorithms, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 import { copyText, downloadBytes } from "./browserUtils";
-import { exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, keysMatch, type KeyRecord } from "./keyUtils";
+import {
+  exportEncryptedPrivatePem, exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, isEncryptedKeyText, keysMatch, type KeyRecord,
+} from "./keyUtils";
 import { KeySelect, MetaRow } from "./SignerControls";
 import { toneClass } from "./statusStyles";
 
@@ -35,6 +37,9 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
   const [importName, setImportName] = useState("");
   const [importError, setImportError] = useState<string>();
   const [importing, setImporting] = useState(false);
+  const [importPassword, setImportPassword] = useState("");
+  const [exportPassword, setExportPassword] = useState("");
+  const [exportPassword2, setExportPassword2] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [pendingDelete, setPendingDelete] = useState<KeyRecord>();
   const [pendingExport, setPendingExport] = useState<PrivateExport>();
@@ -58,8 +63,8 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
   const doImport = async () => {
     setImporting(true); setImportError(undefined);
     try {
-      const key = await importKeyText(importText, importName);
-      onAdd(key); setSelectedId(key.id); setImportText(""); setImportName("");
+      const key = await importKeyText(importText, importName, importPassword);
+      onAdd(key); setSelectedId(key.id); setImportText(""); setImportName(""); setImportPassword("");
       toast.success(key.pkcs8 ? "Private key imported; public key derived" : "Public key imported");
     } catch (e) {
       setImportError(e instanceof Error ? e.message : "The key could not be imported.");
@@ -72,10 +77,18 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
     else downloadBytes(`${slug(key.name)}-public.${format === "pem" ? "pem" : "jwk.json"}`, text, "text/plain");
   };
 
-  const exportPrivate = async ({ key, format }: PrivateExport) => {
-    const text = format === "pem" ? exportPrivatePem(key) : await exportJwk(key, true);
-    downloadBytes(`${slug(key.name)}-private.${format === "pem" ? "pem" : "jwk.json"}`, text, "text/plain");
+  const exportPrivate = async ({ key, format }: PrivateExport, password: string) => {
+    try {
+      const encrypted = format === "pem" && password.length > 0;
+      const text = format === "jwk" ? await exportJwk(key, true) : encrypted ? await exportEncryptedPrivatePem(key, password) : exportPrivatePem(key);
+      const suffix = format === "jwk" ? "jwk.json" : "pem";
+      downloadBytes(`${slug(key.name)}-private${encrypted ? "-encrypted" : ""}.${suffix}`, text, "text/plain");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed.");
+    }
   };
+  const closeExport = () => { setPendingExport(undefined); setExportPassword(""); setExportPassword2(""); };
+  const passwordsMismatch = exportPassword.length > 0 && exportPassword !== exportPassword2;
 
   const checkPair = async () => {
     const priv = keys.find((k) => k.id === pairPrivateId);
@@ -115,7 +128,10 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
         <section aria-labelledby="import-heading" className="space-y-3">
           <h2 id="import-heading" className="font-mono text-sm font-semibold">Import a key</h2>
           <Textarea aria-label="Key to import" value={importText} spellCheck={false} onChange={(e) => { setImportText(e.target.value); setImportError(undefined); }}
-            placeholder={"PKCS#8 private key, SPKI public key, or JWK\n-----BEGIN PRIVATE KEY-----"} className="min-h-[110px] font-mono text-xs resize-y bg-card" />
+            placeholder={"PKCS#8 private key (plain or encrypted), SPKI public key, or JWK\n-----BEGIN PRIVATE KEY-----"} className="min-h-[110px] font-mono text-xs resize-y bg-card" />
+          {isEncryptedKeyText(importText) && (
+            <Input type="password" aria-label="Password for encrypted key" autoComplete="off" value={importPassword} onChange={(e) => { setImportPassword(e.target.value); setImportError(undefined); }} placeholder="Password for this encrypted key" />
+          )}
           <Input aria-label="Name for imported key" value={importName} onChange={(e) => setImportName(e.target.value)} placeholder="Name (optional)" maxLength={60} />
           <Button variant="outline" onClick={doImport} disabled={importing || !importText.trim()}>{importing ? <Loader2 className="animate-spin" /> : <Upload />}Import key</Button>
           {importError && <p role="alert" className="text-sm text-destructive break-words">{importError}</p>}
@@ -173,17 +189,27 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
         )}
       </section>
 
-      <AlertDialog open={Boolean(pendingExport)} onOpenChange={(open) => !open && setPendingExport(undefined)}>
+      <AlertDialog open={Boolean(pendingExport)} onOpenChange={(open) => !open && closeExport()}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Export private key?</AlertDialogTitle>
             <AlertDialogDescription>
-              The file is not encrypted. Anyone who gets it can sign as you. Store it somewhere safe, never email or commit it, and delete copies you no longer need.
+              {pendingExport?.format === "pem"
+                ? "Anyone who gets an unencrypted file can sign as you. Set a password to encrypt it (PKCS#8, PBKDF2-SHA256 600,000 rounds + AES-256), or leave it empty for a plain file. Never email or commit it."
+                : "JWK files are not encrypted. Anyone who gets it can sign as you. Store it somewhere safe, never email or commit it, and delete copies you no longer need."}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {pendingExport?.format === "pem" && (
+            <div className="space-y-2">
+              <Input type="password" aria-label="Export password" autoComplete="new-password" value={exportPassword} onChange={(e) => setExportPassword(e.target.value)} placeholder="Password (optional)" />
+              {exportPassword && <Input type="password" aria-label="Confirm export password" autoComplete="new-password" value={exportPassword2} onChange={(e) => setExportPassword2(e.target.value)} placeholder="Confirm password" />}
+              {passwordsMismatch && exportPassword2 && <p role="alert" className="text-xs text-destructive">Passwords do not match.</p>}
+              <p className="text-xs text-muted-foreground">The password is never stored. If you forget it, the key cannot be recovered.</p>
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { if (pendingExport) void exportPrivate(pendingExport); setPendingExport(undefined); }}>Download private key</AlertDialogAction>
+            <AlertDialogAction disabled={passwordsMismatch} onClick={() => { if (pendingExport) void exportPrivate(pendingExport, exportPassword); closeExport(); }}>{exportPassword && pendingExport?.format === "pem" ? "Download encrypted key" : "Download private key"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -291,3 +291,24 @@ describe("manifest parsing and the inspector", () => {
     expect(bytesToBase64(a.signature)).not.toBe(b.manifest.signature.value);
   });
 });
+
+describe("encrypted private key import/export", () => {
+  it("imports an OpenSSL-encrypted key with the password and asks for one otherwise", async () => {
+    const { PasswordRequiredError, isEncryptedKeyText } = await import("./keyUtils");
+    const pem = text("enc-p256-aes256-sha256.pem");
+    expect(isEncryptedKeyText(pem)).toBe(true);
+    await expect(importKeyText(pem)).rejects.toBeInstanceOf(PasswordRequiredError);
+    const key = await importKeyText(pem, "enc", "fixture-pass-123");
+    expect(key.algorithm).toBe("ECDSA-P256");
+    expect(key.pkcs8).toBeDefined();
+  });
+
+  it("exports an encrypted PEM that re-imports to the same key", async () => {
+    const { exportEncryptedPrivatePem } = await import("./keyUtils");
+    const key = await keyFor("ECDSA-P256");
+    const pem = await exportEncryptedPrivatePem(key, "s3cret");
+    expect(pem).toContain("BEGIN ENCRYPTED PRIVATE KEY");
+    const back = await importKeyText(pem, "", "s3cret");
+    expect(back.fingerprint).toBe(key.fingerprint);
+  });
+});
