@@ -21,7 +21,7 @@ const CertificateInspector = () => {
   const clear = () => { setText(""); setCerts([]); setError(undefined); };
 
   return (
-    <ToolPageLayout title="Certificate Inspector" maxWidth="7xl" icon={ScrollText} description={<>Decode X.509 certificates and requests. Shows what a certificate states; it does not validate trust or revocation. To sign files, see <Link to="/document-signer" className="underline hover:text-foreground">Document Signer</Link>.</>}>
+    <ToolPageLayout title="Certificate Inspector" icon={ScrollText} description={<>Decode X.509 certificates and requests. Shows what a certificate states; it does not validate trust or revocation. To sign files, see <Link to="/document-signer" className="underline hover:text-foreground">Document Signer</Link>.</>}>
       <ToolSEO
         title="Certificate Inspector — Decode X.509 & CSR"
         canonicalPath="/certificate"

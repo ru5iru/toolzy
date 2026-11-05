@@ -42,7 +42,7 @@ const Index = () => {
     : tools;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <ToolSEO
         title="Toolzy"
         description="Toolzy — Free collection of online developer tools. JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, and more. 100% client-side."
@@ -84,7 +84,7 @@ const Index = () => {
         {filteredTools.length === 0 && (
           <p className="text-sm text-muted-foreground mb-4" role="status">No tools match "{query}".</p>
         )}
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {filteredTools.map((tool) => (
             <li key={tool.url}>
               <RouterLink

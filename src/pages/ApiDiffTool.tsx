@@ -14,6 +14,8 @@ import {
 } from "@/components/api-diff/diffUtils";
 import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
 import { ToolHeader } from "@/components/ToolHeader";
+import { toolPageClass } from "@/lib/toolLayout";
+import { AboutTool } from "@/components/AboutTool";
 
 const colorMap: Record<string, string> = {
   added: "text-[hsl(var(--success-foreground))]", removed: "text-destructive",
@@ -147,7 +149,7 @@ const ApiDiffTool = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={toolPageClass("fluid")}>
       <ToolSEO
         title="API Response Diff Tool"
         description="Compare two JSON API responses side-by-side with structural diff, ignore rules, type change detection, and export. Free, browser-only developer tool."
@@ -224,7 +226,8 @@ const ApiDiffTool = () => {
       </div>
 
       {/* Input panels */}
-      <ResizablePanelGroup direction="horizontal" className="border border-border rounded-lg min-h-[350px]">
+      <div className="h-[clamp(340px,calc(100dvh-380px),900px)]">
+      <ResizablePanelGroup direction="horizontal" className="h-full border border-border rounded-lg">
         <ResizablePanel defaultSize={50} minSize={25}>
           <div className="h-full flex flex-col">
             <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card">
@@ -269,6 +272,7 @@ const ApiDiffTool = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -396,8 +400,7 @@ const ApiDiffTool = () => {
         </div>
       )}
 
-      {/* SEO Content */}
-      <section className="mt-12 space-y-8 border-t border-border pt-8">
+      <AboutTool title="About API response diffs">
         <div>
           <h2 className="text-lg font-bold text-foreground mb-3">What is an API Response Diff?</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -445,7 +448,7 @@ const ApiDiffTool = () => {
             </div>
           </div>
         </div>
-      </section>
+      </AboutTool>
     </div>
   );
 };

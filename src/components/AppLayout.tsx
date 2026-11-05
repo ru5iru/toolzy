@@ -16,7 +16,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarTrigger />
             {current && <span className="truncate font-mono text-xs text-muted-foreground">{current}</span>}
           </div>
-          <main className={workspace ? "flex-1 min-h-0 overflow-hidden" : "flex-1 p-4 md:p-6 overflow-auto"}>{children}</main>
+          <main className={workspace ? "flex-1 min-h-0 overflow-hidden" : "flex-1 p-3 sm:p-4 lg:p-5 overflow-auto"}>{children}</main>
         </div>
       </div>
     </SidebarProvider>

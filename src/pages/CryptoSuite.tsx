@@ -23,6 +23,7 @@ import { SecretsTab } from "@/components/secrets/SecretsTab";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
 import { ToolHeader } from "@/components/ToolHeader";
+import { toolPageClass } from "@/lib/toolLayout";
 
 // ---------- Hash helpers ----------
 type HashAlgo = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
@@ -137,7 +138,7 @@ const CryptoSuite = () => {
   }, [tab]);
 
   return (
-    <div className="space-y-6">
+    <div className={toolPageClass("fluid")}>
       <ToolSEO
         title="Crypto Suite — Hash, UUID & Secret Generator"
         description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, create UUID v1/v3/v4/v5 tokens in bulk, and generate random secrets and keys (JWT secrets, AES keys, API tokens) — all via the native Web Crypto API, nothing leaves your browser."
