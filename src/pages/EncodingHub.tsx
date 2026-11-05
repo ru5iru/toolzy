@@ -395,7 +395,7 @@ const EncodingHub = () => {
   const outputBadgeText = mode === "auto" ? `${MODE_LABELS[detectedSubMode]} (auto)` : MODE_LABELS[mode];
 
   return (
-    <div className="h-full flex flex-col gap-3 max-w-full">
+    <div className="mx-0 flex h-full w-full max-w-none flex-col gap-3">
       <ToolSEO
         title="Encoding Hub — Base64, URL Encode & Data URL Converter"
         description="Free browser-based encoding tool. Encode and decode Base64, URL-safe Base64, percent-encoded URLs, and Data URLs — with auto-detect, file support, and query-string editing. Nothing leaves your browser."
@@ -452,7 +452,7 @@ const EncodingHub = () => {
       )}
 
       {/* Direction toggle + sub-mode controls */}
-      <div className="flex flex-wrap items-center gap-2 p-2 rounded-lg bg-muted/30 border border-border text-xs">
+      <div className="flex flex-wrap items-center gap-2 text-xs">
         {mode !== "auto" && mode !== "dataurl" && (
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">Direction:</span>

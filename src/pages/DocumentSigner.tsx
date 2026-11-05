@@ -86,7 +86,7 @@ const DocumentSigner = () => {
   }, [addKey]);
 
   return (
-    <ToolPageLayout title="Document Signer" maxWidth="7xl" icon={FileSignature} description={<>Sign files and verify detached signatures. Keys stay in memory unless you save one on this device. For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.</>}>
+    <ToolPageLayout title="Document Signer" icon={FileSignature} description={<>Sign files and verify detached signatures. Keys stay in memory unless you save one on this device. For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.</>}>
       <ToolSEO
         title="Document Signer — Sign & Verify Files"
         canonicalPath="/document-signer"
