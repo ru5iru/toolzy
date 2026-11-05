@@ -23,6 +23,7 @@ import { markdownExtensions, wrapSelection, insertLink, snippets } from "@/compo
 import "@/components/markdown/markdown.css";
 
 type Mode = "editor" | "split" | "preview" | "compare";
+const editorSetup = { foldGutter: false, highlightActiveLine: true, lineNumbers: true, closeBrackets: false, autocompletion: false };
 function IconButton({ label, children, onClick }: { label: string; children: ReactNode; onClick: () => void }) {
   return <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label={label} onClick={onClick}>{children}</Button></TooltipTrigger><TooltipContent>{label}</TooltipContent></Tooltip>;
 }
@@ -93,7 +94,7 @@ export default function MarkdownEditor() {
   const find = useCallback(() => {
     pendingSearch.current = true;
     setFocus(false); setMode(mobile ? "editor" : "split");
-    setTimeout(() => { const editor = view.current; if (editor?.dom.isConnected && pendingSearch.current) { openSearchPanel(editor); pendingSearch.current = false; } }, 50);
+    setTimeout(() => { const dom = document.querySelector(".markdown-editor .cm-editor"); const editor = dom ? EditorView.findFromDOM(dom as HTMLElement) : undefined; if (editor && pendingSearch.current) { view.current = editor; openSearchPanel(editor); pendingSearch.current = false; } }, 50);
   }, [mobile]);
   const format = useCallback((kind: string) => {
     const editor = view.current; if (!editor) return;
@@ -119,7 +120,7 @@ export default function MarkdownEditor() {
       const key = event.key.toLowerCase();
       if (mod && key === "s") { event.preventDefault(); save(); }
       else if (mod && key === "o") { event.preventDefault(); filePicker.current?.click(); }
-      else if (mod && key === "f") { event.preventDefault(); find(); }
+      else if (mod && key === "f") { event.preventDefault(); event.stopPropagation(); find(); }
       else if (mod && ["b", "i", "k", "e"].includes(key)) { event.preventDefault(); format(({ b: "bold", i: "italic", k: "link", e: "code" } as Record<string, string>)[key]); }
       else if (mod && event.shiftKey && key === "x") { event.preventDefault(); format("strike"); }
       else if (event.altKey && ["1", "2", "3", "4"].includes(key)) { event.preventDefault(); setFocus(false); setMode((["editor", "split", "preview", "compare"] as Mode[])[Number(key) - 1]); }
@@ -145,7 +146,7 @@ export default function MarkdownEditor() {
         <DropdownMenu><DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8" aria-label="More formatting"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent>{["Quote", "Code block", "Table", "Horizontal rule", "Image", "Details", "Footnote"].map(label => <DropdownMenuItem key={label} onSelect={() => insertSnippet(label)}>{label}</DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>
       </div><Badge variant="outline" className="ml-auto text-[9px] font-mono">MARKDOWN</Badge>
     </header>
-    <CodeMirror value={text} height="100%" className="flex-1 min-h-0 overflow-hidden" theme="none" extensions={extensions} onCreateEditor={editor => { view.current = editor; if (pendingSearch.current) { openSearchPanel(editor); pendingSearch.current = false; } }} onChange={setText} onUpdate={update => { const pos = update.state.selection.main.head; const line = update.state.doc.lineAt(pos); setCursor({ line: line.number, col: pos - line.from + 1 }); }} basicSetup={{ foldGutter: false, highlightActiveLine: true, lineNumbers: true, closeBrackets: false, autocompletion: false }} />
+    <CodeMirror value={text} height="100%" className="flex-1 min-h-0 overflow-hidden" theme="none" extensions={extensions} onCreateEditor={editor => { view.current = editor; if (pendingSearch.current) { openSearchPanel(editor); pendingSearch.current = false; } }} onChange={setText} onUpdate={update => { if (!update.selectionSet && !update.docChanged) return; const pos = update.state.selection.main.head; const line = update.state.doc.lineAt(pos); const col = pos - line.from + 1; setCursor(previous => previous.line === line.number && previous.col === col ? previous : { line: line.number, col }); }} basicSetup={editorSetup} />
   </section>;
   const previewPane = <section className="flex h-full min-h-0 min-w-0 flex-col" aria-label="Markdown preview pane"><header className="h-12 shrink-0 border-b border-border bg-card px-4 flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /><h2 className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Live preview</h2><Badge variant="outline" className="ml-auto text-[9px] font-mono">{stats.minutes} MIN</Badge></header><div ref={preview} onScroll={event => synchronize(event.currentTarget, view.current?.scrollDOM)} className="markdown-preview flex-1 min-h-0 overflow-auto p-6"><MarkdownPreview text={deferred} /></div></section>;
 
