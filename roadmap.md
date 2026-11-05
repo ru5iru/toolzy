@@ -1,10 +1,10 @@
 # Toolzy Improvement Roadmap
 
 ## Markdown Editor
-- [ ] Add local document utilities, editor suggestions/commands, and safety tests.
-- [ ] Add full-height workspace, preview/compare, autosave, files, shortcuts, and exports.
-- [ ] Register route, home/search, navigation, SEO, sitemap, and documentation.
-- [ ] Verify editing, suggestions, rendering safety, persistence, downloads, themes, and mobile.
+- [x] Add local document utilities, editor suggestions/commands, and safety tests.
+- [x] Add full-height workspace, preview/compare, autosave, files, shortcuts, and exports.
+- [x] Register route, home/search, navigation, SEO, sitemap, and documentation.
+- [x] Verify editing, suggestions, rendering safety, persistence, downloads, themes, and mobile.
 
 - [x] 1. Foundation: route code-splitting (lazy + Suspense), shared ToolPageLayout
 - [x] 2. UI/UX: semantic color tokens replace hardcoded classes, consistent shell
