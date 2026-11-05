@@ -26,7 +26,7 @@
 - [x] 2. Core: keys (PEM/JWK), RSA-PSS and ECDSA sign/verify, manifest, inspector, cancellable worker session; OpenSSL interoperability tests.
 - [x] 3. Page with Sign, Verify, Keys and Inspector tabs; route, sidebar, homepage, sitemap, llms.txt, SEO.
 - [x] 4a. v2: Ed25519 (feature-detected) and RSA-PSS 4096, with OpenSSL interop tests.
-- [ ] 4b. v2: encrypted private-key export (decide PKCS#8 library vs. Toolzy envelope), IndexedDB storage of non-extractable keys, batch sign/verify.
+- [x] 4b. v2: encrypted PKCS#8 export/import (PBES2, no library), opt-in IndexedDB storage of non-extractable keys, batch sign/verify with ZIP.
 - [x] 5a. Secrets generator tab in Crypto Suite.
-- [ ] 5b. PS256/JWK in JWT Hub, X.509 certificate inspector.
+- [x] 5b. PS256/384/512 and JWK in JWT Hub; X.509/CSR certificate inspector at `/certificate`.
 - [ ] 6. Later: embedded PDF signatures (CMS/PAdES) and X.509 trust chains, only if there is demand.

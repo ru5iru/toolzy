@@ -12,6 +12,7 @@ import {
   Regex,
   FileSearch,
   FileSignature,
+  ScrollText,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -41,6 +42,7 @@ const tools = [
   { title: "Regex", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
   { title: "Document Signer", url: "/document-signer", icon: FileSignature },
+  { title: "Certificate Inspector", url: "/certificate", icon: ScrollText },
 ];
 
 export function AppSidebar() {

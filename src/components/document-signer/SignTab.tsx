@@ -101,7 +101,7 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
 
         {privateKeys.length === 0 ? (
           <div className="border border-border rounded-lg p-4 text-sm space-y-3">
-            <p className="text-muted-foreground">Signing needs a private key. Keys stay in this tab's memory only.</p>
+            <p className="text-muted-foreground">Signing needs a private key. Keys stay in this tab's memory unless you save one on this device.</p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => void onQuickGenerate()}><KeyRound />Generate ECDSA P-256 key</Button>
               <Button size="sm" variant="outline" onClick={onOpenKeys}>Import or choose another type</Button>

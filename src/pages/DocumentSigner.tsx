@@ -29,7 +29,7 @@ const DocumentSigner = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
-  // Keys live in memory only: never written to storage, the URL or any request.
+  // Keys live in memory unless the person opts to save one on this device; never in the URL or any request.
   const [keys, setKeys] = useState<KeyRecord[]>([]);
   const [verification, setVerification] = useState<VerifyResult>();
   const session = useRef<SignerSession>();
@@ -97,7 +97,8 @@ const DocumentSigner = () => {
           { question: "Which algorithms are supported?", answer: "RSA-PSS with 2048, 3072 or 4096-bit keys, ECDSA with P-256 or P-384, and Ed25519 where your browser supports it (it is detected automatically and hidden otherwise). RSA-PSS and ECDSA use SHA-256, SHA-384 or SHA-512; Ed25519 signs the data directly. Keys import and export as PEM (PKCS#8 and SPKI) or JWK." },
           { question: "Can OpenSSL verify these signatures?", answer: "Yes. The .sig file for ECDSA is DER-encoded and the RSA-PSS salt length equals the hash length, so openssl dgst can verify them with the matching public key (for RSA-PSS, add -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:<hash length in bytes>). Ed25519 signatures are the raw 64 bytes; verify them with openssl pkeyutl -verify -rawin -pubin -inkey <public key> -in <file> -sigfile <.sig>." },
           { question: "What is the manifest file?", answer: "A JSON file describing the detached signature: the document's name, size and hash, the algorithm, the signature and the signer's key fingerprint. It is specific to this tool and is not a standard format. Its fields are self-declared; verification always recalculates the hash from the document you provide." },
-          { question: "Why can't I save my keys?", answer: "Keeping private keys in browser storage is risky, so this version holds them in memory only. Export a private key if you need it again; the export is not encrypted, so store it securely." },
+          { question: "Are my keys saved?", answer: "Not by default: keys are held in this tab's memory and disappear when you close or reload it. You can choose Remember on this device for a key, which saves it in this browser as a non-extractable key (it can sign but cannot be exported again). Any script running on this site could still use a stored key to sign, and clearing site data deletes it. To back up a private key, export it as an encrypted PEM with a password." },
+          { question: "Can I sign many files at once?", answer: "Yes. The Batch tab signs up to 100 files (25 MiB each) with one key and gives you a ZIP of .sig and .signature.json files, and it verifies a set of documents against their signature files by matching file names." },
         ]}
         howToSteps={[
           "Open the Keys tab and generate a key pair, or import a PKCS#8 private key",
@@ -108,7 +109,7 @@ const DocumentSigner = () => {
         ]}
       />
       <p className="text-xs text-muted-foreground mb-4">
-        Documents and keys stay in your browser and nothing is uploaded. Keys are held in memory only and disappear when you reload or close this tab.
+        Documents and keys stay in your browser and nothing is uploaded. Keys are held in memory and disappear when you reload or close this tab, unless you choose to save one on this device.
         For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.
       </p>
       <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)} className="space-y-5">

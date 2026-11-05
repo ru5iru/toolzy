@@ -20,6 +20,7 @@ const DateTimeTool = lazy(() => import("./pages/DateTimeTool"));
 const RegexPlayground = lazy(() => import("./pages/RegexPlayground"));
 const ImageMetadataViewer = lazy(() => import("./pages/ImageMetadataViewer"));
 const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
+const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/regex" element={<RegexPlayground />} />
               <Route path="/image-metadata" element={<ImageMetadataViewer />} />
               <Route path="/document-signer" element={<DocumentSigner />} />
+              <Route path="/certificate" element={<CertificateInspector />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
