@@ -6,7 +6,20 @@
 URL: https://toolzy.lovable.app/document-signer
 Category: Cryptography & Privacy
 
-Sign files and verify detached digital signatures locally with the Web Crypto API. Generate RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384) and Ed25519 (when the browser supports it) key pairs, import and export PEM (PKCS#8, SPKI) and JWK keys, and sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512 (Ed25519 signs the data directly). Downloads the original, a detached .sig file (ECDSA signatures are DER-encoded and RSA-PSS uses a salt equal to the hash length, so OpenSSL can verify them) and a JSON manifest. Verification recalculates the document hash from the bytes provided and reports Valid, Invalid, Modified, Missing or Error. The Inspector marks each manifest field as self-declared or verified. Documents and keys are not uploaded; keys are held in memory only and are lost on reload. A valid signature does not establish the signer's real-world identity. Not supported yet: password-encrypted private keys, batch operations, PKCS#1/SEC1 keys, PDF-embedded signatures, certificates.
+Sign files and verify detached digital signatures locally with the Web Crypto API. Generate RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384) and Ed25519 (when the browser supports it) key pairs, import and export PEM (PKCS#8, SPKI) and JWK keys, and sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512 (Ed25519 signs the data directly). Downloads the original, a detached .sig file (ECDSA signatures are DER-encoded and RSA-PSS uses a salt equal to the hash length, so OpenSSL can verify them) and a JSON manifest. Verification recalculates the document hash from the bytes provided and reports Valid, Invalid, Modified, Missing or Error. The Inspector marks each manifest field as self-declared or verified. Documents and keys are not uploaded; keys are held in memory by default, and can optionally be saved on the device as non-extractable keys. Private keys can be exported password-encrypted (PKCS#8, PBKDF2-SHA256 + AES-256) and encrypted keys imported. A Batch tab signs and verifies many files, producing a ZIP of signatures. A valid signature does not establish the signer's real-world identity. Not supported: PKCS#1/SEC1 keys, PDF-embedded signatures, certificate-based signing.
+
+## Certificate Inspector
+
+URL: https://toolzy.lovable.app/certificate
+Category: Cryptography & Privacy
+
+Decode X.509 certificates and PKCS#10 certificate requests locally with a built-in DER parser. Accepts PEM (including chains) and DER files. Shows subject, issuer, serial, validity with expiry status, signature algorithm, public key type and size or curve, extensions (Subject Alternative Name, Key Usage, Extended Key Usage, Basic Constraints, key identifiers) and SHA-1/SHA-256 fingerprints that match OpenSSL. It reports what the certificate states and does not validate trust chains, revocation or hostnames. Private keys are rejected. Nothing is uploaded.
+## Markdown Editor
+
+URL: https://toolzy.lovable.app/markdown
+Category: Writing & Documentation
+
+Browser-only CodeMirror Markdown editor with editor/split/preview/compare modes, local autosave after 500 ms, file open/drop, Markdown and standalone HTML downloads, clipboard exports, and printing. Includes a slash menu, formatting, list continuation, pairing, language/emoji/heading suggestions, table navigation/alignment, find/replace, synchronized scrolling, and focus mode. GitHub-flavored Markdown and raw HTML are sanitized; external images never load automatically. Text is stored only on this device and is not sent in requests or analytics.
 
 ## Image Metadata Viewer
 

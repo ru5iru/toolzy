@@ -43,7 +43,7 @@ describe("PEM helpers", () => {
     const wrap = (label: string) => `-----BEGIN ${label}-----\nAAAA\n-----END ${label}-----`;
     expect(() => parseSupportedKeyPem(wrap("RSA PRIVATE KEY"))).toThrow("PKCS#1");
     expect(() => parseSupportedKeyPem(wrap("EC PRIVATE KEY"))).toThrow("SEC1");
-    expect(() => parseSupportedKeyPem(wrap("ENCRYPTED PRIVATE KEY"))).toThrow("Encrypted");
+    expect(parseSupportedKeyPem(wrap("ENCRYPTED PRIVATE KEY")).kind).toBe("encrypted");
     expect(() => parseSupportedKeyPem(wrap("CERTIFICATE"))).toThrow("Unsupported PEM type");
     expect(() => parseSupportedKeyPem("garbage")).toThrow("No PEM block");
   });

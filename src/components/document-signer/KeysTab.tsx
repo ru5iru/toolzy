@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Copy, Download, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { Copy, Download, HardDrive, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
@@ -12,7 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { ALGORITHMS, algorithmById, supportedAlgorithms, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 import { copyText, downloadBytes } from "./browserUtils";
-import { exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, keysMatch, type KeyRecord } from "./keyUtils";
+import {
+  exportEncryptedPrivatePem, exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, hasPrivateKey, importKeyText, isEncryptedKeyText, keysMatch, type KeyRecord,
+} from "./keyUtils";
 import { KeySelect, MetaRow } from "./SignerControls";
 import { toneClass } from "./statusStyles";
 
@@ -20,11 +22,14 @@ interface KeysTabProps {
   keys: KeyRecord[];
   onAdd: (key: KeyRecord) => void;
   onDelete: (id: string) => void;
+  onRemember: (id: string) => Promise<void>;
+  onForget: (id: string) => Promise<void>;
+  storageSupported: boolean;
 }
 
 type PrivateExport = { key: KeyRecord; format: "pem" | "jwk" };
 
-export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
+export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSupported }: KeysTabProps) => {
   const [algorithm, setAlgorithm] = useState<AlgorithmId>("ECDSA-P256");
   // Ed25519 support varies by browser, so it only appears once detected.
   const [available, setAvailable] = useState<AlgorithmInfo[]>(ALGORITHMS.filter((a) => a.family !== "Ed25519"));
@@ -35,6 +40,9 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
   const [importName, setImportName] = useState("");
   const [importError, setImportError] = useState<string>();
   const [importing, setImporting] = useState(false);
+  const [importPassword, setImportPassword] = useState("");
+  const [exportPassword, setExportPassword] = useState("");
+  const [exportPassword2, setExportPassword2] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [pendingDelete, setPendingDelete] = useState<KeyRecord>();
   const [pendingExport, setPendingExport] = useState<PrivateExport>();
@@ -58,8 +66,8 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
   const doImport = async () => {
     setImporting(true); setImportError(undefined);
     try {
-      const key = await importKeyText(importText, importName);
-      onAdd(key); setSelectedId(key.id); setImportText(""); setImportName("");
+      const key = await importKeyText(importText, importName, importPassword);
+      onAdd(key); setSelectedId(key.id); setImportText(""); setImportName(""); setImportPassword("");
       toast.success(key.pkcs8 ? "Private key imported; public key derived" : "Public key imported");
     } catch (e) {
       setImportError(e instanceof Error ? e.message : "The key could not be imported.");
@@ -72,10 +80,18 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
     else downloadBytes(`${slug(key.name)}-public.${format === "pem" ? "pem" : "jwk.json"}`, text, "text/plain");
   };
 
-  const exportPrivate = async ({ key, format }: PrivateExport) => {
-    const text = format === "pem" ? exportPrivatePem(key) : await exportJwk(key, true);
-    downloadBytes(`${slug(key.name)}-private.${format === "pem" ? "pem" : "jwk.json"}`, text, "text/plain");
+  const exportPrivate = async ({ key, format }: PrivateExport, password: string) => {
+    try {
+      const encrypted = format === "pem" && password.length > 0;
+      const text = format === "jwk" ? await exportJwk(key, true) : encrypted ? await exportEncryptedPrivatePem(key, password) : exportPrivatePem(key);
+      const suffix = format === "jwk" ? "jwk.json" : "pem";
+      downloadBytes(`${slug(key.name)}-private${encrypted ? "-encrypted" : ""}.${suffix}`, text, "text/plain");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed.");
+    }
   };
+  const closeExport = () => { setPendingExport(undefined); setExportPassword(""); setExportPassword2(""); };
+  const passwordsMismatch = exportPassword.length > 0 && exportPassword !== exportPassword2;
 
   const checkPair = async () => {
     const priv = keys.find((k) => k.id === pairPrivateId);
@@ -89,7 +105,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
     }
   };
 
-  const privateKeys = keys.filter((k) => k.pkcs8);
+  const privateKeys = keys.filter(hasPrivateKey);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div className="space-y-5 min-w-0">
@@ -109,13 +125,16 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
             </div>
           </div>
           <Button onClick={generate} disabled={generating}>{generating ? <Loader2 className="animate-spin" /> : <Plus />}Generate key pair</Button>
-          <p className="text-xs text-muted-foreground">Keys exist only in this tab's memory. Reloading or closing the page removes them, so export anything you need to keep.</p>
+          <p className="text-xs text-muted-foreground">Keys stay in this tab's memory unless you choose "Remember on this device". Reloading or closing the page removes the rest, so export anything you need to keep.</p>
         </section>
 
         <section aria-labelledby="import-heading" className="space-y-3">
           <h2 id="import-heading" className="font-mono text-sm font-semibold">Import a key</h2>
           <Textarea aria-label="Key to import" value={importText} spellCheck={false} onChange={(e) => { setImportText(e.target.value); setImportError(undefined); }}
-            placeholder={"PKCS#8 private key, SPKI public key, or JWK\n-----BEGIN PRIVATE KEY-----"} className="min-h-[110px] font-mono text-xs resize-y bg-card" />
+            placeholder={"PKCS#8 private key (plain or encrypted), SPKI public key, or JWK\n-----BEGIN PRIVATE KEY-----"} className="min-h-[110px] font-mono text-xs resize-y bg-card" />
+          {isEncryptedKeyText(importText) && (
+            <Input type="password" aria-label="Password for encrypted key" autoComplete="off" value={importPassword} onChange={(e) => { setImportPassword(e.target.value); setImportError(undefined); }} placeholder="Password for this encrypted key" />
+          )}
           <Input aria-label="Name for imported key" value={importName} onChange={(e) => setImportName(e.target.value)} placeholder="Name (optional)" maxLength={60} />
           <Button variant="outline" onClick={doImport} disabled={importing || !importText.trim()}>{importing ? <Loader2 className="animate-spin" /> : <Upload />}Import key</Button>
           {importError && <p role="alert" className="text-sm text-destructive break-words">{importError}</p>}
@@ -142,7 +161,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                   <button type="button" onClick={() => setSelectedId(key.id)} aria-pressed={selected?.id === key.id}
                     className={`w-full text-left px-3 py-2 hover:bg-secondary ${selected?.id === key.id ? "bg-secondary" : ""}`}>
                     <div className="flex items-center gap-2 text-sm font-mono"><KeyRound className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" /><span className="truncate">{key.name}</span></div>
-                    <div className="text-xs text-muted-foreground mt-0.5">{algorithmById(key.algorithm).label} · {key.pkcs8 ? "key pair" : "public only"}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{algorithmById(key.algorithm).label} · {hasPrivateKey(key) ? "key pair" : "public only"}{key.persisted ? " · saved on device" : ""}</div>
                   </button>
                 </li>
               ))}
@@ -152,9 +171,10 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                 <div className="border border-border rounded-lg px-3">
                   <MetaRow label="Name" value={selected.name} copyable={false} />
                   <MetaRow label="Algorithm" value={algorithmById(selected.algorithm).label} copyable={false} />
-                  <MetaRow label="Contains" value={selected.pkcs8 ? "private and public key" : "public key only"} copyable={false} />
+                  <MetaRow label="Contains" value={hasPrivateKey(selected) ? "private and public key" : "public key only"} copyable={false} />
                   <MetaRow label="Fingerprint (SHA-256 of SPKI)" value={selected.fingerprint} />
                   <MetaRow label="Source" value={selected.source} copyable={false} />
+                  <MetaRow label="Storage" value={selected.persisted ? "saved on this device" : "this tab only"} copyable={false} />
                   <MetaRow label="Created" value={selected.createdAt} copyable={false} />
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -167,23 +187,48 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                   {selected.pkcs8 && <Button size="sm" variant="outline" onClick={() => setPendingExport({ key: selected, format: "jwk" })}><Download />Private JWK…</Button>}
                   <Button size="sm" variant="outline" onClick={() => setPendingDelete(selected)}><Trash2 />Delete</Button>
                 </div>
+                {hasPrivateKey(selected) && !selected.pkcs8 && (
+                  <p className="text-xs text-muted-foreground">This private key was restored from device storage and cannot be exported. Only its public half can be downloaded.</p>
+                )}
+                {storageSupported && (
+                  <div className="space-y-1.5">
+                    <Button size="sm" variant="outline" onClick={() => void (selected.persisted ? onForget(selected.id) : onRemember(selected.id))}>
+                      {selected.persisted ? <><HardDrive />Forget on this device</> : <><HardDrive />Remember on this device</>}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {hasPrivateKey(selected)
+                        ? "Optional. Saves the private key in this browser as a non-extractable key, so you can sign after reloading but can no longer export it from here. Any script running on this site could still use it to sign, and clearing site data deletes it."
+                        : "Optional. Saves this public key in this browser so it is there after reloading."}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </>
         )}
       </section>
 
-      <AlertDialog open={Boolean(pendingExport)} onOpenChange={(open) => !open && setPendingExport(undefined)}>
+      <AlertDialog open={Boolean(pendingExport)} onOpenChange={(open) => !open && closeExport()}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Export private key?</AlertDialogTitle>
             <AlertDialogDescription>
-              The file is not encrypted. Anyone who gets it can sign as you. Store it somewhere safe, never email or commit it, and delete copies you no longer need.
+              {pendingExport?.format === "pem"
+                ? "Anyone who gets an unencrypted file can sign as you. Set a password to encrypt it (PKCS#8, PBKDF2-SHA256 600,000 rounds + AES-256), or leave it empty for a plain file. Never email or commit it."
+                : "JWK files are not encrypted. Anyone who gets it can sign as you. Store it somewhere safe, never email or commit it, and delete copies you no longer need."}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {pendingExport?.format === "pem" && (
+            <div className="space-y-2">
+              <Input type="password" aria-label="Export password" autoComplete="new-password" value={exportPassword} onChange={(e) => setExportPassword(e.target.value)} placeholder="Password (optional)" />
+              {exportPassword && <Input type="password" aria-label="Confirm export password" autoComplete="new-password" value={exportPassword2} onChange={(e) => setExportPassword2(e.target.value)} placeholder="Confirm password" />}
+              {passwordsMismatch && exportPassword2 && <p role="alert" className="text-xs text-destructive">Passwords do not match.</p>}
+              <p className="text-xs text-muted-foreground">The password is never stored. If you forget it, the key cannot be recovered.</p>
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { if (pendingExport) void exportPrivate(pendingExport); setPendingExport(undefined); }}>Download private key</AlertDialogAction>
+            <AlertDialogAction disabled={passwordsMismatch} onClick={() => { if (pendingExport) void exportPrivate(pendingExport, exportPassword); closeExport(); }}>{exportPassword && pendingExport?.format === "pem" ? "Download encrypted key" : "Download private key"}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -193,7 +238,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{pendingDelete?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingDelete?.pkcs8 ? "This removes the key pair from this session. If you have not exported the private key, you will not be able to sign with it again." : "This removes the public key from this session."}
+              {pendingDelete && hasPrivateKey(pendingDelete) ? "This removes the key pair from this session and from this device. If you have not exported the private key, you will not be able to sign with it again." : "This removes the public key from this session and from this device."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

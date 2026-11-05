@@ -27,10 +27,28 @@ describe("inspection lifecycle", () => {
     expect(workers[0].terminate).toHaveBeenCalledOnce(); expect(publish.mock.lastCall?.[0]).toEqual({ status: "idle" });
   });
   it("stops processing at the exact time limit", () => {
-    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file());
+    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file()); workers[0].onmessage?.({ data: { ready: true } } as MessageEvent);
     vi.advanceTimersByTime(19999); expect(publish.mock.lastCall?.[0].status).toBe("loading");
     vi.advanceTimersByTime(1); expect(workers[0].terminate).toHaveBeenCalledOnce(); expect(publish.mock.lastCall?.[0].status).toBe("error");
     session.clear();
+  });
+  it("allows processor startup separately from the processing deadline", () => {
+    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file());
+    expect(publish.mock.lastCall?.[0].phase).toBe("starting");
+    vi.advanceTimersByTime(25000);
+    expect(workers[0].terminate).not.toHaveBeenCalled();
+    workers[0].onmessage?.({ data: { ready: true } } as MessageEvent);
+    expect(publish.mock.lastCall?.[0].phase).toBe("inspecting");
+    vi.advanceTimersByTime(19999);
+    workers[0].onmessage?.({ data: { result } } as MessageEvent);
+    vi.advanceTimersByTime(60000);
+    expect(publish.mock.lastCall?.[0]).toEqual({ status: "ready", result });
+  });
+  it("stops a processor that never loads after 60 seconds", () => {
+    vi.useFakeTimers(); const { session, workers, publish } = setup(); session.select(file());
+    vi.advanceTimersByTime(59999); expect(workers[0].terminate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1); expect(workers[0].terminate).toHaveBeenCalledOnce();
+    expect(publish.mock.lastCall?.[0].error).toMatch(/too long to load/);
   });
   it("reports parser errors and worker failures", () => {
     const { session, workers, publish } = setup(); session.select(file());

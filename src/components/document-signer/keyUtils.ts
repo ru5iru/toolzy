@@ -1,6 +1,7 @@
 import { spkiFingerprint } from "@/lib/crypto/fingerprint";
 import { derToPem, parseSupportedKeyPem } from "@/lib/crypto/pem";
 import { toArrayBuffer } from "@/lib/crypto/base64";
+import { decryptPkcs8, encryptPkcs8 } from "@/lib/crypto/pkcs8Encrypted";
 import { ALGORITHMS, algorithmById, isEd25519Supported, keyAlgorithm, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 
 /**
@@ -18,6 +19,34 @@ export interface KeyRecord {
   fingerprint: string;
   createdAt: string;
   source: "generated" | "imported";
+  /**
+   * Non-extractable private-key handles, keyed by hash name ("any" when the algorithm does not bind a hash).
+   * Present on keys restored from device storage, where no private bytes exist.
+   */
+  privateKeys?: Partial<Record<string, CryptoKey>>;
+  /** True when this key is saved on this device (IndexedDB). */
+  persisted?: boolean;
+}
+
+/** True when the record can sign, either from private bytes or from stored handles. */
+export function hasPrivateKey(record: Pick<KeyRecord, "pkcs8" | "privateKeys">): boolean {
+  return Boolean(record.pkcs8 || record.privateKeys);
+}
+
+const ALL_HASHES = ["SHA-256", "SHA-384", "SHA-512"] as const;
+
+/**
+ * Import non-extractable private-key handles from PKCS#8. RSA-PSS binds the hash when a key is
+ * imported, so one handle is made per hash; other algorithms need a single handle.
+ */
+export async function makePrivateHandles(record: Pick<KeyRecord, "algorithm" | "pkcs8">): Promise<Record<string, CryptoKey>> {
+  if (!record.pkcs8) throw new Error("This entry has no private key.");
+  const info = algorithmById(record.algorithm);
+  const buffer = toArrayBuffer(record.pkcs8);
+  if (info.family !== "RSA-PSS") return { any: await crypto.subtle.importKey("pkcs8", buffer, keyAlgorithm(info, DEFAULT_HASH), false, ["sign"]) };
+  const handles: Record<string, CryptoKey> = {};
+  for (const hash of ALL_HASHES) handles[hash] = await crypto.subtle.importKey("pkcs8", buffer, keyAlgorithm(info, hash), false, ["sign"]);
+  return handles;
 }
 
 const DEFAULT_HASH = "SHA-256" as const;
@@ -140,8 +169,18 @@ async function recordFromJwk(jwk: Record<string, unknown>, name: string): Promis
   return recordFromDer(isPrivate ? "private" : "public", der, name);
 }
 
-/** Import a PEM (PKCS#8 / SPKI) or JWK key pasted as text. */
-export async function importKeyText(text: string, name = ""): Promise<KeyRecord> {
+/** Thrown when an encrypted key is imported without a password, so the UI can ask for one. */
+export class PasswordRequiredError extends Error {
+  constructor() { super("This key is encrypted. Enter its password to import it."); this.name = "PasswordRequiredError"; }
+}
+
+/** True when the pasted text is an encrypted PKCS#8 PEM. */
+export function isEncryptedKeyText(text: string): boolean {
+  return /-----BEGIN ENCRYPTED PRIVATE KEY-----/.test(text);
+}
+
+/** Import a PEM (PKCS#8 / encrypted PKCS#8 / SPKI) or JWK key pasted as text. */
+export async function importKeyText(text: string, name = "", password = ""): Promise<KeyRecord> {
   const trimmed = text.trim();
   if (!trimmed) throw new Error("Paste a PEM or JWK key first.");
   if (trimmed.startsWith("{")) {
@@ -151,6 +190,10 @@ export async function importKeyText(text: string, name = ""): Promise<KeyRecord>
     return recordFromJwk(parsed as Record<string, unknown>, name);
   }
   const { kind, der } = parseSupportedKeyPem(trimmed);
+  if (kind === "encrypted") {
+    if (!password) throw new PasswordRequiredError();
+    return recordFromDer("private", await decryptPkcs8(der, password), name);
+  }
   return recordFromDer(kind, der, name);
 }
 
@@ -161,6 +204,12 @@ export function exportPublicPem(record: KeyRecord): string {
 export function exportPrivatePem(record: KeyRecord): string {
   if (!record.pkcs8) throw new Error("This entry has no private key.");
   return derToPem("PRIVATE KEY", record.pkcs8);
+}
+
+/** PKCS#8 private key encrypted with a password (PBES2: PBKDF2-HMAC-SHA256 + AES-256-CBC). */
+export async function exportEncryptedPrivatePem(record: KeyRecord, password: string): Promise<string> {
+  if (!record.pkcs8) throw new Error("This entry has no private key.");
+  return derToPem("ENCRYPTED PRIVATE KEY", await encryptPkcs8(record.pkcs8, password));
 }
 
 export async function exportJwk(record: KeyRecord, includePrivate: boolean): Promise<string> {

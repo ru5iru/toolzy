@@ -27,7 +27,7 @@ export function parsePem(pem: string): { label: PemLabel; der: Uint8Array } {
  * Parse a PEM key that Web Crypto can import directly (PKCS#8 private or SPKI public)
  * and explain unsupported variants instead of failing with a generic import error.
  */
-export function parseSupportedKeyPem(pem: string): { kind: "private" | "public"; der: Uint8Array } {
+export function parseSupportedKeyPem(pem: string): { kind: "private" | "public" | "encrypted"; der: Uint8Array } {
   const { label, der } = parsePem(pem);
   switch (label) {
     case "PRIVATE KEY":
@@ -41,13 +41,13 @@ export function parseSupportedKeyPem(pem: string): { kind: "private" | "public";
     case "RSA PUBLIC KEY":
       throw new Error("This is a PKCS#1 public key (BEGIN RSA PUBLIC KEY). Convert it first: openssl rsa -RSAPublicKey_in -pubout");
     case "ENCRYPTED PRIVATE KEY":
-      throw new Error("Encrypted private keys are not supported yet. Decrypt it first: openssl pkcs8 -in key.pem -out key-pkcs8.pem");
+      return { kind: "encrypted", der };
     default:
       throw new Error(`Unsupported PEM type "${label}". Use a PKCS#8 private key or an SPKI public key.`);
   }
 }
 
-export function derToPem(label: "PRIVATE KEY" | "PUBLIC KEY", der: Uint8Array): string {
+export function derToPem(label: "PRIVATE KEY" | "PUBLIC KEY" | "ENCRYPTED PRIVATE KEY", der: Uint8Array): string {
   const b64 = bytesToBase64(der);
   const lines = b64.match(/.{1,64}/g) ?? [];
   return `-----BEGIN ${label}-----\n${lines.join("\n")}\n-----END ${label}-----\n`;

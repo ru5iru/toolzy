@@ -13,10 +13,12 @@ interface FileDropzoneProps {
   accept?: string;
   hint?: ReactNode;
   disabled?: boolean;
+  /** Accept several files; `onFile` is then called once per file. */
+  multiple?: boolean;
 }
 
 /** Single-file picker with drag-and-drop, styled like the other Toolzy tools. */
-export const FileDropzone = ({ label, onFile, onClear, file, accept, hint, disabled }: FileDropzoneProps) => {
+export const FileDropzone = ({ label, onFile, onClear, file, accept, hint, disabled, multiple }: FileDropzoneProps) => {
   const picker = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -37,6 +39,7 @@ export const FileDropzone = ({ label, onFile, onClear, file, accept, hint, disab
         setDragging(false);
         if (disabled) return;
         const files = e.dataTransfer.files;
+        if (multiple) { Array.from(files).forEach((f) => onFile(f)); return; }
         if (files.length !== 1) { toast.error("Drop one file at a time."); return; }
         onFile(files[0]);
       }}
@@ -48,23 +51,27 @@ export const FileDropzone = ({ label, onFile, onClear, file, accept, hint, disab
         tabIndex={-1}
         aria-label={label}
         accept={accept}
+        multiple={multiple}
         disabled={disabled}
         onChange={(e) => {
-          const selected = e.target.files?.[0];
-          if (selected) onFile(selected);
+          const selected = Array.from(e.target.files ?? []);
+          if (multiple) selected.forEach((f) => onFile(f));
+          else if (selected[0]) onFile(selected[0]);
           e.target.value = "";
         }}
       />
       <FileUp className="h-6 w-6 text-primary mx-auto mb-2" aria-hidden="true" />
       <div className="flex flex-wrap justify-center gap-2">
         <Button size="sm" type="button" disabled={disabled} onClick={() => picker.current?.click()}>
-          <FileUp />{file ? "Change file" : "Select file"}
+          <FileUp />{multiple ? "Select files" : file ? "Change file" : "Select file"}
         </Button>
-        {file && onClear && (
+        {(file || multiple) && onClear && (
           <Button size="sm" type="button" variant="outline" onClick={clear}><X />Clear</Button>
         )}
       </div>
-      {file ? (
+      {multiple ? (
+        hint && <p className="text-xs text-muted-foreground mt-2">{hint}</p>
+      ) : file ? (
         <p className="text-xs font-mono mt-2 break-all">{file.name} <span className="text-muted-foreground">· {formatBytes(file.size)}</span></p>
       ) : (
         hint && <p className="text-xs text-muted-foreground mt-2">{hint}</p>

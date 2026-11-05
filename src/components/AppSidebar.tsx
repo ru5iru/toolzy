@@ -12,6 +12,7 @@ import {
   Regex,
   FileSearch,
   FileSignature,
+  ScrollText,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
+  { title: "Markdown Editor", url: "/markdown", icon: FileText },
   { title: "JSON Formatter", url: "/json", icon: Braces },
   { title: "Encoding Hub", url: "/encode", icon: Code2 },
   { title: "Crypto Suite", url: "/crypto", icon: KeyRound },
@@ -41,6 +43,7 @@ const tools = [
   { title: "Regex", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
   { title: "Document Signer", url: "/document-signer", icon: FileSignature },
+  { title: "Certificate Inspector", url: "/certificate", icon: ScrollText },
 ];
 
 export function AppSidebar() {

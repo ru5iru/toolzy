@@ -5,7 +5,8 @@ export const CATEGORIES = ["Overview", "Camera", "Location", "Dates", "IPTC/XMP"
 export type Category = typeof CATEGORIES[number];
 export interface MetadataRow { tag: string; label: string; category: Category; value: string }
 export interface PrivacyFinding { title: string; reason: string; tags: string[] }
-export interface Inspection { format: string; mime: string; rows: MetadataRow[]; findings: PrivacyFinding[]; metadataCount: number; thumbnailStatus: string }
+export interface RemovalInfo { kinds?: import("./cleanUtils").BlockKind[]; orientation?: number; animated?: boolean; error?: string }
+export interface Inspection { format: string; mime: string; rows: MetadataRow[]; findings: PrivacyFinding[]; metadataCount: number; thumbnailStatus: string; removal?: RemovalInfo }
 
 const labels: Record<string, string> = {
   Make: "Camera make", Model: "Camera model", LensMake: "Lens make", LensModel: "Lens model",

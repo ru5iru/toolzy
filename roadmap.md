@@ -1,5 +1,16 @@
 # Toolzy Improvement Roadmap
 
+## HTML WYSIWYG Editor
+- [ ] Add safe local rich-text editing, instant HTML source, formatting, and exports.
+- [ ] Register tool and update SEO/discovery/documentation.
+- [ ] Test sanitization and verify editing, download, and mobile layout.
+
+## Markdown Editor
+- [x] Add local document utilities, editor suggestions/commands, and safety tests.
+- [x] Add full-height workspace, preview/compare, autosave, files, shortcuts, and exports.
+- [x] Register route, home/search, navigation, SEO, sitemap, and documentation.
+- [x] Verify editing, suggestions, rendering safety, persistence, downloads, themes, and mobile.
+
 - [x] 1. Foundation: route code-splitting (lazy + Suspense), shared ToolPageLayout
 - [x] 2. UI/UX: semantic color tokens replace hardcoded classes, consistent shell
 - [x] 3. Performance: useDebouncedValue hook; debounced JSON parse + regex eval
@@ -26,7 +37,14 @@
 - [x] 2. Core: keys (PEM/JWK), RSA-PSS and ECDSA sign/verify, manifest, inspector, cancellable worker session; OpenSSL interoperability tests.
 - [x] 3. Page with Sign, Verify, Keys and Inspector tabs; route, sidebar, homepage, sitemap, llms.txt, SEO.
 - [x] 4a. v2: Ed25519 (feature-detected) and RSA-PSS 4096, with OpenSSL interop tests.
-- [ ] 4b. v2: encrypted private-key export (decide PKCS#8 library vs. Toolzy envelope), IndexedDB storage of non-extractable keys, batch sign/verify.
+- [x] 4b. v2: encrypted PKCS#8 export/import (PBES2, no library), opt-in IndexedDB storage of non-extractable keys, batch sign/verify with ZIP.
 - [x] 5a. Secrets generator tab in Crypto Suite.
-- [ ] 5b. PS256/JWK in JWT Hub, X.509 certificate inspector.
+- [x] 5b. PS256/384/512 and JWK in JWT Hub; X.509/CSR certificate inspector at `/certificate`.
 - [ ] 6. Later: embedded PDF signatures (CMS/PAdES) and X.509 trust chains, only if there is demand.
+## Image Metadata Removal
+- [x] Lossless JPEG/PNG cleaner, verification report, comparison, safe download, tests, browser check.
+
+## Image Viewer Improvements
+- [x] Improve processing status, cancellation/retry, and clean-worker startup handling.
+- [x] Add cross-category search and matched-result counts without changing the shared look.
+- [x] Run targeted tests and verify inspection, search, cleaning, and downloads in the browser.
