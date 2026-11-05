@@ -19,6 +19,34 @@ export interface KeyRecord {
   fingerprint: string;
   createdAt: string;
   source: "generated" | "imported";
+  /**
+   * Non-extractable private-key handles, keyed by hash name ("any" when the algorithm does not bind a hash).
+   * Present on keys restored from device storage, where no private bytes exist.
+   */
+  privateKeys?: Partial<Record<string, CryptoKey>>;
+  /** True when this key is saved on this device (IndexedDB). */
+  persisted?: boolean;
+}
+
+/** True when the record can sign, either from private bytes or from stored handles. */
+export function hasPrivateKey(record: Pick<KeyRecord, "pkcs8" | "privateKeys">): boolean {
+  return Boolean(record.pkcs8 || record.privateKeys);
+}
+
+const ALL_HASHES = ["SHA-256", "SHA-384", "SHA-512"] as const;
+
+/**
+ * Import non-extractable private-key handles from PKCS#8. RSA-PSS binds the hash when a key is
+ * imported, so one handle is made per hash; other algorithms need a single handle.
+ */
+export async function makePrivateHandles(record: Pick<KeyRecord, "algorithm" | "pkcs8">): Promise<Record<string, CryptoKey>> {
+  if (!record.pkcs8) throw new Error("This entry has no private key.");
+  const info = algorithmById(record.algorithm);
+  const buffer = toArrayBuffer(record.pkcs8);
+  if (info.family !== "RSA-PSS") return { any: await crypto.subtle.importKey("pkcs8", buffer, keyAlgorithm(info, DEFAULT_HASH), false, ["sign"]) };
+  const handles: Record<string, CryptoKey> = {};
+  for (const hash of ALL_HASHES) handles[hash] = await crypto.subtle.importKey("pkcs8", buffer, keyAlgorithm(info, hash), false, ["sign"]);
+  return handles;
 }
 
 const DEFAULT_HASH = "SHA-256" as const;

@@ -2,7 +2,7 @@ import { base64ToBytes, bytesToBase64, toArrayBuffer } from "@/lib/crypto/base64
 import { ecdsaDerToRaw, ecdsaRawToDer } from "@/lib/crypto/ecdsa";
 import { digestHex } from "@/lib/crypto/fingerprint";
 import { algorithmById, HASH_BYTES, keyAlgorithm, signParams, usesSigningHash, type AlgorithmId, type HashName } from "./algorithms";
-import type { KeyRecord } from "./keyUtils";
+import { hasPrivateKey, type KeyRecord } from "./keyUtils";
 import { manifestToText, type Manifest } from "./manifest";
 
 export const MAX_FILE_BYTES = 256 * 1024 * 1024;
@@ -18,6 +18,19 @@ export async function signBytes(data: Uint8Array, pkcs8: Uint8Array, algorithm: 
   const key = await crypto.subtle.importKey("pkcs8", toArrayBuffer(pkcs8), keyAlgorithm(info, hash), false, ["sign"]);
   const raw = new Uint8Array(await crypto.subtle.sign(signParams(info, hash), key, toArrayBuffer(data)));
   // RSA-PSS and Ed25519 signatures are the same bytes OpenSSL produces; ECDSA needs DER.
+  return info.family === "ECDSA" ? ecdsaRawToDer(raw) : raw;
+}
+
+/** Signs with a record's private key: stored non-extractable handles when present, otherwise its PKCS#8 bytes. */
+export async function signWithRecord(data: Uint8Array, record: KeyRecord, hash: HashName): Promise<Uint8Array> {
+  if (!record.privateKeys) {
+    if (!record.pkcs8) throw new Error("The selected key has no private part. Choose a key pair or import a private key.");
+    return signBytes(data, record.pkcs8, record.algorithm, hash);
+  }
+  const info = algorithmById(record.algorithm);
+  const handle = record.privateKeys[hash] ?? record.privateKeys.any;
+  if (!handle) throw new Error("The stored key cannot sign with this hash. Re-import the key.");
+  const raw = new Uint8Array(await crypto.subtle.sign(signParams(info, hash), handle, toArrayBuffer(data)));
   return info.family === "ECDSA" ? ecdsaRawToDer(raw) : raw;
 }
 
@@ -48,11 +61,11 @@ export interface SignDocumentResult {
 }
 
 export async function signDocument({ data, filename, key, hash }: SignDocumentInput): Promise<SignDocumentResult> {
-  if (!key.pkcs8) throw new Error("The selected key has no private part. Choose a key pair or import a private key.");
+  if (!hasPrivateKey(key)) throw new Error("The selected key has no private part. Choose a key pair or import a private key.");
   validateFileSize(data.length);
   const info = algorithmById(key.algorithm);
   const documentHash = await digestHex(data, hash);
-  const signature = await signBytes(data, key.pkcs8, key.algorithm, hash);
+  const signature = await signWithRecord(data, key, hash);
   const manifest: Manifest = {
     version: 1,
     document: { filename, size: data.length, hashAlgorithm: hash, hash: documentHash },

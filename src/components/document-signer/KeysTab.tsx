@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Copy, Download, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { Copy, Download, HardDrive, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ALGORITHMS, algorithmById, supportedAlgorithms, type AlgorithmId, type AlgorithmInfo } from "./algorithms";
 import { copyText, downloadBytes } from "./browserUtils";
 import {
-  exportEncryptedPrivatePem, exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, importKeyText, isEncryptedKeyText, keysMatch, type KeyRecord,
+  exportEncryptedPrivatePem, exportJwk, exportPrivatePem, exportPublicPem, generateKeyRecord, hasPrivateKey, importKeyText, isEncryptedKeyText, keysMatch, type KeyRecord,
 } from "./keyUtils";
 import { KeySelect, MetaRow } from "./SignerControls";
 import { toneClass } from "./statusStyles";
@@ -22,11 +22,14 @@ interface KeysTabProps {
   keys: KeyRecord[];
   onAdd: (key: KeyRecord) => void;
   onDelete: (id: string) => void;
+  onRemember: (id: string) => Promise<void>;
+  onForget: (id: string) => Promise<void>;
+  storageSupported: boolean;
 }
 
 type PrivateExport = { key: KeyRecord; format: "pem" | "jwk" };
 
-export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
+export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSupported }: KeysTabProps) => {
   const [algorithm, setAlgorithm] = useState<AlgorithmId>("ECDSA-P256");
   // Ed25519 support varies by browser, so it only appears once detected.
   const [available, setAvailable] = useState<AlgorithmInfo[]>(ALGORITHMS.filter((a) => a.family !== "Ed25519"));
@@ -102,7 +105,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
     }
   };
 
-  const privateKeys = keys.filter((k) => k.pkcs8);
+  const privateKeys = keys.filter(hasPrivateKey);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div className="space-y-5 min-w-0">
@@ -122,7 +125,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
             </div>
           </div>
           <Button onClick={generate} disabled={generating}>{generating ? <Loader2 className="animate-spin" /> : <Plus />}Generate key pair</Button>
-          <p className="text-xs text-muted-foreground">Keys exist only in this tab's memory. Reloading or closing the page removes them, so export anything you need to keep.</p>
+          <p className="text-xs text-muted-foreground">Keys stay in this tab's memory unless you choose "Remember on this device". Reloading or closing the page removes the rest, so export anything you need to keep.</p>
         </section>
 
         <section aria-labelledby="import-heading" className="space-y-3">
@@ -158,7 +161,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                   <button type="button" onClick={() => setSelectedId(key.id)} aria-pressed={selected?.id === key.id}
                     className={`w-full text-left px-3 py-2 hover:bg-secondary ${selected?.id === key.id ? "bg-secondary" : ""}`}>
                     <div className="flex items-center gap-2 text-sm font-mono"><KeyRound className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" /><span className="truncate">{key.name}</span></div>
-                    <div className="text-xs text-muted-foreground mt-0.5">{algorithmById(key.algorithm).label} · {key.pkcs8 ? "key pair" : "public only"}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{algorithmById(key.algorithm).label} · {hasPrivateKey(key) ? "key pair" : "public only"}{key.persisted ? " · saved on device" : ""}</div>
                   </button>
                 </li>
               ))}
@@ -168,9 +171,10 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                 <div className="border border-border rounded-lg px-3">
                   <MetaRow label="Name" value={selected.name} copyable={false} />
                   <MetaRow label="Algorithm" value={algorithmById(selected.algorithm).label} copyable={false} />
-                  <MetaRow label="Contains" value={selected.pkcs8 ? "private and public key" : "public key only"} copyable={false} />
+                  <MetaRow label="Contains" value={hasPrivateKey(selected) ? "private and public key" : "public key only"} copyable={false} />
                   <MetaRow label="Fingerprint (SHA-256 of SPKI)" value={selected.fingerprint} />
                   <MetaRow label="Source" value={selected.source} copyable={false} />
+                  <MetaRow label="Storage" value={selected.persisted ? "saved on this device" : "this tab only"} copyable={false} />
                   <MetaRow label="Created" value={selected.createdAt} copyable={false} />
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -183,6 +187,21 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
                   {selected.pkcs8 && <Button size="sm" variant="outline" onClick={() => setPendingExport({ key: selected, format: "jwk" })}><Download />Private JWK…</Button>}
                   <Button size="sm" variant="outline" onClick={() => setPendingDelete(selected)}><Trash2 />Delete</Button>
                 </div>
+                {hasPrivateKey(selected) && !selected.pkcs8 && (
+                  <p className="text-xs text-muted-foreground">This private key was restored from device storage and cannot be exported. Only its public half can be downloaded.</p>
+                )}
+                {storageSupported && (
+                  <div className="space-y-1.5">
+                    <Button size="sm" variant="outline" onClick={() => void (selected.persisted ? onForget(selected.id) : onRemember(selected.id))}>
+                      {selected.persisted ? <><HardDrive />Forget on this device</> : <><HardDrive />Remember on this device</>}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {hasPrivateKey(selected)
+                        ? "Optional. Saves the private key in this browser as a non-extractable key, so you can sign after reloading but can no longer export it from here. Any script running on this site could still use it to sign, and clearing site data deletes it."
+                        : "Optional. Saves this public key in this browser so it is there after reloading."}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -219,7 +238,7 @@ export const KeysTab = ({ keys, onAdd, onDelete }: KeysTabProps) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{pendingDelete?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingDelete?.pkcs8 ? "This removes the key pair from this session. If you have not exported the private key, you will not be able to sign with it again." : "This removes the public key from this session."}
+              {pendingDelete && hasPrivateKey(pendingDelete) ? "This removes the key pair from this session and from this device. If you have not exported the private key, you will not be able to sign with it again." : "This removes the public key from this session and from this device."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

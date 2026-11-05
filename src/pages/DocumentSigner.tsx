@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -9,6 +9,7 @@ import { InspectorTab } from "@/components/document-signer/InspectorTab";
 import { KeysTab } from "@/components/document-signer/KeysTab";
 import { SignTab } from "@/components/document-signer/SignTab";
 import { VerifyTab } from "@/components/document-signer/VerifyTab";
+import { forgetKey, indexedDbBackend, loadStoredKeys, rememberKey } from "@/components/document-signer/keyStore";
 import { generateKeyRecord, type KeyRecord } from "@/components/document-signer/keyUtils";
 import { SignerSession, type SignerWorkerPort } from "@/components/document-signer/signerSession";
 import type { VerifyResult } from "@/components/document-signer/verifyUtils";
@@ -35,8 +36,45 @@ const DocumentSigner = () => {
   if (!session.current) session.current = new SignerSession(() => new SignerWorker() as unknown as SignerWorkerPort);
   useEffect(() => () => session.current?.cancel(), []);
 
+  // Device storage is opt-in: the database is only opened if the person saved a key before.
+  const store = useMemo(() => indexedDbBackend(), []);
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        if (!(await store.exists())) return;
+        const stored = await loadStoredKeys(store);
+        if (!cancelled && stored.length) setKeys((current) => [...current, ...stored.filter((s) => !current.some((c) => c.id === s.id))]);
+      } catch { /* storage unavailable: keys stay session-only */ }
+    })();
+    return () => { cancelled = true; };
+  }, [store]);
+  const remember = useCallback(async (id: string) => {
+    const record = keys.find((k) => k.id === id);
+    if (!record) return;
+    try {
+      const saved = await rememberKey(store, record);
+      setKeys((current) => current.map((k) => (k.id === id ? saved : k)));
+      toast.success("Saved on this device");
+    } catch {
+      toast.error("This browser could not save the key. It stays in memory for this session.");
+    }
+  }, [keys, store]);
+  const forget = useCallback(async (id: string) => {
+    try {
+      await forgetKey(store, id);
+      setKeys((current) => current.map((k) => (k.id === id ? { ...k, persisted: false } : k)));
+      toast.success("Removed from this device");
+    } catch {
+      toast.error("This browser could not remove the saved key.");
+    }
+  }, [store]);
+
   const addKey = useCallback((key: KeyRecord) => setKeys((current) => [key, ...current]), []);
-  const deleteKey = useCallback((id: string) => setKeys((current) => current.filter((key) => key.id !== id)), []);
+  const deleteKey = useCallback((id: string) => {
+    setKeys((current) => current.filter((key) => key.id !== id));
+    void forgetKey(store, id).catch(() => undefined);
+  }, [store]);
   const quickGenerate = useCallback(async () => {
     try {
       addKey(await generateKeyRecord("ECDSA-P256", "Quick start key"));
@@ -92,7 +130,7 @@ const DocumentSigner = () => {
           <BatchTab keys={keys} />
         </TabsContent>
         <TabsContent value="keys" forceMount className={tab === "keys" ? "" : "hidden"}>
-          <KeysTab keys={keys} onAdd={addKey} onDelete={deleteKey} />
+          <KeysTab keys={keys} onAdd={addKey} onDelete={deleteKey} onRemember={remember} onForget={forget} storageSupported={store.supported} />
         </TabsContent>
         <TabsContent value="inspector" forceMount className={tab === "inspector" ? "" : "hidden"}>
           <InspectorTab verification={verification} />

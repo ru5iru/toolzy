@@ -7,7 +7,7 @@ import { digestHex } from "@/lib/crypto/fingerprint";
 import { formatBytes } from "@/lib/formatBytes";
 import { algorithmById, usesSigningHash, type HashName } from "./algorithms";
 import { downloadBytes, readFileBytes } from "./browserUtils";
-import type { KeyRecord } from "./keyUtils";
+import { hasPrivateKey, type KeyRecord } from "./keyUtils";
 import { manifestFileName, signatureFileName } from "./manifest";
 import type { SignerSession } from "./signerSession";
 import { validateFileSize, type SignDocumentResult } from "./signingUtils";
@@ -22,7 +22,7 @@ interface SignTabProps {
 }
 
 export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabProps) => {
-  const privateKeys = keys.filter((key) => key.pkcs8);
+  const privateKeys = keys.filter(hasPrivateKey);
   const [file, setFile] = useState<File>();
   const [fingerprint, setFingerprint] = useState<string>();
   const [keyId, setKeyId] = useState("");

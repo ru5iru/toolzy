@@ -9,7 +9,7 @@ import { formatBytes } from "@/lib/formatBytes";
 import { algorithmById, usesSigningHash, type HashName } from "./algorithms";
 import { BatchCancelled, checkBatchSize, signBatch, verifyBatch, type BatchFile, type BatchSignItem, type BatchVerifyItem } from "./batchUtils";
 import { downloadBytes, readFileBytes } from "./browserUtils";
-import { importKeyText, type KeyRecord } from "./keyUtils";
+import { hasPrivateKey, importKeyText, type KeyRecord } from "./keyUtils";
 import { HashSelect, KeySelect } from "./SignerControls";
 import { toneClass } from "./statusStyles";
 
@@ -41,7 +41,7 @@ const Summary = ({ files }: { files: File[] }) => files.length === 0 ? null : (
 const readAll = async (files: File[]): Promise<BatchFile[]> => Promise.all(files.map(async (f) => ({ name: f.name, data: await readFileBytes(f) })));
 
 export const BatchTab = ({ keys }: { keys: KeyRecord[] }) => {
-  const privateKeys = keys.filter((k) => k.pkcs8);
+  const privateKeys = keys.filter(hasPrivateKey);
   const signList = useFileList();
   const [signKeyId, setSignKeyId] = useState("");
   const [signHash, setSignHash] = useState<HashName>("SHA-256");
