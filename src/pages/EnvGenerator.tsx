@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolHeader } from "@/components/ToolHeader";
+import { toolPageClass } from "@/lib/toolLayout";
 import { FileText } from "lucide-react";
 
 const templates: Record<string, string> = {
@@ -85,7 +86,7 @@ const EnvGenerator = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className={toolPageClass("fluid")}>
       <ToolSEO title="Environment File Generator" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Copy or download instantly." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."},{question:"Is my configuration data uploaded anywhere?",answer:"No. The .env file is built entirely in your browser — secrets and values never leave your machine."},{question:"How do I download the generated .env file?",answer:"Click the download button to save the output as a .env file, or copy it to your clipboard with one click."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file"]} />
       <ToolHeader title="Environment Generator" icon={FileText} description="Build .env files from templates." />
       <div>

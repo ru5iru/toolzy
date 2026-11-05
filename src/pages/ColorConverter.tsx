@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette, Palette } from "lucide-react";
 import { ToolHeader } from "@/components/ToolHeader";
+import { toolPageClass } from "@/lib/toolLayout";
+import { AboutTool } from "@/components/AboutTool";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -157,7 +159,7 @@ const ColorConverter = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className={toolPageClass("fluid")}>
       <ToolSEO
         title="Color Converter & Toolkit"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
@@ -308,7 +310,7 @@ const ColorConverter = () => {
 
       {/* === Tabs for advanced features === */}
       <Tabs defaultValue="palette" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
+        <TabsList className="h-auto w-fit max-w-full flex-wrap justify-start gap-1 bg-muted/50 p-1">
           {["palette", "contrast", "gradient", "extract", "batch", "history"].map(t => (
             <TabsTrigger key={t} value={t} className="text-xs capitalize">{t}</TabsTrigger>
           ))}
@@ -543,8 +545,7 @@ const ColorConverter = () => {
         </TabsContent>
       </Tabs>
 
-      {/* === SEO Content === */}
-      <div className="space-y-6 pt-6 border-t border-border">
+      <AboutTool title="About color formats">
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-2">What is HEX Color?</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -569,7 +570,7 @@ const ColorConverter = () => {
             The Web Content Accessibility Guidelines (WCAG) require a minimum contrast ratio of 4.5:1 for normal text (AA) and 7:1 for enhanced readability (AAA). Large text (18px+ bold or 24px+) requires 3:1 for AA. Use the contrast checker above to verify your color combinations meet accessibility standards.
           </p>
         </section>
-      </div>
+      </AboutTool>
     </div>
   );
 };

@@ -23,6 +23,7 @@ import {
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
 import { importKeyInput } from "@/lib/crypto/keyInput";
 import { ToolHeader } from "@/components/ToolHeader";
+import { toolPageClass } from "@/lib/toolLayout";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -705,7 +706,7 @@ const JwtHub = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4">
+    <div className={toolPageClass("fluid")}>
       <ToolSEO
         title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
         description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
