@@ -42,7 +42,7 @@ const Index = () => {
     : tools;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-[1600px]">
       <ToolSEO
         title="Toolzy"
         description="Toolzy — Free collection of online developer tools. JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, and more. 100% client-side."

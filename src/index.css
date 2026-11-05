@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/noto-sans-sinhala/400.css";
+@import "@fontsource/noto-sans-sinhala/500.css";
+@import "@fontsource/noto-sans-tamil/400.css";
+@import "@fontsource/noto-sans-tamil/500.css";
+@import "@fontsource/noto-sans-devanagari/400.css";
+@import "@fontsource/noto-sans-devanagari/500.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
@@ -47,7 +54,8 @@
     --sidebar-border: 220 14% 16%;
     --sidebar-ring: 185 80% 55%;
 
-    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --font-sans: "Inter Variable", "Noto Sans Sinhala", "Noto Sans Tamil", "Noto Sans Devanagari", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", "PingFang SC", "Hiragino Sans", "Yu Gothic", "Malgun Gothic", "Noto Sans Arabic", "Noto Sans Hebrew", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Sinhala", "Noto Sans Tamil", "Noto Sans Devanagari", monospace;
 
     --success: 145 65% 45%;
     --warning: 40 90% 55%;
@@ -78,7 +86,10 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -97,5 +108,9 @@
 @layer utilities {
   .font-mono {
     font-family: var(--font-mono);
+    font-variant-ligatures: none;
   }
+  .font-sans { font-family: var(--font-sans); }
+  /* Code-like content: always monospace, tabular, no ligatures that hide characters */
+  .code-surface { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.55; font-variant-ligatures: none; tab-size: 2; }
 }
