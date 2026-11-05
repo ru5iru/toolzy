@@ -2,8 +2,8 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, ty
 import { renderToStaticMarkup } from "react-dom/server";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
-import { EditorView } from "@codemirror/view";
-import { openSearchPanel } from "@codemirror/search";
+import { EditorView, type ViewUpdate } from "@codemirror/view";
+import { openSearchPanel, search } from "@codemirror/search";
 import { diffLines } from "diff";
 import { Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3, List, ListOrdered, ListTodo, Link, MoreHorizontal, FileText, Download, ChevronDown, Search, Sun, Moon, PanelLeft, Columns2, Eye, GitCompare, Maximize, FolderOpen, Save, Keyboard, Info, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
@@ -137,6 +137,13 @@ export default function MarkdownEditor() {
     requestAnimationFrame(() => { scrollLock.current = false; });
   }, [sync]);
   const extensions = useMemo(() => [markdown(), ...markdownExtensions(), EditorView.lineWrapping, EditorView.contentAttributes.of({ "aria-label": "Markdown source", spellcheck: "false" }), EditorView.domEventHandlers({ scroll: (_event, editor) => { synchronize(editor.scrollDOM, preview.current); return false; } })], [synchronize]);
+  const updateCursor = useCallback((update: ViewUpdate) => {
+    if (!update.selectionSet && !update.docChanged) return;
+    const pos = update.state.selection.main.head; const line = update.state.doc.lineAt(pos); const col = pos - line.from + 1;
+    setCursor(previous => previous.line === line.number && previous.col === col ? previous : { line: line.number, col });
+  }, []);
+  const searchExtension = useMemo(() => search({ top: true }), []);
+  const editorExtensions = useMemo(() => [...extensions, searchExtension], [extensions, searchExtension]);
 
   const editorPane = <section className="flex h-full min-h-0 min-w-0 flex-col markdown-editor" aria-label="Markdown editor pane">
     <header className="shrink-0 border-b border-border bg-card px-3 py-2 flex flex-wrap items-center gap-1">
@@ -146,7 +153,7 @@ export default function MarkdownEditor() {
         <DropdownMenu><DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8" aria-label="More formatting"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent>{["Quote", "Code block", "Table", "Horizontal rule", "Image", "Details", "Footnote"].map(label => <DropdownMenuItem key={label} onSelect={() => insertSnippet(label)}>{label}</DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>
       </div><Badge variant="outline" className="ml-auto text-[9px] font-mono">MARKDOWN</Badge>
     </header>
-    <CodeMirror value={text} height="100%" className="flex-1 min-h-0 overflow-hidden" theme="none" extensions={extensions} onCreateEditor={editor => { view.current = editor; if (pendingSearch.current) { openSearchPanel(editor); pendingSearch.current = false; } }} onChange={setText} onUpdate={update => { if (!update.selectionSet && !update.docChanged) return; const pos = update.state.selection.main.head; const line = update.state.doc.lineAt(pos); const col = pos - line.from + 1; setCursor(previous => previous.line === line.number && previous.col === col ? previous : { line: line.number, col }); }} basicSetup={editorSetup} />
+    <CodeMirror value={text} height="100%" className="flex-1 min-h-0 overflow-hidden" theme="none" extensions={editorExtensions} onCreateEditor={editor => { view.current = editor; if (pendingSearch.current) { openSearchPanel(editor); pendingSearch.current = false; } }} onChange={setText} onUpdate={updateCursor} basicSetup={editorSetup} />
   </section>;
   const previewPane = <section className="flex h-full min-h-0 min-w-0 flex-col" aria-label="Markdown preview pane"><header className="h-12 shrink-0 border-b border-border bg-card px-4 flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /><h2 className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Live preview</h2><Badge variant="outline" className="ml-auto text-[9px] font-mono">{stats.minutes} MIN</Badge></header><div ref={preview} onScroll={event => synchronize(event.currentTarget, view.current?.scrollDOM)} className="markdown-preview flex-1 min-h-0 overflow-auto p-6"><MarkdownPreview text={deferred} /></div></section>;
 
