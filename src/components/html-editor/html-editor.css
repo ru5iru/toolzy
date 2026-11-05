@@ -1,0 +1,21 @@
+.html-rich-text .tiptap { min-height: 340px; outline: none; overflow-wrap: anywhere; }
+.html-rich-text .tiptap > * + * { margin-top: .75rem; }
+.html-rich-text h1 { font-size: 2rem; font-weight: 700; }
+.html-rich-text h2 { font-size: 1.5rem; font-weight: 700; }
+.html-rich-text h3 { font-size: 1.25rem; font-weight: 600; }
+.html-rich-text h4 { font-size: 1rem; font-weight: 600; }
+.html-rich-text ul { list-style: disc; padding-left: 1.5rem; }
+.html-rich-text ol { list-style: decimal; padding-left: 1.5rem; }
+.html-rich-text blockquote { border-left: 3px solid hsl(var(--primary)); padding-left: 1rem; color: hsl(var(--muted-foreground)); }
+.html-rich-text code { background: hsl(var(--muted)); border-radius: var(--radius); padding: .15rem .3rem; font-family: var(--font-mono); }
+.html-rich-text pre { background: hsl(var(--muted)); padding: 1rem; border-radius: var(--radius); white-space: pre-wrap; }
+.html-rich-text pre code { padding: 0; }
+.html-rich-text a { color: hsl(var(--primary)); text-decoration: underline; }
+.html-rich-text hr { border-top: 1px solid hsl(var(--border)); margin: 1rem 0; }
+.html-rich-text table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.html-rich-text th, .html-rich-text td { border: 1px solid hsl(var(--border)); padding: .5rem; vertical-align: top; position: relative; }
+.html-rich-text th { background: hsl(var(--muted)); font-weight: 600; }
+.html-rich-text .selectedCell { background: hsl(var(--primary) / .15); }
+.html-rich-text img { max-width: 100%; height: auto; }
+.html-rich-text .ProseMirror-selectednode { outline: 2px solid hsl(var(--ring)); }
+.html-rich-text .tiptap:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 6px; }
