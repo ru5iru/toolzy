@@ -146,6 +146,12 @@ toolzy/
 
 ---
 
+## UI and design
+
+See [`DESIGN.md`](DESIGN.md) for the design principles, page anatomy, spacing scale, control states and the rollout plan. New tools use `ToolPageLayout` and the shared controls.
+
+---
+
 ## Tools — Full Catalog & Capabilities
 
 ### Document Signer — `/document-signer`

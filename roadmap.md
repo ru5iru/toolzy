@@ -48,3 +48,10 @@
 - [x] Improve processing status, cancellation/retry, and clean-worker startup handling.
 - [x] Add cross-category search and matched-result counts without changing the shared look.
 - [x] Run targeted tests and verify inspection, search, cleaning, and downloads in the browser.
+
+## UI/UX upgrade (see DESIGN.md)
+- [x] Foundation: tokens, motion, focus; Button/Tabs/Input/Toggle states; `selected` variant.
+- [x] Shell: sticky top bar with tool name, responsive padding, sidebar hover.
+- [x] `ToolHeader` + `ToolPageLayout`; all pages migrated off hand-written headers; compact "Local only" chip.
+- [x] Launcher home page (search focused on load, `/` shortcut, Enter opens first match, tiles are links).
+- [ ] Next: light theme, command palette (Ctrl/Cmd+K), shared `ResultPanel` and `CopyButton`, per-tool density pass for JSON, JWT and Fake Data toolbars.

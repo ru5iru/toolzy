@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
+import type { ComponentProps, ReactNode } from "react";
+import { ToolHeader } from "@/components/ToolHeader";
 
-interface ToolPageLayoutProps {
+interface ToolPageLayoutProps extends Omit<ComponentProps<typeof ToolHeader>, "title"> {
   title: string;
   toolbar?: ReactNode;
   children: ReactNode;
@@ -15,13 +15,11 @@ const maxWidthClass = {
   "7xl": "max-w-7xl",
 };
 
-export const ToolPageLayout = ({ title, toolbar, children, maxWidth = "6xl" }: ToolPageLayoutProps) => (
-  <div className={`${maxWidthClass[maxWidth]} mx-auto`}>
-    <header className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-      <h1 className="text-lg font-mono font-bold text-foreground">{title}</h1>
-      <PrivacyBadge />
-    </header>
-    {toolbar && <div className="mb-2">{toolbar}</div>}
+/** Standard tool page: header, optional toolbar, then content on a 24 px rhythm. */
+export const ToolPageLayout = ({ title, toolbar, children, maxWidth = "6xl", ...header }: ToolPageLayoutProps) => (
+  <div className={`${maxWidthClass[maxWidth]} mx-auto space-y-5`}>
+    <ToolHeader title={title} {...header} />
+    {toolbar && <div>{toolbar}</div>}
     {children}
   </div>
 );

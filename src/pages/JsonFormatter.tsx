@@ -8,14 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link } from "lucide-react";
+import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
-import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
 import { JsonHighlighted } from "@/components/json-formatter/JsonHighlighted";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { ToolHeader } from "@/components/ToolHeader";
 
 type IndentOption = "2" | "4" | "tab";
 
@@ -160,10 +160,7 @@ const JsonFormatter = () => {
     <div className="max-w-6xl mx-auto">
       <ToolSEO title="JSON Formatter & Validator" description="Free online JSON formatter, validator, and minifier. Paste your JSON to format, beautify, or compress it instantly in your browser." canonicalPath="/json" keywords={["JSON formatter", "JSON validator", "JSON beautifier", "JSON minifier", "format JSON online"]} faq={[{question:"How do I format JSON online?",answer:"Paste your JSON into the input field and click Format. The tool will parse, validate, and pretty-print your JSON with proper indentation."},{question:"Does this JSON formatter send my data to a server?",answer:"No. All JSON formatting and validation happens entirely in your browser — your data never leaves your machine."},{question:"Can I convert JSON to CSV, XML, or YAML?",answer:"Yes. Use the download buttons in the toolbar to export your JSON as CSV, XML, or YAML, or download the formatted JSON file itself."},{question:"What is the JSON tree view?",answer:"Tree view renders your JSON as an interactive, collapsible structure with syntax highlighting, search, and click-to-copy JSONPath for every node."},{question:"Can I share my JSON with someone?",answer:"Yes. Click Share to copy a link with your JSON encoded in the URL — anyone opening the link sees the same data loaded instantly."}]} howToSteps={["Paste your JSON into the input textarea","Click Format to beautify or Minify to compress","Click Copy to copy the result to your clipboard"]} />
 
-      <header className="flex items-center justify-between mb-2">
-        <h1 className="text-lg font-mono font-bold text-foreground">JSON Formatter, Validator & Minifier</h1>
-        <PrivacyBadge />
-      </header>
+      <ToolHeader title="JSON Formatter, Validator & Minifier" icon={Braces} />
 
       {/* Compact toolbar */}
       <h2 className="sr-only">Actions</h2>

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Copy, Clock, ArrowRightLeft, Calendar, Timer, Search } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 
 const commonCrons = [
   { label: "Every minute", expr: "* * * * *" },
@@ -210,13 +211,10 @@ const DateTimeTool = () => {
       <ToolSEO title="Date & Time Toolkit" description="Convert Unix timestamps to human dates, compare timezones, and build cron expressions with a visual cron generator. Free online date/time tools." canonicalPath="/datetime" keywords={["Unix timestamp converter", "timezone converter", "cron expression generator", "epoch converter", "date time tool"]} faq={[{question:"How do I convert a Unix timestamp?",answer:"Enter a Unix timestamp (seconds since epoch) and click Convert to see the human-readable date, or enter a date to get the Unix timestamp."},{question:"What is a cron expression?",answer:"A cron expression defines a schedule using five fields: minute, hour, day of month, month, and day of week. This tool helps you build and visualize cron schedules."},{question:"How do I calculate the difference between two dates?",answer:"Use the Date Difference section: pick a start and end date and instantly see the gap in days, hours, and minutes."},{question:"Which timezones are supported?",answer:"All IANA timezones supported by your browser — over 400 zones, searchable and grouped by region, with live UTC offsets."}]} howToSteps={["Enter a Unix timestamp or date to convert","Use the timezone section to compare times across zones","Build cron expressions using the interactive generator"]} />
 
       {/* Header with live clock */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-mono font-bold text-foreground">Date & Time Toolkit</h1>
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
+      <ToolHeader title="Date & Time Toolkit" icon={Clock} description="Timestamps, time zones and a cron builder." actions={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
           <Clock className="h-3.5 w-3.5 text-primary" />
           <span>{liveNow.toISOString().replace("T", " ").slice(0, 19)} UTC</span>
-        </div>
-      </div>
+        </div>} />
 
       {/* Unix ↔ Human */}
       <section className="border border-border rounded-lg bg-card p-4 space-y-3">
@@ -317,7 +315,7 @@ const DateTimeTool = () => {
         </div>
         <div className="flex flex-wrap gap-1.5">
           {commonCrons.map((c) => (
-            <Button key={c.expr} variant={cron === c.expr ? "default" : "secondary"} size="sm" className="h-7 text-xs" onClick={() => setCron(c.expr)}>
+            <Button key={c.expr} variant={cron === c.expr ? "selected" : "secondary"} size="sm" className="h-7 text-xs" onClick={() => setCron(c.expr)}>
               {c.label}
             </Button>
           ))}

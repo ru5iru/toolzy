@@ -62,6 +62,10 @@
 
     /* Semantic status tokens */
     --info: 210 80% 60%;
+
+    /* Interaction surfaces (see DESIGN.md) */
+    --secondary-hover: 220 16% 23%;
+    --border-hover: 220 12% 32%;
     --success-foreground: 145 65% 60%;
     --warning-foreground: 40 90% 60%;
   }
@@ -75,6 +79,18 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer base {
+  html { color-scheme: dark; }
+  ::selection { background: hsl(var(--primary) / 0.3); }
+  /* Quiet, consistent scrollbars for panels and editors */
+  * { scrollbar-width: thin; scrollbar-color: hsl(var(--border-hover)) transparent; }
+  /* Never hide keyboard focus; mouse clicks on buttons do not show it */
+  :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
 }
 
