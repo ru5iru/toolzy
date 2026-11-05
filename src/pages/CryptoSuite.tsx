@@ -18,12 +18,11 @@ import {
   loadUUIDHistory, saveUUIDHistory,
   type UUIDValidation
 } from "@/components/uuid/uuidUtils";
-import {
-  Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText
-} from "lucide-react";
+import { Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
 import { SecretsTab } from "@/components/secrets/SecretsTab";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
+import { ToolHeader } from "@/components/ToolHeader";
 
 // ---------- Hash helpers ----------
 type HashAlgo = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
@@ -166,13 +165,7 @@ const CryptoSuite = () => {
         ]}
       />
 
-      <header className="flex items-center gap-3">
-        <KeyRound className="h-6 w-6 text-primary" aria-hidden />
-        <div>
-          <h1 className="text-2xl font-mono font-bold text-foreground">Crypto Suite</h1>
-          <p className="text-sm text-muted-foreground">Hashing, UUID &amp; secret generation — 100% browser-side</p>
-        </div>
-      </header>
+      <ToolHeader title="Crypto Suite" icon={KeyRound} description="Hashing, UUID and secret generation." />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as CryptoTab)} className="space-y-6">
         <TabsList>
@@ -393,7 +386,7 @@ function HashTab() {
       {/* Mode toggle */}
       <div className="flex flex-wrap items-center gap-2">
         {(["text", "file", "hex"] as const).map((m) => (
-          <Button key={m} size="sm" variant={mode === m ? "default" : "outline"} onClick={() => setMode(m)}>
+          <Button key={m} size="sm" variant={mode === m ? "selected" : "outline"} onClick={() => setMode(m)}>
             {m === "text" ? "Text" : m === "file" ? "File" : "Hex"}
           </Button>
         ))}
@@ -495,7 +488,7 @@ function HashTab() {
               <Button
                 key={a}
                 size="sm"
-                variant={active && !disabled ? "default" : "outline"}
+                variant={active && !disabled ? "selected" : "outline"}
                 disabled={disabled}
                 onClick={() => toggleAlgo(a)}
                 className="h-7 text-xs"
@@ -517,7 +510,7 @@ function HashTab() {
             ["b64", "Base64"],
             ["b64u", "Base64 URL-safe"],
           ] as [OutputFmt, string][]).map(([k, label]) => (
-            <Button key={k} size="sm" variant={outFmt === k ? "default" : "outline"} className="h-7 text-xs" onClick={() => setOutFmt(k)}>
+            <Button key={k} size="sm" variant={outFmt === k ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setOutFmt(k)}>
               {label}
             </Button>
           ))}
@@ -790,7 +783,7 @@ function UuidTab() {
             <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Version</label>
             <div className="grid grid-cols-4 gap-2">
               {(["v1", "v4", "v3", "v5"] as Version[]).map((v) => (
-                <Button key={v} size="sm" variant={version === v ? "default" : "outline"} onClick={() => setVersion(v)}>{v.toUpperCase()}</Button>
+                <Button key={v} size="sm" variant={version === v ? "selected" : "outline"} onClick={() => setVersion(v)}>{v.toUpperCase()}</Button>
               ))}
             </div>
           </div>
@@ -816,7 +809,7 @@ function UuidTab() {
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Namespace</label>
               <div className="flex gap-1 flex-wrap">
                 {(["DNS", "URL", "OID", "X500", "custom"] as const).map((ns) => (
-                  <Button key={ns} size="sm" variant={nsType === ns ? "default" : "outline"} className="h-7 text-xs" onClick={() => setNsType(ns)}>{ns}</Button>
+                  <Button key={ns} size="sm" variant={nsType === ns ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setNsType(ns)}>{ns}</Button>
                 ))}
               </div>
               {nsType === "custom" && (
@@ -850,7 +843,7 @@ function UuidTab() {
                 ["alpha", "A→Z"],
                 ["time", "Timestamp (v1)"],
               ] as [SortMode, string][]).map(([k, l]) => (
-                <Button key={k} size="sm" variant={sortMode === k ? "default" : "outline"} className="h-7 text-xs" onClick={() => setSortMode(k)}>{l}</Button>
+                <Button key={k} size="sm" variant={sortMode === k ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setSortMode(k)}>{l}</Button>
               ))}
             </div>
           </div>
@@ -858,7 +851,7 @@ function UuidTab() {
             <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Export {exportFmt && <span className="text-foreground/60">(last: .{exportFmt})</span>}</label>
             <div className="flex gap-2 flex-wrap">
               {(["txt", "csv", "json", "sql"] as ExportFormat[]).map((f) => (
-                <Button key={f} size="sm" variant={exportFmt === f ? "default" : "outline"} className="h-7 text-xs" onClick={() => exportUuids(f)}>
+                <Button key={f} size="sm" variant={exportFmt === f ? "selected" : "outline"} className="h-7 text-xs" onClick={() => exportUuids(f)}>
                   <Download className="h-3 w-3 mr-1" />.{f}
                 </Button>
               ))}
@@ -977,7 +970,7 @@ function UuidTab() {
       <div className="border border-border rounded-lg p-4 bg-card space-y-3">
         <div className="flex gap-2 flex-wrap">
           {Object.keys(CODE_SNIPPETS).map((lang) => (
-            <Button key={lang} size="sm" variant={snippetLang === lang ? "default" : "outline"} onClick={() => setSnippetLang(lang)}>{lang}</Button>
+            <Button key={lang} size="sm" variant={snippetLang === lang ? "selected" : "outline"} onClick={() => setSnippetLang(lang)}>{lang}</Button>
           ))}
         </div>
         <pre className="bg-background rounded-lg p-4 text-sm font-mono text-foreground overflow-auto"><code>{CODE_SNIPPETS[snippetLang].code}</code></pre>

@@ -21,7 +21,7 @@ const CertificateInspector = () => {
   const clear = () => { setText(""); setCerts([]); setError(undefined); };
 
   return (
-    <ToolPageLayout title="Certificate Inspector" maxWidth="7xl">
+    <ToolPageLayout title="Certificate Inspector" maxWidth="7xl" icon={ScrollText} description={<>Decode X.509 certificates and requests. Shows what a certificate states; it does not validate trust or revocation. To sign files, see <Link to="/document-signer" className="underline hover:text-foreground">Document Signer</Link>.</>}>
       <ToolSEO
         title="Certificate Inspector — Decode X.509 & CSR"
         canonicalPath="/certificate"
@@ -35,10 +35,6 @@ const CertificateInspector = () => {
         ]}
         howToSteps={["Paste a PEM certificate or CSR, or drop a .pem, .crt, .cer, .der or .csr file", "Read the subject, issuer, validity dates, key details and extensions", "Copy a fingerprint or serial number to compare with another source"]}
       />
-      <p className="text-xs text-muted-foreground mb-4">
-        Certificates are decoded in your browser and nothing is uploaded. This shows what a certificate states; it does not validate trust or revocation.
-        To sign files, see <Link to="/document-signer" className="underline hover:text-foreground">Document Signer</Link>.
-      </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <section aria-labelledby="cert-input" className="space-y-3 min-w-0">
           <h2 id="cert-input" className="font-mono text-sm font-semibold">Certificate or request</h2>

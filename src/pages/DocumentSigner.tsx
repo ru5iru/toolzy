@@ -14,6 +14,7 @@ import { generateKeyRecord, type KeyRecord } from "@/components/document-signer/
 import { SignerSession, type SignerWorkerPort } from "@/components/document-signer/signerSession";
 import type { VerifyResult } from "@/components/document-signer/verifyUtils";
 import SignerWorker from "@/workers/signerWorker?worker";
+import { FileSignature } from "lucide-react";
 
 const TABS = ["sign", "verify", "batch", "keys", "inspector"] as const;
 type Tab = (typeof TABS)[number];
@@ -85,7 +86,7 @@ const DocumentSigner = () => {
   }, [addKey]);
 
   return (
-    <ToolPageLayout title="Document Signer" maxWidth="7xl">
+    <ToolPageLayout title="Document Signer" maxWidth="7xl" icon={FileSignature} description={<>Sign files and verify detached signatures. Keys stay in memory unless you save one on this device. For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.</>}>
       <ToolSEO
         title="Document Signer — Sign & Verify Files"
         canonicalPath="/document-signer"
@@ -108,10 +109,6 @@ const DocumentSigner = () => {
           "Open Inspector to see which manifest fields are self-declared and which were verified",
         ]}
       />
-      <p className="text-xs text-muted-foreground mb-4">
-        Documents and keys stay in your browser and nothing is uploaded. Keys are held in memory and disappear when you reload or close this tab, unless you choose to save one on this device.
-        For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.
-      </p>
       <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)} className="space-y-5">
         <TabsList>
           <TabsTrigger value="sign">Sign</TabsTrigger>

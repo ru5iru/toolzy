@@ -12,7 +12,8 @@ import {
   exportAsMarkdown, exportAsJson, loadDiffHistory, saveDiffHistory,
   type DiffEntry, type DiffSummary
 } from "@/components/api-diff/diffUtils";
-import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 
 const colorMap: Record<string, string> = {
   added: "text-[hsl(var(--success-foreground))]", removed: "text-destructive",
@@ -167,18 +168,12 @@ const ApiDiffTool = () => {
         ]}
       />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-mono font-bold text-foreground">API Response Diff</h1>
-          <p className="text-sm text-muted-foreground mt-1">Compare JSON responses structurally • Ctrl+Enter to compare</p>
-        </div>
-        <div className="flex gap-2">
+      <ToolHeader title="API Response Diff" icon={GitCompare} description="Compare JSON responses structurally · Ctrl+Enter to compare" actions={<>
           <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
             <History className="h-4 w-4 mr-1" /> History
           </Button>
           <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
-        </div>
-      </div>
+      </>} />
 
       {/* History panel */}
       {showHistory && history.length > 0 && (

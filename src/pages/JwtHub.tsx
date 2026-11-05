@@ -10,10 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle,
-  ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles,
-} from "lucide-react";
+import { Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles } from "lucide-react";
 
 // Classic jwt.io demo token (HS256, secret "your-256-bit-secret") for instant demos
 const SAMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
@@ -25,6 +22,7 @@ import {
 } from "@/components/jwt-encoder/encoderUtils";
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
 import { importKeyInput } from "@/lib/crypto/keyInput";
+import { ToolHeader } from "@/components/ToolHeader";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -727,10 +725,7 @@ const JwtHub = () => {
         ]}
       />
 
-      <header className="flex items-center gap-3 flex-wrap">
-        <h1 className="text-xl font-mono font-bold text-foreground">JWT Hub</h1>
-        <span className="text-xs text-muted-foreground">Decode · Encode · Verify — all in your browser</span>
-      </header>
+      <ToolHeader title="JWT Hub" icon={ShieldCheck} description="Decode, encode and verify JSON Web Tokens." />
 
       <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-220px)] rounded-lg border border-border">
         <ResizablePanel defaultSize={60} minSize={35}>

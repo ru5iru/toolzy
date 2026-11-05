@@ -11,10 +11,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import {
-  Copy, Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle,
-  Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2,
-} from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
+import { Copy, Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
 
 import {
   encodeText, decodeBase64, decodeToText, encodeFile as encodeFileToB64,
@@ -422,15 +420,7 @@ const EncodingHub = () => {
         ]}
       />
 
-      <header className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="text-xl font-mono font-bold text-foreground">Encoding Hub</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Base64, URL encoding, and Data URL converter — 100% client-side</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1 text-xs"><Shield className="w-3 h-3" aria-hidden="true" /> Client-side only</Badge>
-        </div>
-      </header>
+      <ToolHeader title="Encoding Hub" icon={Code2} description="Base64, URL encoding and Data URL converter." />
 
       {/* Mode selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Encoding mode">
@@ -466,8 +456,8 @@ const EncodingHub = () => {
         {mode !== "auto" && mode !== "dataurl" && (
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">Direction:</span>
-            <Button size="sm" variant={direction === "encode" ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => setDirection("encode")}>Encode →</Button>
-            <Button size="sm" variant={direction === "decode" ? "default" : "outline"} className="h-7 text-xs px-3" onClick={() => setDirection("decode")}>← Decode</Button>
+            <Button size="sm" variant={direction === "encode" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setDirection("encode")}>Encode →</Button>
+            <Button size="sm" variant={direction === "decode" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setDirection("decode")}>← Decode</Button>
           </div>
         )}
 
@@ -516,8 +506,8 @@ const EncodingHub = () => {
           </datalist>
           <div className="w-px h-5 bg-border" />
           <span className="text-muted-foreground">Source:</span>
-          <Button size="sm" variant={dataUrlSource === "text" ? "default" : "outline"} className="h-7 text-xs px-2" onClick={() => setDataUrlSource("text")}>Paste text</Button>
-          <Button size="sm" variant={dataUrlSource === "file" ? "default" : "outline"} className="h-7 text-xs px-2" onClick={() => { setDataUrlSource("file"); dataUrlFileRef.current?.click(); }}>Upload file</Button>
+          <Button size="sm" variant={dataUrlSource === "text" ? "selected" : "outline"} className="h-7 text-xs px-2" onClick={() => setDataUrlSource("text")}>Paste text</Button>
+          <Button size="sm" variant={dataUrlSource === "file" ? "selected" : "outline"} className="h-7 text-xs px-2" onClick={() => { setDataUrlSource("file"); dataUrlFileRef.current?.click(); }}>Upload file</Button>
           <input ref={dataUrlFileRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
         </div>
       )}

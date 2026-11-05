@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette } from "lucide-react";
+import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette, Palette } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -176,7 +177,7 @@ const ColorConverter = () => {
         ]}
       />
 
-      <h1 className="text-2xl font-mono font-bold text-foreground">Color Converter & Toolkit</h1>
+      <ToolHeader title="Color Converter & Toolkit" icon={Palette} description="Convert between HEX, RGB and HSL, and explore palettes." />
 
       {/* === Top: Input + Preview + Formats === */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4">
