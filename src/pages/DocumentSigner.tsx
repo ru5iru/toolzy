@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BatchTab } from "@/components/document-signer/BatchTab";
 import { InspectorTab } from "@/components/document-signer/InspectorTab";
 import { KeysTab } from "@/components/document-signer/KeysTab";
 import { SignTab } from "@/components/document-signer/SignTab";
@@ -13,7 +14,7 @@ import { SignerSession, type SignerWorkerPort } from "@/components/document-sign
 import type { VerifyResult } from "@/components/document-signer/verifyUtils";
 import SignerWorker from "@/workers/signerWorker?worker";
 
-const TABS = ["sign", "verify", "keys", "inspector"] as const;
+const TABS = ["sign", "verify", "batch", "keys", "inspector"] as const;
 type Tab = (typeof TABS)[number];
 
 const DocumentSigner = () => {
@@ -76,6 +77,7 @@ const DocumentSigner = () => {
         <TabsList>
           <TabsTrigger value="sign">Sign</TabsTrigger>
           <TabsTrigger value="verify">Verify</TabsTrigger>
+          <TabsTrigger value="batch">Batch</TabsTrigger>
           <TabsTrigger value="keys">Keys{keys.length > 0 ? ` (${keys.length})` : ""}</TabsTrigger>
           <TabsTrigger value="inspector">Inspector</TabsTrigger>
         </TabsList>
@@ -85,6 +87,9 @@ const DocumentSigner = () => {
         </TabsContent>
         <TabsContent value="verify" forceMount className={tab === "verify" ? "" : "hidden"}>
           <VerifyTab keys={keys} session={session.current} onResult={setVerification} />
+        </TabsContent>
+        <TabsContent value="batch" forceMount className={tab === "batch" ? "" : "hidden"}>
+          <BatchTab keys={keys} />
         </TabsContent>
         <TabsContent value="keys" forceMount className={tab === "keys" ? "" : "hidden"}>
           <KeysTab keys={keys} onAdd={addKey} onDelete={deleteKey} />
