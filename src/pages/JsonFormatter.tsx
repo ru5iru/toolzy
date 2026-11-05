@@ -8,14 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link } from "lucide-react";
+import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
-import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
 import { JsonHighlighted } from "@/components/json-formatter/JsonHighlighted";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { ToolHeader } from "@/components/ToolHeader";
 
 type IndentOption = "2" | "4" | "tab";
 
@@ -160,10 +160,7 @@ const JsonFormatter = () => {
     <div className="max-w-6xl mx-auto">
       <ToolSEO title="JSON Formatter & Validator" description="Free online JSON formatter, validator, and minifier. Paste your JSON to format, beautify, or compress it instantly in your browser." canonicalPath="/json" keywords={["JSON formatter", "JSON validator", "JSON beautifier", "JSON minifier", "format JSON online"]} faq={[{question:"How do I format JSON online?",answer:"Paste your JSON into the input field and click Format. The tool will parse, validate, and pretty-print your JSON with proper indentation."},{question:"Does this JSON formatter send my data to a server?",answer:"No. All JSON formatting and validation happens entirely in your browser — your data never leaves your machine."},{question:"Can I convert JSON to CSV, XML, or YAML?",answer:"Yes. Use the download buttons in the toolbar to export your JSON as CSV, XML, or YAML, or download the formatted JSON file itself."},{question:"What is the JSON tree view?",answer:"Tree view renders your JSON as an interactive, collapsible structure with syntax highlighting, search, and click-to-copy JSONPath for every node."},{question:"Can I share my JSON with someone?",answer:"Yes. Click Share to copy a link with your JSON encoded in the URL — anyone opening the link sees the same data loaded instantly."}]} howToSteps={["Paste your JSON into the input textarea","Click Format to beautify or Minify to compress","Click Copy to copy the result to your clipboard"]} />
 
-      <header className="flex items-center justify-between mb-2">
-        <h1 className="text-lg font-mono font-bold text-foreground">JSON Formatter, Validator & Minifier</h1>
-        <PrivacyBadge />
-      </header>
+      <ToolHeader title="JSON Formatter, Validator & Minifier" icon={Braces} />
 
       {/* Compact toolbar */}
       <h2 className="sr-only">Actions</h2>
@@ -217,8 +214,8 @@ const JsonFormatter = () => {
         </div>
 
         <div className="flex rounded-md border border-border overflow-hidden ml-auto">
-          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
-          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
+          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
+          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
         </div>
       </div>
 
@@ -233,7 +230,7 @@ const JsonFormatter = () => {
       <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border min-h-[500px]">
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-10 shrink-0 flex items-center px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
             </div>
             <Textarea
@@ -247,12 +244,12 @@ const JsonFormatter = () => {
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-10 shrink-0 flex items-center justify-between px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
               {viewMode === "tree" && parsedData !== null && (
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
-                  <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-[10px] gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
+                  <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-xs gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
+                  <Button variant="ghost" size="sm" onClick={collapseAll} className="h-5 px-1.5 text-xs gap-0.5"><Minimize2 className="w-2.5 h-2.5" />Collapse</Button>
                 </div>
               )}
             </div>

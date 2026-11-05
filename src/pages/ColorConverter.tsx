@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette } from "lucide-react";
+import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette, Palette } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -176,7 +177,7 @@ const ColorConverter = () => {
         ]}
       />
 
-      <h1 className="text-2xl font-mono font-bold text-foreground">Color Converter & Toolkit</h1>
+      <ToolHeader title="Color Converter & Toolkit" icon={Palette} description="Convert between HEX, RGB and HSL, and explore palettes." />
 
       {/* === Top: Input + Preview + Formats === */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4">
@@ -200,14 +201,14 @@ const ColorConverter = () => {
                   type="color"
                   value={rgb ? hex.substring(0, 7) : "#000000"}
                   onChange={(e) => setInput(e.target.value)}
-                  className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent"
+                  className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent"
                   aria-label="Color picker"
                 />
                 {"EyeDropper" in window && (
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 shrink-0"
+                    className="h-9 w-10 shrink-0"
                     aria-label="Pick color from screen"
                     title="Pick color from screen"
                     onClick={async () => {
@@ -240,11 +241,11 @@ const ColorConverter = () => {
           {rgb && (
             <div className="rounded-lg border border-border overflow-hidden">
               <div className="flex items-center justify-between px-3 py-1.5 bg-muted/50">
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Preview</span>
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">Preview</span>
                 <div className="flex gap-1">
                   {(["dark", "light"] as const).map(t => (
                     <button key={t} onClick={() => setBgToggle(t)}
-                      className={`text-[10px] px-2 py-0.5 rounded ${bgToggle === t ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
+                      className={`text-xs px-2 py-0.5 rounded ${bgToggle === t ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
                       {t}
                     </button>
                   ))}
@@ -259,7 +260,7 @@ const ColorConverter = () => {
           {/* Sliders */}
           {hsl && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-card">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Adjust</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">Adjust</span>
               {[
                 { label: "H", value: hsl.h, max: 360, field: "h" as const },
                 { label: "S", value: hsl.s, max: 100, field: "s" as const },
@@ -285,7 +286,7 @@ const ColorConverter = () => {
         {/* Right: Format outputs */}
         {rgb && hsl && hsv && cmyk && (
           <div className="space-y-2">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Formats</span>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">Formats</span>
             {[
               { label: "HEX", value: hex.toUpperCase() },
               { label: "RGB", value: formatRgb(rgb) },
@@ -296,7 +297,7 @@ const ColorConverter = () => {
               { label: "SCSS", value: `$color: ${hex};` },
             ].map(row => (
               <div key={row.label} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 group hover:border-primary/40 transition-colors">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-14">{row.label}</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider w-14">{row.label}</span>
                 <code className="font-mono text-xs text-foreground flex-1 text-right mr-2 truncate">{row.value}</code>
                 <CopyBtn text={row.value} k={row.label} />
               </div>
@@ -328,7 +329,7 @@ const ColorConverter = () => {
               {generatePalette(rgb, paletteType).map((c, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <ColorSwatch color={c} onClick={() => setInput(rgbToHex(c))} />
-                  <span className="text-[10px] font-mono text-muted-foreground">{rgbToHex(c)}</span>
+                  <span className="text-xs font-mono text-muted-foreground">{rgbToHex(c)}</span>
                 </div>
               ))}
             </div>
@@ -342,14 +343,14 @@ const ColorConverter = () => {
               <label className="text-xs text-muted-foreground">Foreground</label>
               <div className="flex gap-2">
                 <Input value={fgInput} onChange={e => setFgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
-                <input type="color" value={fgRgb ? rgbToHex(fgRgb).substring(0, 7) : "#ffffff"} onChange={e => setFgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
+                <input type="color" value={fgRgb ? rgbToHex(fgRgb).substring(0, 7) : "#ffffff"} onChange={e => setFgInput(e.target.value)} className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent" />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">Background</label>
               <div className="flex gap-2">
                 <Input value={bgInput} onChange={e => setBgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
-                <input type="color" value={bgRgb ? rgbToHex(bgRgb).substring(0, 7) : "#000000"} onChange={e => setBgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
+                <input type="color" value={bgRgb ? rgbToHex(bgRgb).substring(0, 7) : "#000000"} onChange={e => setBgInput(e.target.value)} className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent" />
               </div>
             </div>
           </div>
@@ -363,15 +364,15 @@ const ColorConverter = () => {
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-md border border-border bg-card p-3 text-center">
                   <div className="text-2xl font-bold text-foreground">{ratio.toFixed(2)}:1</div>
-                  <div className="text-[10px] text-muted-foreground">Contrast Ratio</div>
+                  <div className="text-xs text-muted-foreground">Contrast Ratio</div>
                 </div>
                 <div className={`rounded-md border p-3 text-center ${ratio >= 4.5 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
                   <div className={`text-lg font-bold ${ratio >= 4.5 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 4.5 ? "PASS" : "FAIL"}</div>
-                  <div className="text-[10px] text-muted-foreground">WCAG AA (4.5:1)</div>
+                  <div className="text-xs text-muted-foreground">WCAG AA (4.5:1)</div>
                 </div>
                 <div className={`rounded-md border p-3 text-center ${ratio >= 7 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
                   <div className={`text-lg font-bold ${ratio >= 7 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 7 ? "PASS" : "FAIL"}</div>
-                  <div className="text-[10px] text-muted-foreground">WCAG AAA (7:1)</div>
+                  <div className="text-xs text-muted-foreground">WCAG AAA (7:1)</div>
                 </div>
               </div>
             </div>
@@ -449,7 +450,7 @@ const ColorConverter = () => {
               {extractedColors.map((c, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <ColorSwatch color={c} onClick={() => setInput(rgbToHex(c))} />
-                  <span className="text-[10px] font-mono text-muted-foreground">{rgbToHex(c)}</span>
+                  <span className="text-xs font-mono text-muted-foreground">{rgbToHex(c)}</span>
                 </div>
               ))}
             </div>
@@ -515,7 +516,7 @@ const ColorConverter = () => {
               <div className="flex flex-wrap gap-2">
                 {favorites.map(c => (
                   <div key={c} className="flex flex-col items-center gap-1 group">
-                    <div className="w-10 h-10 rounded-md border border-border cursor-pointer hover:scale-105 transition-transform"
+                    <div className="w-10 h-9 rounded-md border border-border cursor-pointer hover:scale-105 transition-transform"
                       style={{ backgroundColor: c }} onClick={() => setInput(c)} />
                     <span className="text-[9px] font-mono text-muted-foreground">{c}</span>
                   </div>

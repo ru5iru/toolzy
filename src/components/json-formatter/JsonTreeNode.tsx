@@ -31,7 +31,7 @@ const copyPath = (path: string) => {
 const PathButton = ({ path }: { path: string }) => (
   <button
     onClick={(e) => { e.stopPropagation(); copyPath(path); }}
-    className="opacity-0 group-hover/node:opacity-100 ml-2 text-[10px] text-muted-foreground hover:text-primary font-mono transition-opacity"
+    className="opacity-0 group-hover/node:opacity-100 ml-2 text-xs text-muted-foreground hover:text-primary font-mono transition-opacity"
     title={`Copy path: ${path}`}
   >
     {path}

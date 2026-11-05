@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Copy, Clock, ArrowRightLeft, Calendar, Timer, Search } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 
 const commonCrons = [
   { label: "Every minute", expr: "* * * * *" },
@@ -210,13 +211,10 @@ const DateTimeTool = () => {
       <ToolSEO title="Date & Time Toolkit" description="Convert Unix timestamps to human dates, compare timezones, and build cron expressions with a visual cron generator. Free online date/time tools." canonicalPath="/datetime" keywords={["Unix timestamp converter", "timezone converter", "cron expression generator", "epoch converter", "date time tool"]} faq={[{question:"How do I convert a Unix timestamp?",answer:"Enter a Unix timestamp (seconds since epoch) and click Convert to see the human-readable date, or enter a date to get the Unix timestamp."},{question:"What is a cron expression?",answer:"A cron expression defines a schedule using five fields: minute, hour, day of month, month, and day of week. This tool helps you build and visualize cron schedules."},{question:"How do I calculate the difference between two dates?",answer:"Use the Date Difference section: pick a start and end date and instantly see the gap in days, hours, and minutes."},{question:"Which timezones are supported?",answer:"All IANA timezones supported by your browser — over 400 zones, searchable and grouped by region, with live UTC offsets."}]} howToSteps={["Enter a Unix timestamp or date to convert","Use the timezone section to compare times across zones","Build cron expressions using the interactive generator"]} />
 
       {/* Header with live clock */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-mono font-bold text-foreground">Date & Time Toolkit</h1>
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
+      <ToolHeader title="Date & Time Toolkit" icon={Clock} description="Timestamps, time zones and a cron builder." actions={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
           <Clock className="h-3.5 w-3.5 text-primary" />
           <span>{liveNow.toISOString().replace("T", " ").slice(0, 19)} UTC</span>
-        </div>
-      </div>
+        </div>} />
 
       {/* Unix ↔ Human */}
       <section className="border border-border rounded-lg bg-card p-4 space-y-3">
@@ -229,8 +227,8 @@ const DateTimeTool = () => {
             <label className="text-xs text-muted-foreground font-medium">Unix Timestamp (seconds)</label>
             <div className="flex gap-1.5">
               <Input value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="bg-background border-border font-mono text-sm" />
-              <Button variant="secondary" size="sm" className="h-10 px-3 shrink-0" onClick={nowTs}>Now</Button>
-              <Button variant="ghost" size="sm" className="h-10 px-2 shrink-0" onClick={() => copyText(timestamp, "Timestamp")}>
+              <Button variant="secondary" size="sm" className="h-9 px-3 shrink-0" onClick={nowTs}>Now</Button>
+              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(timestamp, "Timestamp")}>
                 <Copy className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -244,8 +242,8 @@ const DateTimeTool = () => {
             <label className="text-xs text-muted-foreground font-medium">ISO 8601 Date</label>
             <div className="flex gap-1.5">
               <Input value={dateStr} onChange={(e) => setDateStr(e.target.value)} className="bg-background border-border font-mono text-sm" />
-              <Button variant="outline" size="sm" className="h-10 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
-              <Button variant="ghost" size="sm" className="h-10 px-2 shrink-0" onClick={() => copyText(dateStr, "Date")}>
+              <Button variant="outline" size="sm" className="h-9 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
+              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(dateStr, "Date")}>
                 <Copy className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -274,7 +272,7 @@ const DateTimeTool = () => {
           <Calendar className="h-4 w-4 text-primary" />
           <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
             Timezone Converter
-            <span className="ml-2 text-[10px] font-normal opacity-60">({allTimezones.length} timezones)</span>
+            <span className="ml-2 text-xs font-normal opacity-60">({allTimezones.length} timezones)</span>
           </h2>
         </div>
 
@@ -295,14 +293,14 @@ const DateTimeTool = () => {
           <div className="border border-border rounded-lg p-3 bg-background">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground font-medium">{tz1}</span>
-              <span className="text-[10px] text-primary font-mono">{utcOffset(tz1)}</span>
+              <span className="text-xs text-primary font-mono">{utcOffset(tz1)}</span>
             </div>
             <div className="font-mono text-sm text-foreground">{convertedTz1}</div>
           </div>
           <div className="border border-border rounded-lg p-3 bg-background">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground font-medium">{tz2}</span>
-              <span className="text-[10px] text-primary font-mono">{utcOffset(tz2)}</span>
+              <span className="text-xs text-primary font-mono">{utcOffset(tz2)}</span>
             </div>
             <div className="font-mono text-sm text-foreground">{convertedTz2}</div>
           </div>
@@ -317,7 +315,7 @@ const DateTimeTool = () => {
         </div>
         <div className="flex flex-wrap gap-1.5">
           {commonCrons.map((c) => (
-            <Button key={c.expr} variant={cron === c.expr ? "default" : "secondary"} size="sm" className="h-7 text-xs" onClick={() => setCron(c.expr)}>
+            <Button key={c.expr} variant={cron === c.expr ? "selected" : "secondary"} size="sm" className="h-7 text-xs" onClick={() => setCron(c.expr)}>
               {c.label}
             </Button>
           ))}
@@ -333,7 +331,7 @@ const DateTimeTool = () => {
         <div className="grid grid-cols-5 gap-1.5">
           {cron.trim().split(/\s+/).slice(0, 5).map((part, i) => (
             <div key={i} className="border border-border rounded p-2 bg-background text-center">
-              <div className="text-[10px] text-muted-foreground mb-1">{cronFields[i]}</div>
+              <div className="text-xs text-muted-foreground mb-1">{cronFields[i]}</div>
               <div className="font-mono text-sm text-primary font-semibold">{part}</div>
             </div>
           ))}

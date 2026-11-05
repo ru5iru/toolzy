@@ -1,0 +1,41 @@
+{
+  "ca-rsa.pem": {
+    "sha256": "8B:8C:BB:BF:DC:1F:35:89:0D:8B:C7:6D:34:04:9A:87:9B:C5:3E:C0:30:C0:CC:EB:8E:43:77:DF:CD:0A:4C:EB",
+    "sha1": "F1:FF:E2:F3:AD:C4:90:4D:43:3D:40:DF:38:CC:83:0E:DB:97:59:31",
+    "serial": "3B37043FCBECB2F74A5930A697FCB565C25D2F5E",
+    "notBefore": "Nov  5 02:21:41 2026 GMT",
+    "notAfter": "Nov  2 02:21:41 2036 GMT",
+    "subject": "CN=Toolzy Test Root CA,OU=Fixtures,O=Toolzy Test,C=LK",
+    "issuer": "CN=Toolzy Test Root CA,OU=Fixtures,O=Toolzy Test,C=LK"
+  },
+  "leaf-ec.pem": {
+    "sha256": "09:D9:C7:B2:1A:4D:88:16:96:4D:19:F5:BC:A9:D9:E6:A4:63:87:A6:5C:E3:16:12:6E:EB:52:06:41:A7:B7:09",
+    "sha1": "A3:6C:13:52:7F:52:85:A7:E1:CE:F7:D8:8B:21:15:59:DB:FF:89:A1",
+    "serial": "14AC5882BBB8C386B16943DFB6A594282BEF9A4F",
+    "notBefore": "Nov  5 02:21:41 2026 GMT",
+    "notAfter": "Feb  7 02:21:41 2029 GMT",
+    "subject": "emailAddress=admin@example.test,CN=www.example.test,O=Example Ltd,L=Colombo,ST=Western,C=LK",
+    "issuer": "CN=Toolzy Test Root CA,OU=Fixtures,O=Toolzy Test,C=LK"
+  },
+  "ed25519.pem": {
+    "sha256": "8D:39:A2:7E:CC:8B:45:D6:E2:B3:74:F0:DA:86:BE:A3:30:4E:26:61:18:63:70:62:AC:DA:E4:AD:1A:D1:74:75",
+    "sha1": "2D:BE:BA:EA:55:AF:5D:3C:70:EC:69:1E:39:58:46:E2:BA:ED:36:FA",
+    "serial": "0D18C7314DBDF3D7F55A2CA2AAAD5FA3C0D83945",
+    "notBefore": "Nov  5 02:21:30 2026 GMT",
+    "notAfter": "Dec  5 02:21:30 2026 GMT",
+    "subject": "CN=ed25519.test",
+    "issuer": "CN=ed25519.test"
+  },
+  "p384.pem": {
+    "sha256": "E0:C8:C0:06:8A:D7:76:DF:A2:33:C6:2F:38:64:BA:95:4E:AE:9A:FD:16:A5:20:5B:03:01:F8:95:59:15:65:A7",
+    "sha1": "E8:51:81:7F:8A:1D:AD:3D:D1:B4:94:3E:FC:A5:8E:E6:8C:FF:45:A7",
+    "serial": "6C0AD52B3761972462AFCA31B2F4C58677AF7845",
+    "notBefore": "Nov  5 02:21:47 2026 GMT",
+    "notAfter": "Dec  5 02:21:47 2026 GMT",
+    "subject": "O=T\\C3\\ABst \\C3\\96rg,CN=p384.test",
+    "issuer": "O=T\\C3\\ABst \\C3\\96rg,CN=p384.test"
+  },
+  "csr": {
+    "subject": "emailAddress=admin@example.test,CN=www.example.test,O=Example Ltd,L=Colombo,ST=Western,C=LK"
+  }
+}

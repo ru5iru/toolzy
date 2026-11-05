@@ -12,7 +12,8 @@ import {
   exportAsMarkdown, exportAsJson, loadDiffHistory, saveDiffHistory,
   type DiffEntry, type DiffSummary
 } from "@/components/api-diff/diffUtils";
-import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
+import { ToolHeader } from "@/components/ToolHeader";
 
 const colorMap: Record<string, string> = {
   added: "text-[hsl(var(--success-foreground))]", removed: "text-destructive",
@@ -167,18 +168,12 @@ const ApiDiffTool = () => {
         ]}
       />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-mono font-bold text-foreground">API Response Diff</h1>
-          <p className="text-sm text-muted-foreground mt-1">Compare JSON responses structurally • Ctrl+Enter to compare</p>
-        </div>
-        <div className="flex gap-2">
+      <ToolHeader title="API Response Diff" icon={GitCompare} description="Compare JSON responses structurally · Ctrl+Enter to compare" actions={<>
           <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
             <History className="h-4 w-4 mr-1" /> History
           </Button>
           <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
-        </div>
-      </div>
+      </>} />
 
       {/* History panel */}
       {showHistory && history.length > 0 && (
@@ -190,7 +185,7 @@ const ApiDiffTool = () => {
           {history.map(h => (
             <div key={h.id} className="text-xs text-muted-foreground flex justify-between border-b border-border pb-1">
               <span className="truncate max-w-[200px]">{h.leftPreview}...</span>
-              <Badge variant="outline" className="text-[10px]">{h.diffCount} diffs</Badge>
+              <Badge variant="outline" className="text-xs">{h.diffCount} diffs</Badge>
               <span>{new Date(h.timestamp).toLocaleTimeString()}</span>
             </div>
           ))}
@@ -219,7 +214,7 @@ const ApiDiffTool = () => {
         {ignoreRules.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {ignoreRules.map((rule, i) => (
-              <Badge key={i} variant="secondary" className="text-[10px] font-mono gap-1">
+              <Badge key={i} variant="secondary" className="text-xs font-mono gap-1">
                 {rule}
                 <button onClick={() => setIgnoreRules(ignoreRules.filter((_, j) => j !== i))}><X className="h-2.5 w-2.5" /></button>
               </Badge>
@@ -235,9 +230,9 @@ const ApiDiffTool = () => {
             <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card">
               <span className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                 Response A
-                <Badge variant="outline" className="text-[10px]">{leftFormat.toUpperCase()}</Badge>
+                <Badge variant="outline" className="text-xs">{leftFormat.toUpperCase()}</Badge>
               </span>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => setLeft("")}><Trash2 className="h-3 w-3" /></Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setLeft("")}><Trash2 className="h-3 w-3" /></Button>
             </div>
             <Textarea
               ref={leftRef}
@@ -257,9 +252,9 @@ const ApiDiffTool = () => {
             <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card">
               <span className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                 Response B
-                <Badge variant="outline" className="text-[10px]">{rightFormat.toUpperCase()}</Badge>
+                <Badge variant="outline" className="text-xs">{rightFormat.toUpperCase()}</Badge>
               </span>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => setRight("")}><Trash2 className="h-3 w-3" /></Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setRight("")}><Trash2 className="h-3 w-3" /></Button>
             </div>
             <Textarea
               ref={rightRef}
@@ -301,19 +296,19 @@ const ApiDiffTool = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="border border-[hsl(var(--success))]/20 bg-[hsl(var(--success))]/5 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-[hsl(var(--success-foreground))] font-mono">{summary.added}</div>
-            <div className="text-[10px] text-muted-foreground uppercase">Added</div>
+            <div className="text-xs text-muted-foreground uppercase">Added</div>
           </div>
           <div className="border border-destructive/20 bg-destructive/5 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-destructive font-mono">{summary.removed}</div>
-            <div className="text-[10px] text-muted-foreground uppercase">Removed</div>
+            <div className="text-xs text-muted-foreground uppercase">Removed</div>
           </div>
           <div className="border border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/5 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-[hsl(var(--warning-foreground))] font-mono">{summary.changed}</div>
-            <div className="text-[10px] text-muted-foreground uppercase">Changed</div>
+            <div className="text-xs text-muted-foreground uppercase">Changed</div>
           </div>
           <div className="border border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/5 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-[hsl(var(--warning-foreground))] font-mono">{summary.typeChanged}</div>
-            <div className="text-[10px] text-muted-foreground uppercase">Type Changed</div>
+            <div className="text-xs text-muted-foreground uppercase">Type Changed</div>
           </div>
         </div>
       )}
@@ -347,12 +342,12 @@ const ApiDiffTool = () => {
               {filteredDiffs.map((d, i) => (
                 <div key={i} className={`border rounded-lg p-3 font-mono text-sm ${bgMap[d.type]}`}>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline" className={`text-[10px] ${colorMap[d.type]} border-current`}>
+                    <Badge variant="outline" className={`text-xs ${colorMap[d.type]} border-current`}>
                       {labelMap[d.type]}
                     </Badge>
                     <span className="text-foreground font-medium">{d.path}</span>
                     {d.leftType && d.rightType && (
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {d.leftType} → {d.rightType}
                       </span>
                     )}
