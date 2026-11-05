@@ -310,7 +310,7 @@ const ColorConverter = () => {
 
       {/* === Tabs for advanced features === */}
       <Tabs defaultValue="palette" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
+        <TabsList className="h-auto w-fit max-w-full flex-wrap justify-start gap-1 bg-muted/50 p-1">
           {["palette", "contrast", "gradient", "extract", "batch", "history"].map(t => (
             <TabsTrigger key={t} value={t} className="text-xs capitalize">{t}</TabsTrigger>
           ))}

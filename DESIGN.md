@@ -60,7 +60,8 @@ Tokens live in `src/index.css` (HSL custom properties). Use tokens, never raw co
 
 ## 5. Typography
 
-- UI text uses the system sans stack; **data, code, keys, hashes and titles** use JetBrains Mono (`font-mono`).
+- UI text uses **Inter** (self-hosted variable font, `--font-sans`) with self-hosted Noto Sans fallbacks for Sinhala, Tamil and Devanagari, then the system stack (which covers CJK, Arabic and Hebrew). Fonts load from `@fontsource` packages through `src/index.css`; there are no third-party font requests. **Data, code, keys, hashes, editors and page titles** use JetBrains Mono (`font-mono`, ligatures off so characters are never merged). Anything a person may copy and paste into code or a terminal is monospace; prose and labels are sans.
+- Do not add a font per tool. Change `--font-sans` / `--font-mono` in `src/index.css` to change fonts everywhere. Keep new non-Latin fallbacks as lazily loaded unicode-range subsets (check the `dist` size after adding).
 - Sizes: title `text-base`, body `text-sm`, labels and help `text-xs`, code `text-xs` (`text-[13px]` in editors). Minimum 12 px. No `text-[10px]` for anything a person must read.
 - Labels are sentence case; the uppercase style is only for panel headings.
 
@@ -97,7 +98,7 @@ Only short, functional transitions: colour and border at 120 ms, panel open/clos
 
 ## 8. Home page (launcher)
 
-The home page is a launcher, not a landing page: compact heading, a search box focused on load (press `/` anywhere to focus it), a dense grid of tool tiles with hover and focus states, and nothing else above the fold. Tiles show icon, name and one short line. Tiles are links (keyboard reachable), not nested buttons.
+The home page is a launcher, not a landing page, and is left-aligned like the tools (max 1600 px): compact heading, a search box focused on load (press `/` anywhere to focus it), a dense grid of tool tiles with hover and focus states, and nothing else above the fold. Tiles show icon, name and one short line. Tiles are links (keyboard reachable), not nested buttons.
 
 ## 9. Accessibility checklist
 
