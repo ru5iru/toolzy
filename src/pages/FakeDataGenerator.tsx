@@ -21,7 +21,7 @@ import { SavedTemplates } from "@/components/fake-data/SavedTemplates";
 import { encodeShare, decodeShare, MAX_TEMPLATE } from "@/lib/fakeTemplate/storage";
 import { ToolHeader } from "@/components/ToolHeader";
 
-const labelStyle = "text-xs text-muted-foreground uppercase tracking-wider";
+const labelStyle = "block text-xs text-muted-foreground uppercase tracking-wider";
 const editorStyle = "font-mono text-sm bg-card border-border resize-none";
 
 const FakeDataGenerator = () => {

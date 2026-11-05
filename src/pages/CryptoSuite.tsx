@@ -55,7 +55,7 @@ function PasswordStrength({ text }: { text: string }) {
         <span className="text-xs font-mono text-muted-foreground w-20 text-right">{label}</span>
       </div>
       {tips.length > 0 && score < 4 && (
-        <p className="text-[10px] text-muted-foreground">{tips.join(" • ")}</p>
+        <p className="text-xs text-muted-foreground">{tips.join(" • ")}</p>
       )}
     </div>
   );
@@ -529,8 +529,8 @@ function HashTab() {
             <div key={a} className="border border-border rounded-lg p-3 bg-card">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px]">{label}</Badge>
-                  {a === "SHA-1" && !hmac && <span className="text-[10px] text-destructive">cryptographically broken — not for security</span>}
+                  <Badge variant="outline" className="text-xs">{label}</Badge>
+                  {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken — not for security</span>}
                 </div>
                 <Button variant="ghost" size="sm" aria-label={`Copy ${label}`} disabled={!val} onClick={() => copyVal(val)}>
                   <Copy className="h-3 w-3 mr-1" /> Copy
@@ -756,7 +756,7 @@ function UuidTab() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Badge variant={cryptoSecure ? "default" : "destructive"} className="text-[10px]">
+          <Badge variant={cryptoSecure ? "default" : "destructive"} className="text-xs">
             {cryptoSecure ? "Using crypto.getRandomValues ✓" : "Not cryptographically secure"}
           </Badge>
         </div>
@@ -770,7 +770,7 @@ function UuidTab() {
           {history.map((h) => (
             <div key={h.id} className="text-xs text-muted-foreground flex justify-between border-b border-border pb-1">
               <code className="font-mono">{h.preview}</code>
-              <div className="flex gap-2"><Badge variant="outline" className="text-[10px]">{h.version}</Badge><span>×{h.count}</span></div>
+              <div className="flex gap-2"><Badge variant="outline" className="text-xs">{h.version}</Badge><span>×{h.count}</span></div>
             </div>
           ))}
         </div>
@@ -800,7 +800,7 @@ function UuidTab() {
             <Slider value={[count]} onValueChange={([v]) => setCount(v)} min={1} max={10000} step={1} />
             <div className="flex gap-2 mt-2 flex-wrap">
               {[1, 10, 100, 500, 1000, 5000, 10000].map((n) => (
-                <Button key={n} size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => setCount(n)}>{n.toLocaleString()}</Button>
+                <Button key={n} size="sm" variant="ghost" className="h-6 text-xs px-2" onClick={() => setCount(n)}>{n.toLocaleString()}</Button>
               ))}
             </div>
           </div>

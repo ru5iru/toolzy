@@ -40,7 +40,7 @@ export const InspectorTab = ({ verification }: { verification?: VerifyResult }) 
             <div className="border border-border rounded-lg px-3">
               {inspected.rows.map((row) => (
                 <MetaRow key={row.label} label={row.label} value={row.value}
-                  badge={<span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-mono ${row.trust === "verified" ? toneClass.success : toneClass.neutral}`}>{row.trust}</span>} />
+                  badge={<span className={`inline-block rounded-full border px-2 py-0.5 text-xs font-mono ${row.trust === "verified" ? toneClass.success : toneClass.neutral}`}>{row.trust}</span>} />
               ))}
             </div>
           </>
