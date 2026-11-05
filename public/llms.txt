@@ -14,6 +14,12 @@ URL: https://toolzy.lovable.app/certificate
 Category: Cryptography & Privacy
 
 Decode X.509 certificates and PKCS#10 certificate requests locally with a built-in DER parser. Accepts PEM (including chains) and DER files. Shows subject, issuer, serial, validity with expiry status, signature algorithm, public key type and size or curve, extensions (Subject Alternative Name, Key Usage, Extended Key Usage, Basic Constraints, key identifiers) and SHA-1/SHA-256 fingerprints that match OpenSSL. It reports what the certificate states and does not validate trust chains, revocation or hostnames. Private keys are rejected. Nothing is uploaded.
+## Markdown Editor
+
+URL: https://toolzy.lovable.app/markdown
+Category: Writing & Documentation
+
+Browser-only CodeMirror Markdown editor with editor/split/preview/compare modes, local autosave after 500 ms, file open/drop, Markdown and standalone HTML downloads, clipboard exports, and printing. Includes a slash menu, formatting, list continuation, pairing, language/emoji/heading suggestions, table navigation/alignment, find/replace, synchronized scrolling, and focus mode. GitHub-flavored Markdown and raw HTML are sanitized; external images never load automatically. Text is stored only on this device and is not sent in requests or analytics.
 
 ## Image Metadata Viewer
 

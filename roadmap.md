@@ -1,5 +1,16 @@
 # Toolzy Improvement Roadmap
 
+## HTML WYSIWYG Editor
+- [ ] Add safe local rich-text editing, instant HTML source, formatting, and exports.
+- [ ] Register tool and update SEO/discovery/documentation.
+- [ ] Test sanitization and verify editing, download, and mobile layout.
+
+## Markdown Editor
+- [x] Add local document utilities, editor suggestions/commands, and safety tests.
+- [x] Add full-height workspace, preview/compare, autosave, files, shortcuts, and exports.
+- [x] Register route, home/search, navigation, SEO, sitemap, and documentation.
+- [x] Verify editing, suggestions, rendering safety, persistence, downloads, themes, and mobile.
+
 - [x] 1. Foundation: route code-splitting (lazy + Suspense), shared ToolPageLayout
 - [x] 2. UI/UX: semantic color tokens replace hardcoded classes, consistent shell
 - [x] 3. Performance: useDebouncedValue hook; debounced JSON parse + regex eval
@@ -30,3 +41,10 @@
 - [x] 5a. Secrets generator tab in Crypto Suite.
 - [x] 5b. PS256/384/512 and JWK in JWT Hub; X.509/CSR certificate inspector at `/certificate`.
 - [ ] 6. Later: embedded PDF signatures (CMS/PAdES) and X.509 trust chains, only if there is demand.
+## Image Metadata Removal
+- [x] Lossless JPEG/PNG cleaner, verification report, comparison, safe download, tests, browser check.
+
+## Image Viewer Improvements
+- [x] Improve processing status, cancellation/retry, and clean-worker startup handling.
+- [x] Add cross-category search and matched-result counts without changing the shared look.
+- [x] Run targeted tests and verify inspection, search, cleaning, and downloads in the browser.

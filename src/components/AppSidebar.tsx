@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
+  { title: "Markdown Editor", url: "/markdown", icon: FileText },
   { title: "JSON Formatter", url: "/json", icon: Braces },
   { title: "Encoding Hub", url: "/encode", icon: Code2 },
   { title: "Crypto Suite", url: "/crypto", icon: KeyRound },

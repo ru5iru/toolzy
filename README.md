@@ -9,6 +9,24 @@ Toolzy is a fast, privacy-first collection of everyday developer utilities that 
 
 ## Table of Contents
 
+### Markdown Editor (`/markdown`)
+
+Write and preview Markdown locally using CodeMirror 6. The full-height workspace keeps the existing sidebar and header, with Editor, Split (default), Preview, and Compare views. On narrow screens Split becomes Editor, with Preview available as a tab. Pane sizes are adjustable. A tool-local light theme overrides semantic tokens without changing other pages.
+
+- Formatting toolbar: bold, italic, strike, inline code, headings, bullet/number/task lists, link, quote, fenced code, table, rule, image, details, and footnote.
+- Slash suggestions: type `/` after whitespace; choose syntax, today's date, README, changelog, or meeting notes. Keyboard navigation and Escape dismissal use CodeMirror autocomplete.
+- Editing helpers: smart list continuation/termination, indent/outdent, delimiter pairing, selected-text links and URL paste wrapping, code-fence languages, emoji shortcodes, heading-anchor suggestions, and table Tab navigation/blur alignment.
+- Preview: GFM tables/tasks/strike/autolinks/footnotes, sanitized raw HTML, syntax-highlighted fences with code-copy buttons. External images are replaced by local placeholders, including in exported HTML; scripts, event handlers, and unsafe URL protocols are removed.
+- Compare: line changes against the last opened/downloaded snapshot or explicitly set snapshot. Autosave never updates this baseline.
+- Persistence: `toolzy-markdown-document-v1` localStorage stores document, filename, and snapshot after 500 ms. Storage errors remain visible; download remains available. No backend, content telemetry, or requests carrying text. Browser/site data clearing deletes the autosaved document.
+- Files: open/drop `.md`, `.markdown`, or `.txt`; export `.md`, standalone `.html`, Markdown/HTML clipboard, or browser print/PDF. HTML is generated from the current source, not a stale preview.
+- Shortcuts: Ctrl/Cmd+S/O/F, B/I/K/E, Shift+X; Alt+1/2/3/4 for views; Alt+F focus mode; Escape exits focus; `?` outside the editor opens shortcut help. Find uses CodeMirror's replace and regex options.
+- Status: save state, whitespace-separated word count, characters, lines, cursor position; read time uses 200 words/minute.
+
+Important files: `src/pages/MarkdownEditor.tsx` orchestrates the workspace and local IO; `src/components/markdown/editorExtensions.ts` owns suggestions/commands; `documentUtils.ts` owns stats, filenames, headings, and tables; `MarkdownPreview.tsx` sanitizes rendering; `markdown.css` scopes editor/preview styles and semantic theme overrides. `AppLayout` opts only `/markdown` into a viewport-bounded layout. Tests sit beside these modules and run with `bunx vitest run src/components/markdown`.
+
+Dependencies: `@uiw/react-codemirror`, CodeMirror Markdown/autocomplete/search/commands/state/view/language, `react-markdown`, `remark-gfm`, `rehype-raw`, `rehype-sanitize`, `rehype-highlight`, and `diff`. They are loaded by the lazy Markdown route. No remote syntax services, fonts, or content processing are used.
+
 1. [Quick Start](#quick-start)
 2. [Available Scripts](#available-scripts)
 3. [Project Structure](#project-structure)
@@ -166,7 +184,7 @@ Inspect JPEG, PNG, and classic TIFF locally with **exifr 7.1.3**. The new route 
 - No images, metadata, or coordinates are uploaded or persistently stored. Selected image previews use local object URLs, released on switching/reset/unmount. Downloads release their temporary URLs after starting. Worker results cannot overwrite a newer selection.
 - Empty, oversized, unsupported, truncated, parse-failed, and preview-failed files have explicit states. No detected embedded metadata is distinct from failure and does not establish complete coverage. Parser diagnostics are not shown as raw untrusted errors.
 - **Limits:** WebP, HEIC/HEIF, AVIF, RAW and BigTIFF are intentionally not enabled. Proprietary maker notes and unsupported thumbnail types are not verified. A damaged file may yield partial metadata; success is not a full file-integrity check. PNG/ICC/XMP coverage depends on what exifr supports, not every possible ancillary field. TIFF dimensions depend on available tags.
-- **Create Clean Copy is deferred:** reliable, format-specific removal and re-parsing are needed before shipping it; canvas conversion could lose profiles, transparency, orientation, animation, or quality. Originals are never modified.
+- **Create Clean Copy (JPEG, PNG):** lossless removal of whole metadata blocks (EXIF incl. GPS/camera/dates/thumbnail, XMP, IPTC, comments, PNG text/tIME, other ancillary data) in a worker; all-or-selective by block; optional orientation-only EXIF kept; colour profiles, transparency, and animation preserved; output re-parsed and image data compared byte-for-byte; download only when verified. TIFF removal unsupported. Originals are never modified (`cleanUtils.ts`, `cleanSession.ts`, `CleanCopyPanel.tsx`, `imageCleanWorker.ts`).
 
 Important files: `src/pages/ImageMetadataViewer.tsx` (shared UI/SEO), `src/components/image-metadata/metadataUtils.ts` (signature checks, extraction, normalization, privacy, exports), `inspectionSession.ts` (worker cancellation and object-URL lifecycle), `src/workers/imageMetadataWorker.ts` (local processing), and adjacent `*.test.ts` files (synthetic fixtures and lifecycle tests). Run `bun run test` and `bun run lint`; the normal Vite build also bundles the worker. No environment variables or backend configuration are needed.
 

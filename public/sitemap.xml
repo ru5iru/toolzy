@@ -73,6 +73,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://toolzy.lovable.app/markdown</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://toolzy.lovable.app/document-signer</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
