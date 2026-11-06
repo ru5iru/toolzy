@@ -260,3 +260,20 @@ Example queries this tool answers:
 - "Test this regex against my text"
 - "What does this regex match?"
 - "Regex to validate an email address"
+
+## Text Utilities
+
+URL: https://toolzy.lovable.app/text
+Category: Text & Data
+
+Transform and inspect plain text in the browser.
+
+Capabilities:
+- Case conversion: upper, lower, title, sentence, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, dot.case
+- Sort (A-Z, Z-A, numeric), reverse, deduplicate, trim and number lines; slugify
+- Live character, word, line, byte and reading-time counts, with undo
+
+Example queries this tool answers:
+- "Convert this list to snake_case"
+- "Remove duplicate lines from this list"
+- "Count words in my text"
