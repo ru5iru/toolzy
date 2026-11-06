@@ -316,6 +316,25 @@ Convert between Unix timestamps (s/ms), ISO 8601, RFC 2822, and human-readable f
 ### 10. Regex Playground — `/regex`
 Test regular expressions against sample text with live match highlighting, flags toggle (`g`, `i`, `m`, `s`, `u`, `y`), capture-group inspection, and replace preview.
 
+### 11. HTML WYSIWYG Editor — `/html-editor`
+Write rich text in a visual editor and get the matching HTML source immediately, entirely in the browser.
+
+- **Two-pane workspace**: visual editor beside a live, read-only HTML source panel with a drag handle to resize them; on narrow screens the panes stack.
+- **Text marks**: bold, italic, underline, strikethrough, and inline code.
+- **Blocks**: headings 1-4, bullet lists, numbered lists, blockquotes, code blocks, and horizontal rules.
+- **Alignment**: left, center, and right for headings and paragraphs.
+- **Links**: insert or edit through a dialog restricted to `http`, `https`, `mailto`, `tel`, and in-page anchors; unsafe URLs are dropped.
+- **Tables**: insert a 3×3 table with a header row, then add/delete rows and columns from the "more" menu.
+- **Images**: insert a local PNG/JPEG/GIF/WebP (≤ 5 MiB) as a data URL; remote images are never loaded.
+- **Import**: paste HTML source or open a local `.html`/`.htm`/`.txt` file; scripts, event handlers, remote assets, and unsupported markup are stripped on the way in.
+- **Export**: copy the HTML fragment or download a standalone HTML document.
+- **Toolbar**: every control is labelled, shows its active state, and stays reachable when the pane is narrowed.
+- **Privacy**: nothing is uploaded, no autosave, and no request carries document content. Clearing the editor is confirmed and undoable while the page stays open.
+
+Important files: `src/pages/HtmlEditor.tsx` owns the workspace, toolbar, dialogs, and IO; `src/components/html-editor/htmlUtils.ts` owns sanitization (DOMPurify allowlist), link safety, formatting, and standalone-document wrapping; `html-editor.css` scopes editor styles to semantic tokens. Tests: `bunx vitest run src/components/html-editor`.
+
+Dependencies: `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-text-align`, `@tiptap/extension-table`, `@tiptap/extension-image`, and `dompurify`, all loaded by the lazy route.
+
 ---
 
 ## Design System
