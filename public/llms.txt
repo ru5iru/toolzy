@@ -14,6 +14,13 @@ URL: https://toolzy.lovable.app/certificate
 Category: Cryptography & Privacy
 
 Decode X.509 certificates and PKCS#10 certificate requests locally with a built-in DER parser. Accepts PEM (including chains) and DER files. Shows subject, issuer, serial, validity with expiry status, signature algorithm, public key type and size or curve, extensions (Subject Alternative Name, Key Usage, Extended Key Usage, Basic Constraints, key identifiers) and SHA-1/SHA-256 fingerprints that match OpenSSL. It reports what the certificate states and does not validate trust chains, revocation or hostnames. Private keys are rejected. Nothing is uploaded.
+## HTML WYSIWYG Editor
+
+URL: https://toolzy.lovable.app/html-editor
+Category: Writing & Documentation
+
+Browser-only visual HTML editor with instant source generation, adjustable side-by-side panes, headings, bold/italic/underline/strike, lists, code, blockquotes, alignment, links, tables with row/column controls, local raster images, undo/redo, HTML import/file open, clipboard copy, and standalone HTML download. Imports and exports are sanitized; scripts, remote images, frames, and unsupported styles are removed. No document uploads or automatic persistence. On mobile the panes stack vertically.
+
 ## Markdown Editor
 
 URL: https://toolzy.lovable.app/markdown

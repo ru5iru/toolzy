@@ -10,7 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles } from "lucide-react";
+import {
+  Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle,
+  ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles,
+} from "lucide-react";
 
 // Classic jwt.io demo token (HS256, secret "your-256-bit-secret") for instant demos
 const SAMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
@@ -18,12 +21,8 @@ import {
   decodeJwt, formatTimestamp, extractJwtFromInput, type DecodedJwt,
 } from "@/components/jwt-decoder/jwtUtils";
 import {
-  ALGORITHMS, getAlgorithmFamily, signHMAC, signRSA, signRSAPSS, signECDSA,
+  ALGORITHMS, getAlgorithmFamily, signHMAC, signRSA, signECDSA,
 } from "@/components/jwt-encoder/encoderUtils";
-import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
-import { importKeyInput } from "@/lib/crypto/keyInput";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -111,8 +110,16 @@ function pushHistory(token: string, label: string) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
 }
 
-// base64url helper (for verification) — returns ArrayBuffer for crypto.subtle compatibility
-const b64uToBuf = (s: string): ArrayBuffer => toArrayBuffer(base64UrlToBytes(s));
+// base64url helpers (for verification) — returns ArrayBuffer for crypto.subtle compatibility
+function b64uToBuf(s: string): ArrayBuffer {
+  const padded = s.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = padded.length % 4;
+  const final = pad ? padded + "=".repeat(4 - pad) : padded;
+  const bin = atob(final);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out.buffer;
+}
 
 async function verifyHmacToken(token: string, secret: string, hashAlg: string): Promise<boolean> {
   const parts = token.split(".");
@@ -125,20 +132,23 @@ async function verifyHmacToken(token: string, secret: string, hashAlg: string): 
   return crypto.subtle.verify("HMAC", key, b64uToBuf(parts[2]), data);
 }
 
+function pemToBuf(pem: string): ArrayBuffer {
+  const lines = pem.replace(/-----[^-]+-----/g, "").replace(/\s/g, "");
+  const bin = atob(lines);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+
 async function verifyRsaToken(token: string, pubKeyPem: string, hashAlg: string): Promise<boolean> {
   const parts = token.split(".");
   if (parts.length !== 3) return false;
   const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
-  const key = await importKeyInput(pubKeyPem, { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, "verify");
+  const key = await crypto.subtle.importKey(
+    "spki", pemToBuf(pubKeyPem),
+    { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, false, ["verify"]
+  );
   return crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64uToBuf(parts[2]), data);
-}
-
-async function verifyRsaPssToken(token: string, pubKeyPem: string, hashAlg: string): Promise<boolean> {
-  const parts = token.split(".");
-  if (parts.length !== 3) return false;
-  const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
-  const key = await importKeyInput(pubKeyPem, { name: "RSA-PSS", hash: hashAlg }, "verify");
-  return crypto.subtle.verify({ name: "RSA-PSS", saltLength: Number(hashAlg.slice(4)) / 8 }, key, b64uToBuf(parts[2]), data);
 }
 
 async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: string, alg: string): Promise<boolean> {
@@ -146,7 +156,10 @@ async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: strin
   if (parts.length !== 3) return false;
   const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
   const namedCurve = alg === "ES384" ? "P-384" : "P-256";
-  const key = await importKeyInput(pubKeyPem, { name: "ECDSA", namedCurve }, "verify");
+  const key = await crypto.subtle.importKey(
+    "spki", pemToBuf(pubKeyPem),
+    { name: "ECDSA", namedCurve }, false, ["verify"]
+  );
   return crypto.subtle.verify({ name: "ECDSA", hash: hashAlg }, key, b64uToBuf(parts[2]), data);
 }
 
@@ -183,7 +196,7 @@ function TokenPreview({ token }: { token: string }) {
         <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet — paste, encode, or verify a JWT.</p>
       )}
       {token && (
-        <Button variant="ghost" size="sm" className="h-6 text-xs w-full" onClick={() => copyPart(token, "Full JWT")}>
+        <Button variant="ghost" size="sm" className="h-6 text-[10px] w-full" onClick={() => copyPart(token, "Full JWT")}>
           <Copy className="w-3 h-3 mr-1" /> Copy full token
         </Button>
       )}
@@ -210,10 +223,10 @@ function SecurityCard({ result }: { result: SecurityResult }) {
           {result.findings.map((f, i) => (
             <div key={i} className="rounded-md border border-border p-2 space-y-1">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`text-xs ${SEVERITY_COLOR[f.severity]}`}>{f.severity}</Badge>
+                <Badge variant="outline" className={`text-[10px] ${SEVERITY_COLOR[f.severity]}`}>{f.severity}</Badge>
                 <span className="text-xs text-foreground">{f.message}</span>
               </div>
-              <p className="text-xs text-muted-foreground pl-1">→ {f.fix}</p>
+              <p className="text-[10px] text-muted-foreground pl-1">→ {f.fix}</p>
             </div>
           ))}
         </div>
@@ -267,8 +280,8 @@ function JsonBlock({ title, data, accent }: { title: string; data: any; accent: 
   return (
     <div className={`rounded-md border ${cls} bg-card`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
-        <span className={`text-xs uppercase tracking-wider font-semibold ${titleCls}`}>{title}</span>
-        <Button variant="ghost" size="sm" className="h-5 text-xs px-1.5" onClick={() => { navigator.clipboard.writeText(text); toast.success(`${title} copied`); }}>
+        <span className={`text-[10px] uppercase tracking-wider font-semibold ${titleCls}`}>{title}</span>
+        <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5" onClick={() => { navigator.clipboard.writeText(text); toast.success(`${title} copied`); }}>
           <Copy className="w-2.5 h-2.5 mr-1" /> Copy
         </Button>
       </div>
@@ -330,11 +343,11 @@ function DecodeTab({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Label className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</Label>
         <div className="flex flex-wrap items-center gap-1">
-          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
+          <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
             <Sparkles className="w-3 h-3 mr-1" /> Sample
           </Button>
           <div className="relative">
-            <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setShowHistory(v => !v)}>
+            <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => setShowHistory(v => !v)}>
               <History className="w-3 h-3 mr-1" /> History ({history.length})
             </Button>
             {showHistory && history.length > 0 && (
@@ -346,13 +359,13 @@ function DecodeTab({
                     className="w-full text-left px-3 py-2 text-xs hover:bg-muted border-b border-border last:border-0"
                   >
                     <div className="font-mono truncate">{h.label}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(h.ts).toLocaleString()}</div>
+                    <div className="text-[10px] text-muted-foreground">{new Date(h.ts).toLocaleString()}</div>
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <Button variant="ghost" size="sm" className="h-6 text-xs text-destructive" onClick={() => { setInput(""); run(""); }}>
+          <Button variant="ghost" size="sm" className="h-6 text-[10px] text-destructive" onClick={() => { setInput(""); run(""); }}>
             <Trash2 className="w-3 h-3 mr-1" /> Clear
           </Button>
         </div>
@@ -388,7 +401,7 @@ function DecodeTab({
           <CollapsibleContent className="pt-2 space-y-2">
             <JsonBlock title="Payload" data={shared.decodedPayload} accent="green" />
             {(shared.decodedPayload.iat || shared.decodedPayload.exp || shared.decodedPayload.nbf) && (
-              <div className="flex flex-wrap gap-2 text-xs font-mono">
+              <div className="flex flex-wrap gap-2 text-[10px] font-mono">
                 {["iat", "nbf", "exp"].map(k => {
                   const v = shared.decodedPayload?.[k];
                   if (typeof v !== "number") return null;
@@ -480,7 +493,6 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       let token: string;
       if (family === "HMAC") token = await signHMAC(JSON.stringify(h), JSON.stringify(p), secret, opt.webCryptoAlg);
       else if (family === "RSA") token = await signRSA(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg);
-      else if (family === "RSA-PSS") token = await signRSAPSS(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg);
       else token = await signECDSA(JSON.stringify(h), JSON.stringify(p), pkey, opt.webCryptoAlg, alg);
       setShared({
         activeToken: token,
@@ -504,7 +516,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
         <Select value={alg} onValueChange={setAlg}>
           <SelectTrigger className="w-[140px] h-7 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            {ALGORITHMS.filter(a => ["HS256","HS384","HS512","RS256","PS256","ES256"].includes(a.value)).map(a => (
+            {ALGORITHMS.filter(a => ["HS256","HS384","HS512","RS256","ES256"].includes(a.value)).map(a => (
               <SelectItem key={a.value} value={a.value} className="text-xs">{a.label} <span className="text-muted-foreground ml-1">({a.family})</span></SelectItem>
             ))}
           </SelectContent>
@@ -513,7 +525,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="space-y-1">
         <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-          {family === "HMAC" ? "Secret" : "Private Key (PEM or JWK)"}
+          {family === "HMAC" ? "Secret" : "Private Key (PEM)"}
         </Label>
         {family === "HMAC" ? (
           <div className="relative">
@@ -523,7 +535,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
             </Button>
           </div>
         ) : (
-          <Textarea value={pkey} onChange={e => setPkey(e.target.value)} placeholder={`-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----`} className="min-h-[90px] font-mono text-xs bg-card resize-none" />
+          <Textarea value={pkey} onChange={e => setPkey(e.target.value)} placeholder={`-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----`} className="min-h-[90px] font-mono text-[10px] bg-card resize-none" />
         )}
       </div>
 
@@ -538,11 +550,11 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="flex flex-wrap gap-1">
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("exp", now() + 3600)}><Plus className="w-3 h-3" />exp (1h)</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("nbf", now())}><Plus className="w-3 h-3" />nbf</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("iss", "https://example.com")}><Plus className="w-3 h-3" />iss</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("aud", "my-api")}><Plus className="w-3 h-3" />aud</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => addClaim("jti", crypto.randomUUID())}><Plus className="w-3 h-3" />jti</Button>
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("exp", now() + 3600)}><Plus className="w-3 h-3" />exp (1h)</Button>
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("nbf", now())}><Plus className="w-3 h-3" />nbf</Button>
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("iss", "https://example.com")}><Plus className="w-3 h-3" />iss</Button>
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("aud", "my-api")}><Plus className="w-3 h-3" />aud</Button>
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => addClaim("jti", crypto.randomUUID())}><Plus className="w-3 h-3" />jti</Button>
       </div>
 
       <Button onClick={sign} disabled={signing} className="w-full">
@@ -550,7 +562,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </Button>
 
       {shared.signatureStatus === "unsigned" && (
-        <p className="text-xs text-[hsl(var(--warning-foreground))] flex items-center gap-1">
+        <p className="text-[10px] text-[hsl(var(--warning-foreground))] flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" /> Unsigned preview — click Sign to generate signature
         </p>
       )}
@@ -580,7 +592,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
   }, [token]);
 
   const alg: string = (parsed?.header.alg || "").toUpperCase();
-  const family = alg.startsWith("HS") ? "HMAC" : alg.startsWith("RS") ? "RSA" : alg.startsWith("PS") ? "RSA-PSS" : alg.startsWith("ES") ? "ECDSA" : "";
+  const family = alg.startsWith("HS") ? "HMAC" : alg.startsWith("RS") ? "RSA" : alg.startsWith("ES") ? "ECDSA" : "";
 
   const verify = async () => {
     if (!parsed) { toast.error("Paste a valid JWT first"); return; }
@@ -593,7 +605,6 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       let ok = false;
       if (family === "HMAC") ok = await verifyHmacToken(token, secret, hash);
       else if (family === "RSA") ok = await verifyRsaToken(token, secret, hash);
-      else if (family === "RSA-PSS") ok = await verifyRsaPssToken(token, secret, hash);
       else if (family === "ECDSA") ok = await verifyEcdsaToken(token, secret, hash, alg);
       setResult(ok ? "valid" : "invalid");
       setShared({ signatureStatus: ok ? "valid" : "invalid", activeToken: token, decodedHeader: parsed.header, decodedPayload: parsed.payload });
@@ -623,12 +634,12 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="space-y-1">
         <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-          {family === "HMAC" ? "Secret" : "Public Key (PEM or JWK)"}
+          {family === "HMAC" ? "Secret" : "Public Key (PEM)"}
         </Label>
         {family === "HMAC" || !family ? (
           <Input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs h-8" />
         ) : (
-          <Textarea value={secret} onChange={e => setSecret(e.target.value)} placeholder={`-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----`} className="min-h-[90px] font-mono text-xs bg-card resize-none" />
+          <Textarea value={secret} onChange={e => setSecret(e.target.value)} placeholder={`-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----`} className="min-h-[90px] font-mono text-[10px] bg-card resize-none" />
         )}
       </div>
 
@@ -666,7 +677,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
               <button
                 key={k}
                 onClick={() => setCodeLang(k)}
-                className={`px-2 py-1 rounded text-xs font-mono ${codeLang === k ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                className={`px-2 py-1 rounded text-[10px] font-mono ${codeLang === k ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
               >
                 {k}
               </button>
@@ -706,7 +717,7 @@ const JwtHub = () => {
   );
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <div className="max-w-7xl mx-auto space-y-4">
       <ToolSEO
         title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
         description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
@@ -715,18 +726,21 @@ const JwtHub = () => {
         faq={[
           { question: "What is a JSON Web Token (JWT)?", answer: "A JWT is a compact, URL-safe token format used for authentication and authorization. It has three Base64URL-encoded sections joined by dots: header, payload, and signature." },
           { question: "Can I decode a JWT without knowing the secret?", answer: "Yes. The header and payload are only Base64URL-encoded (not encrypted), so any JWT can be decoded and inspected without a secret. The secret is only required to verify the signature." },
-          { question: "How does signature verification work here?", answer: "JWT Hub uses the browser's native Web Crypto API (crypto.subtle) to verify HMAC (HS256/384/512), RSA (RS256/384/512), RSA-PSS (PS256/384/512), and ECDSA (ES256/384) signatures locally. No data is transmitted." },
+          { question: "How does signature verification work here?", answer: "JWT Hub uses the browser's native Web Crypto API (crypto.subtle) to verify HMAC (HS256/384/512), RSA (RS256), and ECDSA (ES256) signatures locally. No data is transmitted." },
           { question: "What does the security score check?", answer: "It flags algorithm 'none', weak HS256 secrets (< 32 chars), preference for RS256/ES256 on public APIs, missing exp/iss/sub claims, and overly long expiry windows. Grade ranges from A (best) to F (critical issue)." },
         ]}
         howToSteps={[
           "Paste a JWT in the Decode tab to auto-parse the header and payload",
           "Inspect claims (exp, nbf, iat, iss, aud, sub) in the live validator",
           "Switch to Verify, provide your secret or public key, and confirm the signature",
-          "Use Encode to build and sign a new token with HS256/RS256/PS256/ES256 using PEM or JWK keys",
+          "Use Encode to build and sign a new token with HS256/RS256/ES256",
         ]}
       />
 
-      <ToolHeader title="JWT Hub" icon={ShieldCheck} description="Decode, encode and verify JSON Web Tokens." />
+      <header className="flex items-center gap-3 flex-wrap">
+        <h1 className="text-xl font-mono font-bold text-foreground">JWT Hub</h1>
+        <span className="text-xs text-muted-foreground">Decode · Encode · Verify — all in your browser</span>
+      </header>
 
       <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-220px)] rounded-lg border border-border">
         <ResizablePanel defaultSize={60} minSize={35}>
@@ -749,7 +763,7 @@ const JwtHub = () => {
             <TokenPreview token={shared.activeToken} />
             <SecurityCard result={security} />
             {shared.signatureStatus !== "unverified" && (
-              <div className="text-xs text-muted-foreground text-center">
+              <div className="text-[10px] text-muted-foreground text-center">
                 Signature status: <span className="font-mono text-foreground">{shared.signatureStatus}</span>
               </div>
             )}

@@ -68,7 +68,7 @@ export const TokenComparison = ({ currentToken }: { currentToken: string }) => {
       </Button>
       {diff && (
         <div className="space-y-3">
-          <div className="grid grid-cols-3 gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium px-1.5">
+          <div className="grid grid-cols-3 gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-medium px-1.5">
             <span>Claim</span><span>Token A</span><span>Token B</span>
           </div>
           {renderDiffs(diff.headerDiffs, "Header")}

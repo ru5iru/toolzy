@@ -4,6 +4,7 @@ import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
+  { title: "HTML WYSIWYG Editor", description: "Create rich text with instant HTML source, tables, links, local images, and HTML exports", url: "/html-editor", icon: Braces },
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
   { title: "Base64", description: "Encode & decode Base64 strings", url: "/base64", icon: Binary },

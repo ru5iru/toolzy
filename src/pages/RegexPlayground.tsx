@@ -4,10 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Share2, Regex } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
 
 const encodeShare = (pattern: string, flags: string, text: string) =>
   btoa(unescape(encodeURIComponent(JSON.stringify({ p: pattern, f: flags, t: text }))));
@@ -99,9 +97,9 @@ const RegexPlayground = () => {
   };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <div className="max-w-5xl mx-auto space-y-6">
       <ToolSEO title="Regex Playground" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
-      <ToolHeader title="Regex Playground" icon={Regex} description="Live matching with highlighted results and capture groups." />
+      <h1 className="text-2xl font-mono font-bold text-foreground">Regex Playground</h1>
 
       <div>
         <div className="flex items-center justify-between mb-2">
@@ -132,7 +130,7 @@ const RegexPlayground = () => {
 
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground uppercase tracking-wider">Test String</label>
-        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter text to test against…" className="min-h-[clamp(150px,28dvh,420px)] font-mono text-sm bg-card border-border resize-none" />
+        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter text to test against…" className="min-h-[150px] font-mono text-sm bg-card border-border resize-none" />
       </div>
 
       {pattern && text && (

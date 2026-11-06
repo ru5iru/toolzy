@@ -18,12 +18,11 @@ import {
   loadUUIDHistory, saveUUIDHistory,
   type UUIDValidation
 } from "@/components/uuid/uuidUtils";
-import { Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
-import { SecretsTab } from "@/components/secrets/SecretsTab";
+import {
+  Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText
+} from "lucide-react";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
 
 // ---------- Hash helpers ----------
 type HashAlgo = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
@@ -56,7 +55,7 @@ function PasswordStrength({ text }: { text: string }) {
         <span className="text-xs font-mono text-muted-foreground w-20 text-right">{label}</span>
       </div>
       {tips.length > 0 && score < 4 && (
-        <p className="text-xs text-muted-foreground">{tips.join(" • ")}</p>
+        <p className="text-[10px] text-muted-foreground">{tips.join(" • ")}</p>
       )}
     </div>
   );
@@ -123,13 +122,10 @@ type ExportFormat = "txt" | "csv" | "json" | "sql";
 const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
-type CryptoTab = "hash" | "uuid" | "secrets";
-
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
-  const requestedTab = params.get("tab");
-  const initialTab: CryptoTab = requestedTab === "uuid" || requestedTab === "secrets" ? requestedTab : "hash";
-  const [tab, setTab] = useState<CryptoTab>(initialTab);
+  const initialTab = params.get("tab") === "uuid" ? "uuid" : "hash";
+  const [tab, setTab] = useState<"hash" | "uuid">(initialTab);
   useEffect(() => {
     const next = new URLSearchParams(params);
     next.set("tab", tab);
@@ -138,20 +134,18 @@ const CryptoSuite = () => {
   }, [tab]);
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <div className="space-y-6">
       <ToolSEO
-        title="Crypto Suite — Hash, UUID & Secret Generator"
-        description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, create UUID v1/v3/v4/v5 tokens in bulk, and generate random secrets and keys (JWT secrets, AES keys, API tokens) — all via the native Web Crypto API, nothing leaves your browser."
+        title="Crypto Suite — Hash Generator & UUID Generator"
+        description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, and create UUID v1/v3/v4/v5 tokens in bulk — all via the native Web Crypto API, nothing leaves your browser."
         canonicalPath="/crypto"
-        keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator", "random secret generator", "jwt secret generator", "random key generator", "api token generator"]}
+        keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator"]}
         faq={[
           { question: "What is the difference between SHA-256 and SHA-512?", answer: "Both are SHA-2 family hashes. SHA-256 produces a 256-bit (32-byte) digest and is faster on 32-bit hardware; SHA-512 produces a 512-bit (64-byte) digest and is generally faster on 64-bit hardware. SHA-512 offers a larger security margin against brute-force attacks." },
           { question: "What is HMAC and when should I use it?", answer: "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash with a secret key to produce a tag that proves both integrity and authenticity. Use it whenever you need to verify a message came from a party that knows the shared secret — e.g. signing API requests or webhook payloads." },
           { question: "Is it safe to hash files in the browser?", answer: "Yes. All hashing in Crypto Suite happens locally via the Web Crypto API (crypto.subtle.digest). The file bytes never leave your machine and no network requests are made." },
           { question: "What is the difference between UUID v4 and v5?", answer: "v4 is fully random (122 bits of entropy from crypto.getRandomValues). v5 is deterministic: it derives the UUID from a namespace UUID plus a name string using SHA-1, so the same inputs always yield the same UUID — useful for stable IDs derived from URLs, DNS names, or other natural keys." },
           { question: "How do I generate cryptographically secure UUIDs?", answer: "Use v4. Crypto Suite uses crypto.getRandomValues (or crypto.randomUUID when available), the browser's CSPRNG, which is suitable for security-sensitive identifiers." },
-          { question: "How long should a JWT HS256 secret be?", answer: "At least 32 random bytes (256 bits), the length of the SHA-256 output, as RFC 7518 requires. The Secrets tab has presets for HS256, HS384 and HS512 secrets, AES keys and API tokens, generated with crypto.getRandomValues." },
-          { question: "Are the generated secrets stored or sent anywhere?", answer: "No. Secrets are generated in your browser with its secure random source, shown only on the page, and never stored or transmitted. Once you copy one, protect it like any other credential." },
           { question: "Why is MD5 not supported?", answer: "MD5 is cryptographically broken — practical collisions can be generated in seconds. The Web Crypto API deliberately omits it. We only expose it indirectly inside UUID v3 generation, where collision resistance is not a security requirement." },
         ]}
         howToSteps={[
@@ -161,27 +155,27 @@ const CryptoSuite = () => {
           "UUID: pick a version (v1, v3, v4, or v5) in the UUID Generator tab",
           "UUID: set the quantity (1–10,000) and generate",
           "UUID: copy individual UUIDs or export the batch as CSV/JSON/SQL/TXT",
-          "Secrets: pick a preset (JWT secret, AES key, API token) or set a length and encoding",
-          "Secrets: generate one or many values and copy them",
         ]}
       />
 
-      <ToolHeader title="Crypto Suite" icon={KeyRound} description="Hashing, UUID and secret generation." />
+      <header className="flex items-center gap-3">
+        <KeyRound className="h-6 w-6 text-primary" aria-hidden />
+        <div>
+          <h1 className="text-2xl font-mono font-bold text-foreground">Crypto Suite</h1>
+          <p className="text-sm text-muted-foreground">Hashing &amp; UUID generation — 100% browser-side</p>
+        </div>
+      </header>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as CryptoTab)} className="space-y-6">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as "hash" | "uuid")} className="space-y-6">
         <TabsList>
           <TabsTrigger value="hash">Hashing</TabsTrigger>
           <TabsTrigger value="uuid">UUID Generator</TabsTrigger>
-          <TabsTrigger value="secrets">Secrets</TabsTrigger>
         </TabsList>
         <TabsContent value="hash" forceMount className={tab === "hash" ? "space-y-6" : "hidden"}>
           <HashTab />
         </TabsContent>
         <TabsContent value="uuid" forceMount className={tab === "uuid" ? "space-y-6" : "hidden"}>
           <UuidTab />
-        </TabsContent>
-        <TabsContent value="secrets" className="space-y-6">
-          <SecretsTab />
         </TabsContent>
       </Tabs>
     </div>
@@ -387,7 +381,7 @@ function HashTab() {
       {/* Mode toggle */}
       <div className="flex flex-wrap items-center gap-2">
         {(["text", "file", "hex"] as const).map((m) => (
-          <Button key={m} size="sm" variant={mode === m ? "selected" : "outline"} onClick={() => setMode(m)}>
+          <Button key={m} size="sm" variant={mode === m ? "default" : "outline"} onClick={() => setMode(m)}>
             {m === "text" ? "Text" : m === "file" ? "File" : "Hex"}
           </Button>
         ))}
@@ -489,7 +483,7 @@ function HashTab() {
               <Button
                 key={a}
                 size="sm"
-                variant={active && !disabled ? "selected" : "outline"}
+                variant={active && !disabled ? "default" : "outline"}
                 disabled={disabled}
                 onClick={() => toggleAlgo(a)}
                 className="h-7 text-xs"
@@ -511,7 +505,7 @@ function HashTab() {
             ["b64", "Base64"],
             ["b64u", "Base64 URL-safe"],
           ] as [OutputFmt, string][]).map(([k, label]) => (
-            <Button key={k} size="sm" variant={outFmt === k ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setOutFmt(k)}>
+            <Button key={k} size="sm" variant={outFmt === k ? "default" : "outline"} className="h-7 text-xs" onClick={() => setOutFmt(k)}>
               {label}
             </Button>
           ))}
@@ -530,8 +524,8 @@ function HashTab() {
             <div key={a} className="border border-border rounded-lg p-3 bg-card">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">{label}</Badge>
-                  {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken — not for security</span>}
+                  <Badge variant="outline" className="text-[10px]">{label}</Badge>
+                  {a === "SHA-1" && !hmac && <span className="text-[10px] text-destructive">cryptographically broken — not for security</span>}
                 </div>
                 <Button variant="ghost" size="sm" aria-label={`Copy ${label}`} disabled={!val} onClick={() => copyVal(val)}>
                   <Copy className="h-3 w-3 mr-1" /> Copy
@@ -757,7 +751,7 @@ function UuidTab() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Badge variant={cryptoSecure ? "default" : "destructive"} className="text-xs">
+          <Badge variant={cryptoSecure ? "default" : "destructive"} className="text-[10px]">
             {cryptoSecure ? "Using crypto.getRandomValues ✓" : "Not cryptographically secure"}
           </Badge>
         </div>
@@ -771,7 +765,7 @@ function UuidTab() {
           {history.map((h) => (
             <div key={h.id} className="text-xs text-muted-foreground flex justify-between border-b border-border pb-1">
               <code className="font-mono">{h.preview}</code>
-              <div className="flex gap-2"><Badge variant="outline" className="text-xs">{h.version}</Badge><span>×{h.count}</span></div>
+              <div className="flex gap-2"><Badge variant="outline" className="text-[10px]">{h.version}</Badge><span>×{h.count}</span></div>
             </div>
           ))}
         </div>
@@ -784,7 +778,7 @@ function UuidTab() {
             <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Version</label>
             <div className="grid grid-cols-4 gap-2">
               {(["v1", "v4", "v3", "v5"] as Version[]).map((v) => (
-                <Button key={v} size="sm" variant={version === v ? "selected" : "outline"} onClick={() => setVersion(v)}>{v.toUpperCase()}</Button>
+                <Button key={v} size="sm" variant={version === v ? "default" : "outline"} onClick={() => setVersion(v)}>{v.toUpperCase()}</Button>
               ))}
             </div>
           </div>
@@ -801,7 +795,7 @@ function UuidTab() {
             <Slider value={[count]} onValueChange={([v]) => setCount(v)} min={1} max={10000} step={1} />
             <div className="flex gap-2 mt-2 flex-wrap">
               {[1, 10, 100, 500, 1000, 5000, 10000].map((n) => (
-                <Button key={n} size="sm" variant="ghost" className="h-6 text-xs px-2" onClick={() => setCount(n)}>{n.toLocaleString()}</Button>
+                <Button key={n} size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => setCount(n)}>{n.toLocaleString()}</Button>
               ))}
             </div>
           </div>
@@ -810,7 +804,7 @@ function UuidTab() {
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Namespace</label>
               <div className="flex gap-1 flex-wrap">
                 {(["DNS", "URL", "OID", "X500", "custom"] as const).map((ns) => (
-                  <Button key={ns} size="sm" variant={nsType === ns ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setNsType(ns)}>{ns}</Button>
+                  <Button key={ns} size="sm" variant={nsType === ns ? "default" : "outline"} className="h-7 text-xs" onClick={() => setNsType(ns)}>{ns}</Button>
                 ))}
               </div>
               {nsType === "custom" && (
@@ -844,7 +838,7 @@ function UuidTab() {
                 ["alpha", "A→Z"],
                 ["time", "Timestamp (v1)"],
               ] as [SortMode, string][]).map(([k, l]) => (
-                <Button key={k} size="sm" variant={sortMode === k ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setSortMode(k)}>{l}</Button>
+                <Button key={k} size="sm" variant={sortMode === k ? "default" : "outline"} className="h-7 text-xs" onClick={() => setSortMode(k)}>{l}</Button>
               ))}
             </div>
           </div>
@@ -852,7 +846,7 @@ function UuidTab() {
             <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Export {exportFmt && <span className="text-foreground/60">(last: .{exportFmt})</span>}</label>
             <div className="flex gap-2 flex-wrap">
               {(["txt", "csv", "json", "sql"] as ExportFormat[]).map((f) => (
-                <Button key={f} size="sm" variant={exportFmt === f ? "selected" : "outline"} className="h-7 text-xs" onClick={() => exportUuids(f)}>
+                <Button key={f} size="sm" variant={exportFmt === f ? "default" : "outline"} className="h-7 text-xs" onClick={() => exportUuids(f)}>
                   <Download className="h-3 w-3 mr-1" />.{f}
                 </Button>
               ))}
@@ -971,7 +965,7 @@ function UuidTab() {
       <div className="border border-border rounded-lg p-4 bg-card space-y-3">
         <div className="flex gap-2 flex-wrap">
           {Object.keys(CODE_SNIPPETS).map((lang) => (
-            <Button key={lang} size="sm" variant={snippetLang === lang ? "selected" : "outline"} onClick={() => setSnippetLang(lang)}>{lang}</Button>
+            <Button key={lang} size="sm" variant={snippetLang === lang ? "default" : "outline"} onClick={() => setSnippetLang(lang)}>{lang}</Button>
           ))}
         </div>
         <pre className="bg-background rounded-lg p-4 text-sm font-mono text-foreground overflow-auto"><code>{CODE_SNIPPETS[snippetLang].code}</code></pre>

@@ -1,5 +1,7 @@
 # Architecture rules
 
+- HTML WYSIWYG Editor uses Tiptap for schema-backed editing and DOMPurify allowlisting for imports/exports; block remote assets and retain only supported alignment styles so untrusted documents cannot execute or transmit content.
+
 - Markdown Editor uses CodeMirror extensions and pure document helpers, with sanitized React Markdown rendering and blocked remote images; local autosave and exports never transmit content.
 - Only the Markdown route opts into a bounded full-height shared shell and locally scoped theme overrides, keeping other tools' layout and theme behavior unchanged.
 

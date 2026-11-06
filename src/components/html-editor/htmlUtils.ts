@@ -25,7 +25,7 @@ export function sanitizeHTML(input: string): string {
 }
 
 export function safeLink(url: string): boolean {
-  return /^(https?:\/\/|mailto:|tel:|#)/i.test(url.trim()) && !/[\u0000-\u001f\u007f]/.test(url);
+  return /^(https?:\/\/|mailto:|tel:|#)/i.test(url.trim()) && !Array.from(url).some(char => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127);
 }
 
 export function formatHTML(html: string): string {
