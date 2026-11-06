@@ -1,9 +1,9 @@
 # Toolzy Improvement Roadmap
 
 ## HTML WYSIWYG Editor
-- [ ] Add safe local rich-text editing, instant HTML source, formatting, and exports.
-- [ ] Register tool and update SEO/discovery/documentation.
-- [ ] Test sanitization and verify editing, download, and mobile layout.
+- [x] Add safe local rich-text editing, instant HTML source, formatting, and exports.
+- [x] Register tool and update SEO/discovery/documentation.
+- [x] Test sanitization and verify editing, download, and mobile layout.
 
 ## Markdown Editor
 - [x] Add local document utilities, editor suggestions/commands, and safety tests.
@@ -65,4 +65,4 @@ Survey result: tools are solid but navigation, copy feedback and a few everyday 
 - [x] 5. JSON Formatter: JSON to TypeScript interfaces (tested generator).
 - [x] 6. Env Generator: strip values into `.env.example`, and convert `.env` to JSON.
 - [ ] 7. Verify (unit, e2e, 390 px, 1920 px), update README, DESIGN.md, sitemap, llms.txt.
-- Noted, not in this round: `/html-editor` page exists but is not routed or listed (roadmap item still open); light theme; per-tool shortcut hints.
+- Done since: `/html-editor` is routed, listed in the sidebar/home/search, and documented (see the HTML WYSIWYG Editor section above).

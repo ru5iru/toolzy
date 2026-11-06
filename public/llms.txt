@@ -423,3 +423,29 @@ Example queries this tool answers:
 - "Convert this .env file to JSON"
 - "Convert this JSON object to a .env file"
 - "What environment variables does a Django project typically need?"
+
+## HTML WYSIWYG Editor
+https://devtools.rusiru.cc/html-editor
+
+Write rich text in a visual editor and get the matching HTML source immediately,
+entirely in the browser.
+
+Capabilities:
+- Visual editing with instant HTML source in a side-by-side, resizable workspace
+- Text marks: bold, italic, underline, strikethrough, inline code
+- Headings 1-4, bullet lists, numbered lists, blockquotes, code blocks, horizontal rules
+- Left, center, and right alignment
+- Links restricted to http, https, mailto, tel, and in-page anchors
+- Tables with add/delete row and column support
+- Local images embedded as data URLs; remote images are never loaded
+- Import existing HTML source or open a local .html/.htm/.txt file
+- Copy the HTML fragment or download a standalone HTML document
+- Scripts, event handlers, remote assets, and unsupported markup are stripped
+- Runs entirely in the browser — content is not transmitted
+
+Example queries this tool answers:
+- "Write formatted text and copy the HTML for my website"
+- "Convert pasted HTML into clean, safe markup"
+- "Build a small HTML table without writing markup by hand"
+- "Download a standalone HTML page from rich text I typed"
+- "Edit HTML without a server or account"

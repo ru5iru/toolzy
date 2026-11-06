@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2 } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
+  { title: "HTML WYSIWYG Editor", description: "Edit rich text visually and get the HTML source instantly, with tables, links, local images, and downloads", url: "/html-editor", icon: FileCode2 },
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
   { title: "Base64", description: "Encode & decode Base64 strings", url: "/base64", icon: Binary },
   { title: "URL Encode", description: "Encode & decode URL components", url: "/url-encode", icon: Link },

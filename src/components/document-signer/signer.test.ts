@@ -96,7 +96,7 @@ describe("sign and verify round trips", () => {
     const der = await signBytes(doc, key.pkcs8!, key.algorithm, "SHA-256");
     expect(der[0]).toBe(0x30);
     expect(await verifyBytes(doc, der, key.spki, key.algorithm, "SHA-256")).toBe(true);
-    const imported = await crypto.subtle.importKey("pkcs8", key.pkcs8!, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+    const imported = await crypto.subtle.importKey("pkcs8", key.pkcs8!.slice(), { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
     const raw = new Uint8Array(await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, imported, doc));
     expect(raw.length).toBe(64);
     expect(await verifyBytes(doc, raw, key.spki, key.algorithm, "SHA-256")).toBe(true);

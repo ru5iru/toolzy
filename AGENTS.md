@@ -1,6 +1,7 @@
 # Architecture rules
 
 - Markdown Editor uses CodeMirror extensions and pure document helpers, with sanitized React Markdown rendering and blocked remote images; local autosave and exports never transmit content.
+- HTML WYSIWYG Editor keeps its TipTap setup in `src/pages/HtmlEditor.tsx` with sanitization, link safety, and export helpers in `src/components/html-editor/htmlUtils.ts`, so imported and pasted markup is always filtered through the allowlist before it reaches the editor.
 - Only the Markdown route opts into a bounded full-height shared shell and locally scoped theme overrides, keeping other tools' layout and theme behavior unchanged.
 
 - Extend tools through the existing lazy React Router routes, searchable homepage list, sidebar, and ToolSEO; keep the shared application shell intact.
