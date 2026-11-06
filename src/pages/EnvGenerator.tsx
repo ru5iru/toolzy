@@ -7,6 +7,8 @@ import { ToolSEO } from "@/components/ToolSEO";
 import { ToolHeader } from "@/components/ToolHeader";
 import { toolPageClass } from "@/lib/toolLayout";
 import { FileText } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
+import { envToJson, jsonToEnv, parseEnv, toExample } from "@/lib/env/envUtils";
 
 const templates: Record<string, string> = {
   Node: `NODE_ENV=development
@@ -69,9 +71,9 @@ const EnvGenerator = () => {
     toast.success("Variable added");
   };
 
-  const copy = () => {
-    navigator.clipboard.writeText(content);
-    toast.success("Copied to clipboard");
+  const issues = parseEnv(content).issues;
+  const convert = (fn: () => string, done: string) => {
+    try { setContent(fn()); toast.success(done); } catch (e) { toast.error(e instanceof Error ? e.message : "Conversion failed"); }
   };
 
   const download = () => {
@@ -112,12 +114,22 @@ const EnvGenerator = () => {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="KEY=value"
-        className="min-h-[300px] font-mono text-sm bg-card border-border resize-none"
+        className="code-surface h-[clamp(240px,calc(100dvh-420px),800px)] resize-y bg-card"
       />
       <div className="flex gap-2">
-        <Button onClick={copy} disabled={!content}>Copy</Button>
-        <Button variant="secondary" onClick={download} disabled={!content}>Download .env</Button>
+        <CopyButton value={content} label="Copy" variant="default" disabled={!content} />
+        <Button variant="secondary" size="sm" onClick={download} disabled={!content}>Download .env</Button>
+        <span className="mx-1 hidden w-px bg-border sm:block" aria-hidden />
+        <Button variant="outline" size="sm" disabled={!content} onClick={() => convert(() => toExample(content), "Secret values cleared")} title="Blank secrets, tokens and URLs with credentials">Make .env.example</Button>
+        <Button variant="outline" size="sm" disabled={!content} onClick={() => convert(() => envToJson(content), "Converted to JSON")}>To JSON</Button>
+        <Button variant="outline" size="sm" disabled={!content} onClick={() => convert(() => jsonToEnv(content), "Converted to .env")}>From JSON</Button>
       </div>
+      {issues.length > 0 && (
+        <ul role="status" className="space-y-0.5 rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
+          {issues.slice(0, 6).map((i) => <li key={i}>{i}</li>)}
+          {issues.length > 6 && <li>…and {issues.length - 6} more</li>}
+        </ul>
+      )}
     </div>
   );
 };

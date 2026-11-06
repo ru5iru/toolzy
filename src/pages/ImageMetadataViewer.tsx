@@ -74,12 +74,25 @@ const ImageMetadataViewer = () => {
   };
   return (
     <ToolPageLayout title="Image Metadata Viewer" icon={FileSearch} description="Inspect EXIF, GPS and other metadata, and remove it from JPEG and PNG files.">
-      <ToolSEO title="Image Metadata Viewer" canonicalPath="/image-metadata" description="Inspect EXIF, GPS, camera details, timestamps, and other image metadata privately in your browser." keywords={["image metadata viewer", "EXIF viewer", "GPS metadata", "IPTC", "XMP"]} faq={[
-        { question: "Are my images uploaded?", answer: "No. Image contents and extracted metadata are processed locally in your browser and are not transmitted for processing. The website still loads its own static assets." },
-        { question: "Which image formats are supported?", answer: "JPEG, PNG, and classic TIFF are inspected by their file signatures. Detected tags vary by file. TIFF previews are not available. WebP, HEIC, HEIF, RAW, and BigTIFF are not supported in this tool." },
-        { question: "Can this tool remove metadata?", answer: "Yes, for JPEG and PNG. Create clean copy drops whole metadata blocks (EXIF, XMP, IPTC, comments, PNG text and time chunks, and other ancillary data) without re-encoding, keeps colour profiles, transparency, and animation, then re-checks the result before allowing download. TIFF removal is not supported." },
-        { question: "Does no detected metadata mean my image is anonymous?", answer: "No. Parser coverage is limited, and the image itself can reveal identifying information. The privacy summary lists only detected fields, not a privacy score." },
-      ]} />
+      <ToolSEO
+        title="Image Metadata Viewer — EXIF, GPS & Privacy Inspector"
+        description="Inspect EXIF, GPS coordinates, camera details, timestamps, IPTC and XMP tags from JPEG, PNG and TIFF images privately in your browser. Export JSON or CSV. Remove metadata from JPEG and PNG."
+        canonicalPath="/image-metadata"
+        keywords={["image metadata viewer", "EXIF viewer online", "GPS metadata extractor", "IPTC viewer", "XMP viewer", "remove EXIF data", "image privacy tool", "photo metadata"]}
+        faq={[
+          { question: "Are my images uploaded?", answer: "No. Image contents and extracted metadata are processed locally in your browser using exifr and are not transmitted for processing. The website still loads its own static assets." },
+          { question: "Which image formats are supported?", answer: "JPEG, PNG, and classic TIFF are inspected by their file signatures. Detected tags vary by file. TIFF previews are not available. WebP, HEIC, HEIF, RAW, and BigTIFF are not supported in this tool." },
+          { question: "Can this tool remove metadata from images?", answer: "Yes, for JPEG and PNG. 'Create clean copy' drops whole metadata blocks (EXIF, XMP, IPTC, comments, PNG text chunks, and other ancillary data) without re-encoding, preserves colour profiles, transparency, and animation, then re-checks the result before allowing download. TIFF removal is not supported." },
+          { question: "Does finding no metadata mean my image is fully anonymous?", answer: "No. Parser coverage is limited, and the image content itself can reveal identifying information. The privacy summary lists only detected fields — it is not a comprehensive privacy score." },
+          { question: "Can I export the metadata?", answer: "Yes. Use the JSON or CSV export buttons to download all extracted tags. CSV output uses dot-path keys and formula-safe quoting for safe import into spreadsheets." },
+        ]}
+        howToSteps={[
+          "Drop an image onto the page or click 'Choose image' to select a JPEG, PNG, or TIFF file",
+          "Browse detected EXIF, GPS, camera, date, IPTC, and XMP tags by category or search",
+          "Click any value to copy it, or export all tags as JSON or CSV",
+          "To remove metadata, switch to the Privacy tab and download a clean copy",
+        ]}
+      />
       <input ref={picker} type="file" className="sr-only" tabIndex={-1} aria-label="Select image file" accept=".jpg,.jpeg,.png,.tif,.tiff,image/jpeg,image/png,image/tiff" onChange={e => { const selected = e.target.files?.[0]; if (selected) select(selected); e.target.value = ""; }} />
       <div className={`border border-dashed rounded-lg p-6 mb-4 text-center ${dragging ? "border-primary bg-secondary" : "border-border"}`}
         onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); const files = e.dataTransfer.files; if (files.length !== 1) { toast.error("Select one image at a time."); return; } const selected = files[0]; if (selected) select(selected); }}>

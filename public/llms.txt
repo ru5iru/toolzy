@@ -1,36 +1,43 @@
 # Toolzy llms.txt — AI/LLM discovery file
-# https://toolzy.lovable.app
+# https://devtools.rusiru.cc
+# See also: https://devtools.rusiru.cc/ai.txt
 
-## Document Signer
+Toolzy is a free, browser-based developer toolbox. All tools run entirely
+client-side using the Web Crypto API and local JavaScript — no data, files,
+or keys are ever uploaded to any server.
 
-URL: https://toolzy.lovable.app/document-signer
-Category: Cryptography & Privacy
+---
 
-Sign files and verify detached digital signatures locally with the Web Crypto API. Generate RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384) and Ed25519 (when the browser supports it) key pairs, import and export PEM (PKCS#8, SPKI) and JWK keys, and sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512 (Ed25519 signs the data directly). Downloads the original, a detached .sig file (ECDSA signatures are DER-encoded and RSA-PSS uses a salt equal to the hash length, so OpenSSL can verify them) and a JSON manifest. Verification recalculates the document hash from the bytes provided and reports Valid, Invalid, Modified, Missing or Error. The Inspector marks each manifest field as self-declared or verified. Documents and keys are not uploaded; keys are held in memory by default, and can optionally be saved on the device as non-extractable keys. Private keys can be exported password-encrypted (PKCS#8, PBKDF2-SHA256 + AES-256) and encrypted keys imported. A Batch tab signs and verifies many files, producing a ZIP of signatures. A valid signature does not establish the signer's real-world identity. Not supported: PKCS#1/SEC1 keys, PDF-embedded signatures, certificate-based signing.
+## JSON Formatter
 
-## Certificate Inspector
+URL: https://devtools.rusiru.cc/json
+Category: Data Formatting
 
-URL: https://toolzy.lovable.app/certificate
-Category: Cryptography & Privacy
+Format, validate, minify, and explore JSON entirely in the browser.
 
-Decode X.509 certificates and PKCS#10 certificate requests locally with a built-in DER parser. Accepts PEM (including chains) and DER files. Shows subject, issuer, serial, validity with expiry status, signature algorithm, public key type and size or curve, extensions (Subject Alternative Name, Key Usage, Extended Key Usage, Basic Constraints, key identifiers) and SHA-1/SHA-256 fingerprints that match OpenSSL. It reports what the certificate states and does not validate trust chains, revocation or hostnames. Private keys are rejected. Nothing is uploaded.
-## Markdown Editor
+Capabilities:
+- Pretty-print with 2-space, 4-space, or tab indentation; minify
+- Interactive tree view with click-to-copy JSONPath per node
+- Search/filter keys and values with match highlighting
+- Sort keys recursively
+- Export to JSON, CSV, XML, or YAML
+- JSON Schema generation and validation
+- TypeScript type/interface generation from any JSON payload
+- Stats: size, depth, key count
+- Shareable links with JSON encoded in the URL
+- File upload (.json) and 100% client-side processing
 
-URL: https://toolzy.lovable.app/markdown
-Category: Writing & Documentation
-
-Browser-only CodeMirror Markdown editor with editor/split/preview/compare modes, local autosave after 500 ms, file open/drop, Markdown and standalone HTML downloads, clipboard exports, and printing. Includes a slash menu, formatting, list continuation, pairing, language/emoji/heading suggestions, table navigation/alignment, find/replace, synchronized scrolling, and focus mode. GitHub-flavored Markdown and raw HTML are sanitized; external images never load automatically. Text is stored only on this device and is not sent in requests or analytics.
-
-## Image Metadata Viewer
-
-URL: https://toolzy.lovable.app/image-metadata
-Category: Images & Privacy
-
-Inspect JPEG, PNG, and classic TIFF metadata locally with exifr. Pick or drop a file up to 25 MiB; preview JPEG/PNG, inspect file details and available dimensions, search categorized EXIF/camera/GPS/date/IPTC/XMP/other tags, and copy values or coordinates. Export JSON or formula-safe CSV locally. Privacy findings explain detected timestamps, GPS, serial numbers, creator/owner fields, location descriptions, and EXIF thumbnails without inventing a score. Images and metadata are not uploaded or persistently stored. TIFF previews, WebP, HEIC/HEIF, RAW, BigTIFF, and metadata removal are not supported. No detected fields is not a guarantee of anonymity or complete parser coverage.
+Example queries this tool answers:
+- "Format this JSON with proper indentation"
+- "Validate this JSON and show me the error"
+- "Convert this JSON to CSV"
+- "Generate a JSON schema from this payload"
+- "Generate TypeScript interfaces from this JSON"
+- "What is the depth of this JSON structure?"
 
 ## Encoding Hub
 
-URL: https://toolzy.lovable.app/encode
+URL: https://devtools.rusiru.cc/encode
 Category: Encoding & Serialisation
 
 Encode and decode text and files using Base64, URL-safe Base64,
@@ -59,18 +66,22 @@ Example queries this tool answers:
 - "Parse the query parameters from this URL"
 - "What is the difference between encodeURI and encodeURIComponent?"
 - "Encode this string using RFC 3986"
+
 ## JWT Hub
 
-URL: https://toolzy.lovable.app/jwt
+URL: https://devtools.rusiru.cc/jwt
 Category: Authentication & Security
 
-Decode, encode, and verify JSON Web Tokens (JWTs) entirely in the browser. No data leaves the client.
+Decode, encode, and verify JSON Web Tokens (JWTs) entirely in the browser.
+No data leaves the client.
 
 Capabilities:
 - Decode any JWT and inspect header, payload, and claims (exp, nbf, iat, iss, aud, sub)
-- Encode and sign new JWTs using HS256, HS384, HS512, RS256, or ES256 via the Web Crypto API
+- Encode and sign new JWTs using HS256, HS384, HS512, RS256, or ES256 via
+  the Web Crypto API
 - Verify JWT signatures with a secret or public key (HMAC and RSA/ECDSA)
-- Security score card grading token safety: algorithm strength, secret length, claim presence, expiry window
+- Security score card grading token safety: algorithm strength, secret length,
+  claim presence, expiry window
 - Token history (last 10 tokens, localStorage)
 - Server-side verification code examples in Node.js, Python, Go, and PHP
 
@@ -83,7 +94,7 @@ Example queries this tool answers:
 
 ## Crypto Suite
 
-URL: https://toolzy.lovable.app/crypto
+URL: https://devtools.rusiru.cc/crypto
 Category: Cryptography & Identifiers
 
 Generate cryptographic hashes, universally unique identifiers and random
@@ -112,6 +123,13 @@ Capabilities — UUID Generator tab:
 - UUID comparison with field-by-field breakdown and timestamp diff for v1
 - Nil UUID and Max UUID (RFC 9562) quick-copy shortcuts
 
+Capabilities — Secrets tab:
+- Generate random secrets and keys with crypto.getRandomValues: 1-1,024
+  bytes, 1-50 at a time, as hex, Base64 or Base64URL
+- Presets: JWT HS256/HS384/HS512 secrets, AES-128 and AES-256 keys, API
+  token, session secret
+- Values are shown only on the page and are never stored or sent
+
 Example queries this tool answers:
 - "Generate the SHA-256 hash of this text"
 - "What is the SHA-512 hash of this file?"
@@ -122,40 +140,9 @@ Example queries this tool answers:
 - "Generate a UUID v5 from this namespace and name"
 - "What is the difference between SHA-256 and SHA-512?"
 
-Capabilities — Secrets tab (/crypto?tab=secrets):
-- Generate random secrets and keys with crypto.getRandomValues: 1-1,024
-  bytes, 1-50 at a time, as hex, Base64 or Base64URL
-- Presets: JWT HS256/HS384/HS512 secrets, AES-128 and AES-256 keys, API
-  token, session secret
-- Values are shown only on the page and are never stored or sent
-
-## JSON Formatter
-
-URL: https://toolzy.lovable.app/json
-Category: Data Formatting
-
-Format, validate, minify, and explore JSON entirely in the browser.
-
-Capabilities:
-- Pretty-print with 2-space, 4-space, or tab indentation; minify
-- Interactive tree view with click-to-copy JSONPath per node
-- Search/filter keys and values with match highlighting
-- Sort keys recursively
-- Export to JSON, CSV, XML, or YAML
-- JSON Schema generation and validation
-- Stats: size, depth, key counts
-- Shareable links with JSON encoded in the URL
-- File upload (.json) and 100% client-side processing
-
-Example queries this tool answers:
-- "Format this JSON with proper indentation"
-- "Validate this JSON and show me the error"
-- "Convert this JSON to CSV"
-- "Generate a JSON schema from this payload"
-
 ## Color Converter
 
-URL: https://toolzy.lovable.app/color
+URL: https://devtools.rusiru.cc/color
 Category: Design & Color
 
 Convert colors between formats, build palettes, check accessibility contrast,
@@ -177,57 +164,15 @@ Example queries this tool answers:
 - "What is the contrast ratio between these two colors?"
 - "Generate a complementary palette for this color"
 - "Extract the dominant colors from this image"
-
-## API Diff
-
-URL: https://toolzy.lovable.app/diff
-Category: Testing & Debugging
-
-Compare two API responses or data payloads and see structural differences.
-
-Capabilities:
-- Structural diffing of JSON, XML, HTML, and plain text
-- Tree and table diff views
-- Ignore rules for volatile fields (timestamps, IDs)
-- Filtering: show only added, removed, or changed nodes
-- Export diff results
-
-Example queries this tool answers:
-- "Compare these two JSON API responses"
-- "What changed between these two payloads?"
-
-## Fake Data Generator
-
-URL: https://toolzy.lovable.app/fake-data
-Category: Testing & Debugging
-
-Generate realistic fake user data in JSON for testing and development.
-
-Capabilities:
-- Names, emails, phone numbers, addresses, ages, UUIDs
-- 1–100 records per generation
-- JSON output, copy or download
-- 100% client-side, no real personal data
-
-## Environment File Generator
-
-URL: https://toolzy.lovable.app/env
-Category: Configuration
-
-Build .env configuration files from framework templates.
-
-Capabilities:
-- Templates for Node.js, Laravel, Spring Boot, React, and Django
-- Custom key-value pairs
-- Copy to clipboard or download as .env
-- Runs entirely in the browser — secrets never leave the machine
+- "Does this color combination meet WCAG AA contrast?"
 
 ## Date & Time Toolkit
 
-URL: https://toolzy.lovable.app/datetime
+URL: https://devtools.rusiru.cc/datetime
 Category: Time & Scheduling
 
-Convert timestamps, compare timezones, calculate date differences, and build cron expressions.
+Convert timestamps, compare timezones, calculate date differences, and build
+cron expressions.
 
 Capabilities:
 - Unix timestamp ↔ ISO 8601 conversion with relative time ("2h ago")
@@ -241,22 +186,240 @@ Example queries this tool answers:
 - "How many days between these two dates?"
 - "Convert 3pm New York time to Tokyo time"
 - "Build a cron expression for every Monday at 9 AM"
+- "What is the current UTC time?"
 
 ## Regex Playground
 
-URL: https://toolzy.lovable.app/regex
+URL: https://devtools.rusiru.cc/regex
 Category: Testing & Debugging
 
-Test regular expressions live with match highlighting and capture groups.
+Test regular expressions live with match highlighting, capture groups,
+and string replacement.
 
 Capabilities:
 - Real-time matching with debounced processing
 - Match highlighting, positions, and named capture groups
+- Replace mode: apply a replacement string with $1, $2, $<name> backreferences
+  and see the transformed output instantly
 - Flag support (g, i, m, s, u, y)
 - Library of common patterns (email, URL, IPv4, phone, hex color, ISO date)
-- Shareable links with pattern and test text encoded in the URL
+- Shareable links with pattern, flags, test text, and replacement encoded
+  in the URL
 
 Example queries this tool answers:
 - "Test this regex against my text"
 - "What does this regex match?"
 - "Regex to validate an email address"
+- "Replace all occurrences matching this pattern with a template string"
+- "Show me named capture groups for this regex"
+
+## Text Utilities
+
+URL: https://devtools.rusiru.cc/text
+Category: Text & Data
+
+Transform and inspect plain text in the browser.
+
+Capabilities:
+- Case conversion: upper, lower, title, sentence, camelCase, PascalCase,
+  snake_case, kebab-case, CONSTANT_CASE, dot.case — identifier cases operate
+  per input line
+- Slugify: convert text to URL-safe slugs
+- Line operations: sort A-Z, sort Z-A, sort numeric, reverse, deduplicate,
+  trim whitespace, number lines
+- Live counts: characters, words, lines, bytes, estimated reading time
+- Undo (up to 20 steps)
+
+Example queries this tool answers:
+- "Convert this text to snake_case"
+- "Convert this list to kebab-case"
+- "Remove duplicate lines from this list"
+- "Sort these lines alphabetically"
+- "Count words in my text"
+- "Slugify this page title for use in a URL"
+
+## Markdown Editor
+
+URL: https://devtools.rusiru.cc/markdown
+Category: Writing & Documentation
+
+Browser-only CodeMirror Markdown editor with live preview, GFM support,
+local autosave, and exports.
+
+Capabilities:
+- Editor, split, preview, and compare (diff) modes
+- GitHub-Flavored Markdown (GFM): tables, task lists, strikethrough, footnotes,
+  fenced code with syntax highlighting, sanitized inline HTML
+- Local autosave after 500 ms (stored only on this device)
+- File open and drag-and-drop (.md, .markdown, .txt)
+- Slash menu, formatting keyboard shortcuts, list continuation, table
+  navigation/alignment
+- Find and replace (Ctrl/Cmd+F)
+- Synchronized scrolling in split mode
+- Focus mode (full-screen editing)
+- Export: download .md, download standalone .html, copy Markdown, copy HTML,
+  print / save as PDF
+- External images are blocked to prevent data leaving the browser
+- Nothing is uploaded or stored on any server
+
+Example queries this tool answers:
+- "Preview my Markdown with GitHub-Flavored Markdown rendering"
+- "Export my Markdown document as HTML"
+- "Compare two versions of my Markdown document"
+- "Edit Markdown with live preview"
+
+## Image Metadata Viewer
+
+URL: https://devtools.rusiru.cc/image-metadata
+Category: Images & Privacy
+
+Inspect JPEG, PNG, and classic TIFF metadata locally with exifr. Remove
+metadata from JPEG and PNG without re-encoding.
+
+Capabilities:
+- Pick or drop a file up to 25 MiB
+- Preview JPEG/PNG with file details and detected dimensions
+- Search and browse categorized metadata: EXIF, camera settings, GPS
+  coordinates, timestamps, IPTC caption/creator, XMP, and other tags
+- Copy any value or GPS coordinates with one click
+- Export all tags as JSON or formula-safe CSV
+- Privacy summary: highlights detected timestamps, GPS, serial numbers,
+  creator/owner fields, location descriptions, and embedded thumbnails
+- Metadata removal ("Create clean copy"): lossless segment/chunk dropping for
+  JPEG and PNG; re-verifies the result before allowing download
+- Images and metadata are not uploaded or persistently stored
+
+Example queries this tool answers:
+- "What EXIF metadata is embedded in this photo?"
+- "Does this image contain GPS coordinates?"
+- "Remove metadata from this JPEG for privacy"
+- "What camera was used to take this photo?"
+- "Export all metadata from this image as JSON"
+
+## Document Signer
+
+URL: https://devtools.rusiru.cc/document-signer
+Category: Cryptography & Privacy
+
+Sign files and verify detached digital signatures locally with the Web
+Crypto API.
+
+Capabilities:
+- Key generation: RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384),
+  Ed25519 (detected automatically)
+- Import and export PEM (PKCS#8, SPKI) and JWK keys
+- Sign any file up to 256 MiB with SHA-256, SHA-384 or SHA-512
+- Detached signatures: .sig file + JSON manifest; ECDSA is DER-encoded,
+  RSA-PSS uses a salt equal to the hash length → both verify with OpenSSL
+- Verification: reports Valid, Invalid, Modified, Missing, or Error
+- Inspector: marks each manifest field as self-declared or verified
+- Private key export with password encryption (PKCS#8, PBKDF2 + AES-256-GCM)
+- Device storage: opt-in only; keys stored as non-extractable CryptoKeys
+- Batch tab: sign or verify up to 100 files; outputs a ZIP of .sig files
+- Not supported: PKCS#1/SEC1 keys, PDF-embedded signatures, certificates
+
+Example queries this tool answers:
+- "Sign this file with an ECDSA key"
+- "Verify this detached signature against a file"
+- "Generate an RSA-PSS key pair for document signing"
+- "Can OpenSSL verify signatures from this tool?"
+
+## Certificate Inspector
+
+URL: https://devtools.rusiru.cc/certificate
+Category: Cryptography & Privacy
+
+Decode X.509 certificates and PKCS#10 certificate signing requests (CSRs)
+locally with a built-in DER parser.
+
+Capabilities:
+- Accepts PEM (including certificate chains) and DER files (.der, .cer, .crt,
+  .pem, .csr)
+- Shows: subject, issuer, serial number, validity dates with expiry status
+- Signature algorithm, public key type (RSA/EC/Ed25519) and size or curve
+- Extensions: Subject Alternative Name (SANs), Key Usage, Extended Key Usage,
+  Basic Constraints, Subject Key Identifier, Authority Key Identifier
+- SHA-1 and SHA-256 fingerprints that match OpenSSL output
+- Decodes CSRs (PKCS#10) with the same field set
+- Does not validate trust chains, revocation (CRL/OCSP), or hostname matching
+- Private keys are rejected on input
+- Nothing is uploaded
+
+Example queries this tool answers:
+- "Decode this PEM certificate"
+- "What SANs (Subject Alternative Names) does this certificate have?"
+- "When does this SSL certificate expire?"
+- "What is the SHA-256 fingerprint of this certificate?"
+- "Decode this CSR and show the requested subject"
+
+## API Diff
+
+URL: https://devtools.rusiru.cc/diff
+Category: Testing & Debugging
+
+Compare two API responses or data payloads and see structural differences.
+
+Capabilities:
+- Structural diffing of JSON, XML, HTML, and plain text
+- Tree and table diff views
+- Ignore rules for volatile fields (timestamps, IDs, JSON paths)
+- Filtering: show only added, removed, or changed nodes
+- Export diff results as Markdown or JSON
+- Shareable links and diff history (last 10 comparisons, localStorage)
+
+Example queries this tool answers:
+- "Compare these two JSON API responses"
+- "What changed between these two payloads?"
+- "Find breaking changes between these two JSON schemas"
+- "Ignore timestamps and IDs in this diff"
+
+## Fake Data Generator
+
+URL: https://devtools.rusiru.cc/fake-data
+Category: Testing & Development
+
+Generate realistic, reproducible fake data using Faker v10 JSON templates,
+entirely in the browser.
+
+Capabilities:
+- JSON template engine with Faker tokens, nested objects and arrays,
+  `repeat`, `pick`, `weighted`, `maybe`, and `unique` directives
+- Visual template builder (no-code)
+- 1–1000 records per batch; large batches run in a browser Web Worker
+- Reproducible: seed + reference date + locale always give the same output
+- 50+ IANA locales with lazy-loaded public data
+- Export: JSON, NDJSON, CSV (flattened, formula-safe), SQL INSERT, YAML
+- Share links encode the template and options in a URL fragment
+- Templates are saved in localStorage; generated data is never stored or sent
+
+Example queries this tool answers:
+- "Generate 100 fake user records with names, emails and addresses"
+- "Generate reproducible test data with a fixed seed"
+- "Export fake data as SQL INSERT statements"
+- "Generate fake data in Japanese (ja) locale"
+- "Build a JSON template for a product catalog"
+
+## Environment File Generator
+
+URL: https://devtools.rusiru.cc/env
+Category: Configuration
+
+Build, parse, convert, and strip .env configuration files in the browser.
+Secrets never leave the machine.
+
+Capabilities:
+- Framework templates: Node.js, Laravel, Spring Boot, React, Django
+- Custom key-value pairs
+- Warning list for invalid lines, non-portable names, and duplicate keys
+- Make .env.example: blanks out secrets, tokens, passwords, keys, and
+  credentialed URLs automatically
+- Convert .env → JSON and JSON → .env (bidirectional)
+- Download as .env or copy to clipboard
+- Runs entirely in the browser — secrets are not transmitted
+
+Example queries this tool answers:
+- "Build a .env file for a Node.js project"
+- "Create a .env.example file by stripping secret values"
+- "Convert this .env file to JSON"
+- "Convert this JSON object to a .env file"
+- "What environment variables does a Django project typically need?"

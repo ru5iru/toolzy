@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { CopyButton } from "@/components/CopyButton";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Share2, Regex } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -92,6 +93,12 @@ const RegexPlayground = () => {
     }
   }, [debouncedPattern, flags, debouncedText]);
 
+  const [replacement, setReplacement] = useState("");
+  const replaced = useMemo(() => {
+    if (!debouncedPattern || error || !replacement) return null;
+    try { return debouncedText.replace(new RegExp(debouncedPattern, flags), replacement); } catch { return null; }
+  }, [debouncedPattern, flags, debouncedText, replacement, error]);
+
   const loadSnippet = (s: typeof snippets[0]) => {
     setPattern(s.pattern);
     setFlags(s.flags);
@@ -128,6 +135,11 @@ const RegexPlayground = () => {
         </div>
       </div>
 
+      <div className="space-y-1">
+        <label htmlFor="regex-replace" className="text-xs text-muted-foreground uppercase tracking-wider">Replace with (optional)</label>
+        <Input id="regex-replace" value={replacement} onChange={(e) => setReplacement(e.target.value)} placeholder="$1, $<name>, $&" className="bg-card border-border font-mono" />
+      </div>
+
       {error && <p className="text-destructive font-mono text-sm">{error}</p>}
 
       <div className="space-y-2">
@@ -149,6 +161,16 @@ const RegexPlayground = () => {
               )}
             </pre>
           </div>
+
+          {replaced !== null && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Replaced text</label>
+                <CopyButton value={replaced} label="Copy" variant="outline" />
+              </div>
+              <pre className="code-surface max-h-[300px] overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-card p-4">{replaced}</pre>
+            </div>
+          )}
 
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground uppercase tracking-wider">

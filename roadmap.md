@@ -55,3 +55,14 @@
 - [x] `ToolHeader` + `ToolPageLayout`; all pages migrated off hand-written headers; compact "Local only" chip.
 - [x] Launcher home page (search focused on load, `/` shortcut, Enter opens first match, tiles are links).
 - [ ] Next: light theme, command palette (Ctrl/Cmd+K), shared `ResultPanel` and `CopyButton`, per-tool density pass for JSON, JWT and Fake Data toolbars.
+
+## Capability and UX plan (feat/ui-density-pass follow-up)
+Survey result: tools are solid but navigation, copy feedback and a few everyday utilities are missing.
+- [x] 1. Command palette (Ctrl/Cmd+K) with tool search, aliases (base64, uuid, hash, jwt, cron…) and a top-bar trigger.
+- [x] 2. Shared `CopyButton` created and adopted in Text, Regex, Env and JSON TypeScript. Remaining ad-hoc clipboard call sites (about 24) to migrate.
+- [x] 3. New tool: Text Utilities (case converters, slugify, sort/dedupe/trim lines, counts, line numbers) with tested pure helpers.
+- [x] 4. Regex Playground: replace mode with `$1` / `$<name>` preview and copy.
+- [x] 5. JSON Formatter: JSON to TypeScript interfaces (tested generator).
+- [x] 6. Env Generator: strip values into `.env.example`, and convert `.env` to JSON.
+- [ ] 7. Verify (unit, e2e, 390 px, 1920 px), update README, DESIGN.md, sitemap, llms.txt.
+- Noted, not in this round: `/html-editor` page exists but is not routed or listed (roadmap item still open); light theme; per-tool shortcut hints.

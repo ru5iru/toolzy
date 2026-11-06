@@ -13,9 +13,23 @@ interface ToolSEOProps {
   faq?: FAQItem[];
   /** Short "how to use" steps for HowTo schema */
   howToSteps?: string[];
+  /**
+   * Absolute URL of the Open Graph image for this page.
+   * Falls back to the site-wide OG image set in index.html.
+   */
+  ogImage?: string;
+  /**
+   * Pass false for the home / launcher page, which is not a WebApplication.
+   * Defaults to true for every tool page.
+   */
+  isApp?: boolean;
 }
 
-const BASE_URL = "https://toolzy.lovable.app";
+const BASE_URL = "https://devtools.rusiru.cc";
+
+/** Shared OG image (1200×630) used as the fallback for all tool pages. */
+const DEFAULT_OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a8941552-9ffd-43fb-a460-b27723f2980b/id-preview-75720018--c01f4f33-6220-46a1-bfb7-420b0ce8af24.lovable.app-1774889779954.png";
 
 export function ToolSEO({
   title,
@@ -24,18 +38,44 @@ export function ToolSEO({
   keywords = [],
   faq = [],
   howToSteps = [],
+  ogImage = DEFAULT_OG_IMAGE,
+  isApp = true,
 }: ToolSEOProps) {
-  const fullTitle = `${title} — Free Online Developer Tool | Toolzy`;
+  // Home page uses a plain title; tool pages get the full suffix.
+  const fullTitle =
+    canonicalPath === "/"
+      ? title
+      : `${title} — Free Online Tool | Toolzy`;
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
 
-  const webAppSchema = {
+  // BreadcrumbList — helps search engines and AI engines show navigation context.
+  const breadcrumbSchema = canonicalPath !== "/" && {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Toolzy",
+        item: BASE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
+  const webAppSchema = isApp && {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: title,
     description,
     url: canonicalUrl,
     applicationCategory: "DeveloperApplication",
-    operatingSystem: "Any",
+    operatingSystem: "Any (Browser-based)",
     offers: {
       "@type": "Offer",
       price: "0",
@@ -93,16 +133,27 @@ export function ToolSEO({
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:site_name" content="Toolzy" />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
 
       {/* Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify(webAppSchema)}
-      </script>
+      {webAppSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(webAppSchema)}
+        </script>
+      )}
+      {breadcrumbSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      )}
       {faqSchema && (
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}
