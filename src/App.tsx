@@ -19,8 +19,6 @@ const EnvGenerator = lazy(() => import("./pages/EnvGenerator"));
 const DateTimeTool = lazy(() => import("./pages/DateTimeTool"));
 const RegexPlayground = lazy(() => import("./pages/RegexPlayground"));
 const ImageMetadataViewer = lazy(() => import("./pages/ImageMetadataViewer"));
-const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
-const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const MarkdownEditor = lazy(() => import("./pages/MarkdownEditor"));
 const HtmlEditor = lazy(() => import("./pages/HtmlEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -60,8 +58,6 @@ const App = () => (
               <Route path="/datetime" element={<DateTimeTool />} />
               <Route path="/regex" element={<RegexPlayground />} />
               <Route path="/image-metadata" element={<ImageMetadataViewer />} />
-              <Route path="/document-signer" element={<DocumentSigner />} />
-              <Route path="/certificate" element={<CertificateInspector />} />
               <Route path="/markdown" element={<MarkdownEditor />} />
               <Route path="/html-editor" element={<HtmlEditor />} />
               <Route path="*" element={<NotFound />} />
