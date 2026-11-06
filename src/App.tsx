@@ -22,6 +22,7 @@ const ImageMetadataViewer = lazy(() => import("./pages/ImageMetadataViewer"));
 const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
 const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const MarkdownEditor = lazy(() => import("./pages/MarkdownEditor"));
+const HtmlEditor = lazy(() => import("./pages/HtmlEditor"));
 const TextUtilities = lazy(() => import("./pages/TextUtilities"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/certificate" element={<CertificateInspector />} />
               <Route path="/text" element={<TextUtilities />} />
               <Route path="/markdown" element={<MarkdownEditor />} />
+              <Route path="/html-editor" element={<HtmlEditor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
