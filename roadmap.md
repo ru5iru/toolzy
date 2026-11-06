@@ -1,9 +1,9 @@
 # Toolzy Improvement Roadmap
 
 ## HTML WYSIWYG Editor
-- [ ] Add safe local rich-text editing, instant HTML source, formatting, and exports.
-- [ ] Register tool and update SEO/discovery/documentation.
-- [ ] Test sanitization and verify editing, download, and mobile layout.
+- [x] Add safe local rich-text editing, instant HTML source, formatting, and exports.
+- [x] Register tool and update SEO/discovery/documentation.
+- [x] Test sanitization and verify editing, download, and mobile layout.
 
 ## Markdown Editor
 - [x] Add local document utilities, editor suggestions/commands, and safety tests.
