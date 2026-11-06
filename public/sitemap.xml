@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home / launcher -->
   <url>
     <loc>https://toolzy.lovable.app/</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Core data tools -->
   <url>
     <loc>https://toolzy.lovable.app/json</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/encode</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/crypto</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/color</loc>
-    <lastmod>2026-10-01</lastmod>
+    <loc>https://toolzy.lovable.app/jwt</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Developer utilities -->
+  <url>
+    <loc>https://toolzy.lovable.app/regex</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/jwt</loc>
-    <lastmod>2026-10-01</lastmod>
+    <loc>https://toolzy.lovable.app/datetime</loc>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/diff</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/fake-data</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/env</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <!-- Design and text -->
   <url>
-    <loc>https://toolzy.lovable.app/datetime</loc>
-    <lastmod>2026-10-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://toolzy.lovable.app/regex</loc>
-    <lastmod>2026-10-01</lastmod>
+    <loc>https://toolzy.lovable.app/color</loc>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -73,20 +80,22 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/image-metadata</loc>
-    <lastmod>2026-10-25</lastmod>
+    <loc>https://toolzy.lovable.app/markdown</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Privacy and security tools -->
   <url>
-    <loc>https://toolzy.lovable.app/markdown</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://toolzy.lovable.app/image-metadata</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolzy.lovable.app/document-signer</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

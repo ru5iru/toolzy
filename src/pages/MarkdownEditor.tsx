@@ -158,7 +158,25 @@ export default function MarkdownEditor() {
   const previewPane = <section className="flex h-full min-h-0 min-w-0 flex-col" aria-label="Markdown preview pane"><header className="h-12 shrink-0 border-b border-border bg-card px-4 flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /><h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Live preview</h2><Badge variant="outline" className="ml-auto text-[9px] font-mono">{stats.minutes} MIN</Badge></header><div ref={preview} onScroll={event => synchronize(event.currentTarget, view.current?.scrollDOM)} className="markdown-preview flex-1 min-h-0 overflow-auto p-6"><MarkdownPreview text={deferred} /></div></section>;
 
   return <div data-theme={light ? "light" : "dark"} className={`markdown-workspace flex flex-col min-h-0 h-full ${focus ? "fixed inset-0 z-50" : ""} ${dragging ? "ring-2 ring-inset ring-primary" : ""}`} onDragOver={event => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={event => { event.preventDefault(); setDragging(false); const file = event.dataTransfer.files[0]; if (file) void openFile(file); }}>
-    <ToolSEO title="Markdown Editor" description="Write Markdown with a safe live preview, slash suggestions, local autosave, side-by-side comparison, and Markdown or HTML exports. Entirely in your browser." canonicalPath="/markdown" keywords={["markdown editor", "GFM preview", "local markdown editor", "markdown to HTML"]} howToSteps={["Write or open a local Markdown file.", "Use the toolbar or slash menu to format your document.", "Preview or compare, then export Markdown or HTML."]} />
+    <ToolSEO
+      title="Markdown Editor — Live Preview & GFM Support"
+      description="Browser-only Markdown editor with live preview, GitHub-flavored Markdown, local autosave, split view, slash suggestions, find/replace, and Markdown or HTML exports. Nothing is uploaded."
+      canonicalPath="/markdown"
+      keywords={["markdown editor online", "GFM markdown editor", "live markdown preview", "markdown to HTML", "github flavored markdown", "local markdown editor", "markdown split view"]}
+      faq={[
+        { question: "Is my text uploaded anywhere?", answer: "No. Everything — editing, rendering, comparison, autosave — happens locally in your browser. Your document is saved on this device only. No text is sent to any server." },
+        { question: "What Markdown syntax is supported?", answer: "GitHub-Flavored Markdown (GFM): tables, task lists, strikethrough, footnotes, fenced code blocks with syntax highlighting, and sanitized inline HTML. Remote images are blocked to prevent content from leaving the browser." },
+        { question: "How does the split view work?", answer: "Split view shows the editor on the left and a live rendered preview on the right, with optional synchronized scrolling. Switch modes with Alt+1 (Editor), Alt+2 (Split), Alt+3 (Preview), or Alt+4 (Compare)." },
+        { question: "Can I open and save Markdown files from my computer?", answer: "Yes. Use the Open button or drag and drop a .md, .markdown, or .txt file. The editor saves back to your device — it does not write to your file system automatically, but you can download the file at any time." },
+        { question: "Can I export to HTML?", answer: "Yes. Use the Export menu to download a standalone .html file, copy the HTML to your clipboard, or print the rendered document as a PDF." },
+      ]}
+      howToSteps={[
+        "Open the editor and type or paste your Markdown, or drag a .md file onto the page",
+        "Use the toolbar, slash menu (/), or keyboard shortcuts for formatting",
+        "Switch to Split or Preview mode to see the rendered output",
+        "Export as .md, .html, or PDF via the Export menu",
+      ]}
+    />
     <input ref={filePicker} type="file" className="sr-only" accept=".md,.markdown,.txt" aria-label="Open Markdown file" onChange={event => { const file = event.target.files?.[0]; if (file) void openFile(file); event.target.value = ""; }} />
     {!focus && <header className="markdown-chrome shrink-0 border-b border-border px-3 py-2 flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /><h1 className="text-sm font-mono font-bold">Markdown Editor</h1></div>

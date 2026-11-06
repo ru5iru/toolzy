@@ -38,7 +38,26 @@ const TextUtilities = () => {
 
   return (
     <ToolPageLayout title="Text Utilities" icon={Type} description="Change case, clean up lines and count text.">
-      <ToolSEO title="Text Utilities" description="Free online text tools: convert case (camelCase, snake_case, kebab-case), slugify, sort and dedupe lines, and count words and characters in your browser." canonicalPath="/text" keywords={["case converter", "slugify", "sort lines", "remove duplicate lines", "word counter"]} />
+      <ToolSEO
+        title="Text Utilities — Case Converter, Slugify & Line Tools"
+        description="Free browser-based text tools: convert case (camelCase, PascalCase, snake_case, kebab-case), slugify, sort and deduplicate lines, count words and characters. No data is uploaded."
+        canonicalPath="/text"
+        keywords={["case converter", "camelCase converter", "snake_case converter", "kebab-case converter", "slugify", "sort lines online", "remove duplicate lines", "word counter", "text transformation"]}
+        faq={[
+          { question: "How do I convert text to camelCase?", answer: "Paste or type your text in the box, then click the camelCase button. Each word or line is treated as a separate identifier token and joined in camelCase." },
+          { question: "What is the difference between snake_case and kebab-case?", answer: "snake_case separates words with underscores (e.g. my_variable_name) and is common in Python and database column names. kebab-case separates words with hyphens (e.g. my-class-name) and is common in CSS class names and URL slugs." },
+          { question: "How does slugify work?", answer: "Slugify converts text to a URL-friendly slug: it lowercases everything, replaces spaces and special characters with hyphens, and strips leading and trailing hyphens. For example, 'Hello World!' becomes 'hello-world'." },
+          { question: "Can I sort lines alphabetically?", answer: "Yes. Click Sort A–Z for ascending order or Sort Z–A for descending. Numeric sort orders lines by their numeric value where present." },
+          { question: "How do I remove duplicate lines?", answer: "Click Deduplicate lines. The tool keeps the first occurrence of each line and removes any later duplicates, preserving the original order." },
+          { question: "Is my text sent to a server?", answer: "No. All transformations run entirely in your browser using JavaScript. Your text never leaves your machine." },
+        ]}
+        howToSteps={[
+          "Paste or type text into the input area",
+          "Click a case button (e.g. camelCase, snake_case) or a line operation (Sort, Deduplicate, Trim)",
+          "Use Undo to revert the last change",
+          "Copy the result with the Copy button",
+        ]}
+      />
       <div className="space-y-2">
         <h2 className="text-xs uppercase tracking-wider text-muted-foreground">Case</h2>
         <div className="flex flex-wrap gap-2">

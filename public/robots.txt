@@ -1,4 +1,56 @@
+# Toolzy robots.txt
+# https://toolzy.lovable.app
+
+# All crawlers: allow full access
 User-agent: *
 Allow: /
 
+# Sitemap
 Sitemap: https://toolzy.lovable.app/sitemap.xml
+
+# AI / LLM crawlers — explicitly welcome for indexing and answer generation.
+# Toolzy is a browser-only tool suite with no user data or private content.
+
+# OpenAI GPTBot
+User-agent: GPTBot
+Allow: /
+
+# OpenAI ChatGPT-User
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic ClaudeBot
+User-agent: ClaudeBot
+Allow: /
+
+# Google Gemini / Bard
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Apple
+User-agent: Applebot
+Allow: /
+
+# Microsoft / Bing AI
+User-agent: bingbot
+Allow: /
+
+# Common Crawl (used to train many LLMs)
+User-agent: CCBot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# AI2 (Semantic Scholar)
+User-agent: ia_archiver
+Allow: /

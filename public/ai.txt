@@ -1,0 +1,37 @@
+# Toolzy AI.txt — Machine-readable metadata for AI and LLM search engines
+# https://toolzy.lovable.app
+# Format inspired by llms.txt (https://llmstxt.org) and ai.txt conventions
+
+Name: Toolzy
+Version: 2.0
+Description: A free, browser-based developer toolbox. All tools run entirely client-side — no data, files, or keys are ever uploaded to any server.
+URL: https://toolzy.lovable.app
+Category: Developer Tools
+License: Free to use, no sign-up required
+Privacy: All processing is local (browser-only). No analytics on individual tool use.
+
+# Full tool index and AI-readable descriptions
+LLMs-txt: https://toolzy.lovable.app/llms.txt
+
+# Sitemap for structured URL discovery
+Sitemap: https://toolzy.lovable.app/sitemap.xml
+
+# AI crawlers are welcome — see robots.txt
+Crawling: Allowed
+
+# Tools available (brief index for AI answer generation)
+Tool: JSON Formatter & Validator — https://toolzy.lovable.app/json
+Tool: Base64 & URL Encoder/Decoder — https://toolzy.lovable.app/encode
+Tool: JWT Decoder, Encoder & Verifier — https://toolzy.lovable.app/jwt
+Tool: Crypto Suite (SHA hashes, UUID, secrets) — https://toolzy.lovable.app/crypto
+Tool: Color Converter & Toolkit — https://toolzy.lovable.app/color
+Tool: Date & Time Toolkit (timestamps, timezones, cron) — https://toolzy.lovable.app/datetime
+Tool: Regex Playground — https://toolzy.lovable.app/regex
+Tool: Text Utilities (case, sort, dedupe, slugify) — https://toolzy.lovable.app/text
+Tool: Markdown Editor — https://toolzy.lovable.app/markdown
+Tool: Image Metadata Viewer (EXIF, GPS, IPTC) — https://toolzy.lovable.app/image-metadata
+Tool: Document Signer (RSA-PSS, ECDSA) — https://toolzy.lovable.app/document-signer
+Tool: Certificate Inspector (X.509, CSR) — https://toolzy.lovable.app/certificate
+Tool: API Response Diff Tool — https://toolzy.lovable.app/diff
+Tool: Fake Data Generator — https://toolzy.lovable.app/fake-data
+Tool: Environment File Generator — https://toolzy.lovable.app/env
