@@ -146,7 +146,50 @@ toolzy/
 
 ---
 
+## UI and design
+
+See [`DESIGN.md`](DESIGN.md) for the design principles, page anatomy, spacing scale, control states and the rollout plan. New tools use `ToolPageLayout` and the shared controls.
+
+---
+
 ## Tools — Full Catalog & Capabilities
+
+### HTML WYSIWYG Editor — `/html-editor`
+
+Visual rich-text editing with immediately generated HTML source. Uses the shared ToolPageLayout, theme tokens, and shadcn controls. Desktop panes resize independently; on mobile the visual editor and source stack. The source pane is read-only; use Import HTML to edit existing source.
+
+- Format bold, italic, underline, strike, inline code, headings H1–H4, bullet/numbered lists, code blocks, blockquotes, and left/center/right alignment. Clear formatting, undo, and redo; Tiptap's native editing shortcuts remain available.
+- Insert/edit/remove safe links, horizontal rules, and 3×3 tables with header rows. When the cursor is in a table, its menu offers add/delete row/column and delete table.
+- Insert local PNG/JPEG/GIF/WebP images up to 5 MiB, embedded as data URLs; remote images and SVG are intentionally excluded.
+- Import pasted HTML or open `.html`, `.htm`, and `.txt` files up to 5 MiB. Supported schema content replaces the document; scripts, frames, event handlers, remote resources, unsupported tags, and styles other than text alignment are removed.
+- Copy the sanitized HTML fragment or download a complete standalone `document.html`. Downloads revoke temporary object URLs. Sanitization is a safety boundary, not a guarantee of fidelity to arbitrary HTML/CSS.
+- Processing stays in the browser; no autosave, backend, or requests carrying documents. Download before navigating away. Clearing content is confirmed and can be undone while the page remains open.
+
+Important files: `src/pages/HtmlEditor.tsx` owns Tiptap state, toolbar, dialogs, and local IO; `src/components/html-editor/htmlUtils.ts` sanitizes imports/exports, validates link protocols, formats source, and wraps complete HTML documents; `html-editor.css` scopes rich-text typography to semantic tokens. Tiptap React/starter-kit/text-align/table/image and DOMPurify load with the lazy route. Run `bunx vitest run src/components/html-editor` for safety tests. Integration follows App routes, sidebar/home arrays, ToolSEO, sitemap, and llms.txt.
+
+### Document Signer — `/document-signer`
+
+Sign files and verify **detached** digital signatures with the browser's Web Crypto API; no new dependencies. Five tabs (`?tab=sign|verify|batch|keys|inspector`), registered like the other tools.
+
+- **Algorithms:** RSA-PSS (2048, 3072, 4096), ECDSA (P-256, P-384) and Ed25519. RSA-PSS and ECDSA use SHA-256, SHA-384 or SHA-512, and RSA-PSS uses a salt equal to the hash length. ECDSA signatures are written DER-encoded so OpenSSL can verify the `.sig` file, and verification accepts DER or raw `r||s`. Ed25519 signs the data directly (no signing hash is recorded in the manifest) and is **feature-detected**: it only appears in the key generator when the browser supports it, and a key or JWK for it is rejected with a clear message otherwise.
+- **Sign:** any file up to 256 MiB; shows name, MIME type, size and SHA-256. Downloads the unchanged original, `<name>.sig` and `<name>.signature.json`.
+- **Verify:** document, signature and/or manifest, and a public key (from this session or pasted). The document hash is always recalculated from the bytes provided; the manifest's hash is only compared against it. Results: Valid, Invalid, Modified (the document no longer matches the manifest and the signature fails), Missing, Error. A valid signature with a stale manifest verifies with a warning.
+- **Keys:** generate, import and export PEM (PKCS#8 / SPKI) and JWK, SHA-256 fingerprints of the SPKI, and a key-pair match check. Importing a private key derives its public key. PKCS#1, SEC1, encrypted and unsupported keys get an explanatory error. Private keys can be exported as an **encrypted PKCS#8 PEM** (PBES2: PBKDF2-HMAC-SHA256, 600,000 rounds, AES-256-CBC), which OpenSSL reads; encrypted PEMs import with their password (PBKDF2 with SHA-1/256/384/512 and AES-128/192/256-CBC; 3DES and scrypt get a clear message). A plain export stays available behind a confirmation dialog.
+- **Inspector:** labels each manifest field *self-declared* or *verified* (confirmed by the latest successful verification of the same signature).
+- **Batch:** sign up to 100 files (25 MiB each, 250 MiB total) with one key and download a ZIP (hand-written "store" writer, no dependency) of `.sig` and `.signature.json`; verify a mixed selection by pairing `<name>`, `<name>.sig` and `<name>.signature.json` by filename. Progress and cancel between files; orphan signature files are reported.
+- **Device storage (opt-in):** "Remember on this device" saves a key in IndexedDB. Private keys are stored only as non-extractable `CryptoKey`s (one per hash for RSA-PSS) with no private bytes, so they sign after a reload but cannot be exported again. Any script on this origin can still use them, and clearing site data deletes them. Nothing is stored unless you opt in, and the database is not even created before then.
+- **Privacy:** keys are held in memory by default: no `localStorage`, no IndexedDB until you opt in, no URL or network use. Files of 5 MiB or more are processed in a disposable, cancellable worker. Hashing and HMAC are in [Crypto Suite](#4-crypto-suite--crypto), not duplicated here.
+- **Limits:** no PDF-embedded (PAdES) signatures or certificate-based signing yet. A valid signature does not prove who owns the key. The manifest is a Toolzy-specific format, not a standard; use JWS or CMS when other software must consume it.
+
+**Delivery validation:** `npx vitest run` passed all 155 tests (110 new: encoding/PEM/ECDSA helpers, key import/export, every algorithm and hash round trip, tamper and wrong-key cases, Ed25519 and RSA-4096, OpenSSL-made fixtures verified by Toolzy, Toolzy signatures verified by Node's OpenSSL, session cancellation, the secrets generator, encrypted PKCS#8 against OpenSSL in both directions, ZIP validity, batch pairing, device-key storage logic, JWT PS/JWK, and the certificate parser against `openssl x509` fixtures). `tsc -p tsconfig.app.json` and ESLint on the new and touched files are clean, and `vite build` succeeds. A Playwright run against the production build passed 122 checks: sign/verify for ECDSA P-256, ECDSA P-384, RSA-PSS 2048, RSA-PSS 4096 and Ed25519; `openssl` verifying the downloaded `.sig` files and rejecting a tampered file; a 6 MiB file through the worker; private-key export, import and delete; no storage use before opting in and no requests after load; the Secrets tab (presets, counts, validation, deep link); no horizontal overflow at 390 px; encrypted export decrypted by `openssl pkcs8` (wrong password rejected) and OpenSSL-encrypted import; batch ZIP checked with `unzip -t` and every `.sig` verified by OpenSSL; remember, reload, sign with the restored key, and forget (stored record holds no private bytes, all keys non-extractable); the certificate inspector (fingerprint equal to OpenSSL, DER upload, private-key rejection); and JWT Hub verifying HS256, RS256, ES256 and PS256 with PEM and JWK keys. Whole-project lint was not re-run (the existing errors are unrelated).
+
+Important files: `src/pages/DocumentSigner.tsx`, `src/components/document-signer/` (`algorithms`, `keyUtils`, `signingUtils`, `verifyUtils`, `manifest`, `inspectorUtils`, `signerJobs`, `signerSession`, the four tab components, and `__fixtures__/` with OpenSSL-generated **test-only** keys), `src/workers/signerWorker.ts`, and shared helpers in `src/lib/crypto/` (also used by JWT Hub) and `src/components/FileDropzone.tsx`.
+
+### Certificate Inspector — `/certificate`
+
+Decodes X.509 certificates and PKCS#10 requests with a small hand-written DER parser (`src/lib/crypto/der.ts`, shared with encrypted-key support); no dependency. Accepts PEM (chains too) and DER. Shows subject, issuer, serial, validity with expiry status, signature algorithm, key type and size or curve, Subject Alternative Name, Key Usage, Extended Key Usage, Basic Constraints, key identifiers and SHA-1/SHA-256 fingerprints. Tests compare against OpenSSL-made fixtures (`expected.json` from `openssl x509`). It reports what the certificate states and does **not** validate chains, revocation or hostnames; private keys are rejected.
+
+**JWT Hub additions:** PS256/384/512 sign and verify, and JWK keys (private JWK to sign, public or private JWK to verify) alongside PEM.
 
 ### Image Metadata Viewer — `/image-metadata`
 
@@ -221,7 +264,7 @@ Comprehensive color toolkit for developers and designers.
 - **Favorites & history** in `localStorage`; **URL state** (`?value=#3ecfcf`).
 
 ### 4. Crypto Suite — `/crypto`
-Browser-native cryptographic hashing and UUID generation in a two-tab workbench, powered entirely by the Web Crypto API. Old routes `/hash` and `/uuid` redirect here.
+Browser-native cryptographic hashing, UUID generation and random secret generation in a three-tab workbench (`?tab=hash|uuid|secrets`), powered entirely by the Web Crypto API. Old routes `/hash` and `/uuid` redirect here.
 
 **Hashing tab**
 
@@ -245,6 +288,12 @@ Browser-native cryptographic hashing and UUID generation in a two-tab workbench,
 - UUID comparison: field-by-field breakdown, v1 timestamp delta
 - Export: CSV, JSON, SQL `INSERT`, plain TXT
 - Code snippets: JavaScript, Python, Go, SQL
+
+**Secrets tab**
+
+- Random secrets and keys from `crypto.getRandomValues`: 1–1,024 bytes, 1–50 values at a time, as hex, Base64 or Base64URL; shows the bytes and bits of randomness
+- Presets: JWT HS256/HS384/HS512 secrets (sized to the hash output, per RFC 7518), AES-128 and AES-256 keys, API token, session secret
+- Values are shown only on the page and never stored or sent; logic lives in `src/components/secrets/secretsUtils.ts` with tests
 
 ### 5. JWT Hub — `/jwt`
 Decode, encode, and verify JSON Web Tokens in a unified three-tab workbench.
@@ -313,6 +362,7 @@ When you add a new tool, **always** include a `<ToolSEO />` call at the top of t
 ## Testing
 
 - **Unit tests:** [Vitest](https://vitest.dev) + Testing Library, jsdom environment. Configured in `vitest.config.ts`. Setup file: `src/test/setup.ts`. Example: `src/test/example.test.ts`.
+  Tests that need Web Crypto (`src/lib/crypto`, `src/components/document-signer`) opt into Node with a `// @vitest-environment node` first line.
   ```bash
   npm run test           # single run
   npm run test:watch     # watch mode
