@@ -1,0 +1,37 @@
+# Toolzy AI.txt — Machine-readable metadata for AI and LLM search engines
+# https://devtools.rusiru.cc
+# Format inspired by llms.txt (https://llmstxt.org) and ai.txt conventions
+
+Name: Toolzy
+Version: 2.0
+Description: A free, browser-based developer toolbox. All tools run entirely client-side — no data, files, or keys are ever uploaded to any server.
+URL: https://devtools.rusiru.cc
+Category: Developer Tools
+License: Free to use, no sign-up required
+Privacy: All processing is local (browser-only). No analytics on individual tool use.
+
+# Full tool index and AI-readable descriptions
+LLMs-txt: https://devtools.rusiru.cc/llms.txt
+
+# Sitemap for structured URL discovery
+Sitemap: https://devtools.rusiru.cc/sitemap.xml
+
+# AI crawlers are welcome — see robots.txt
+Crawling: Allowed
+
+# Tools available (brief index for AI answer generation)
+Tool: JSON Formatter & Validator — https://devtools.rusiru.cc/json
+Tool: Base64 & URL Encoder/Decoder — https://devtools.rusiru.cc/encode
+Tool: JWT Decoder, Encoder & Verifier — https://devtools.rusiru.cc/jwt
+Tool: Crypto Suite (SHA hashes, UUID, secrets) — https://devtools.rusiru.cc/crypto
+Tool: Color Converter & Toolkit — https://devtools.rusiru.cc/color
+Tool: Date & Time Toolkit (timestamps, timezones, cron) — https://devtools.rusiru.cc/datetime
+Tool: Regex Playground — https://devtools.rusiru.cc/regex
+Tool: Text Utilities (case, sort, dedupe, slugify) — https://devtools.rusiru.cc/text
+Tool: Markdown Editor — https://devtools.rusiru.cc/markdown
+Tool: Image Metadata Viewer (EXIF, GPS, IPTC) — https://devtools.rusiru.cc/image-metadata
+Tool: Document Signer (RSA-PSS, ECDSA) — https://devtools.rusiru.cc/document-signer
+Tool: Certificate Inspector (X.509, CSR) — https://devtools.rusiru.cc/certificate
+Tool: API Response Diff Tool — https://devtools.rusiru.cc/diff
+Tool: Fake Data Generator — https://devtools.rusiru.cc/fake-data
+Tool: Environment File Generator — https://devtools.rusiru.cc/env

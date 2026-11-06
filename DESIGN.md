@@ -88,7 +88,7 @@ All interactive controls share one state model. Implemented in `ui/button.tsx`, 
 
 **Inputs:** 36 px high, `bg-card`, border brightens on hover, ring on focus, placeholder in `muted-foreground`. Textareas for code use `font-mono text-xs` and `resize-y`.
 
-**Feedback:** use `sonner` toasts for completed actions (copied, downloaded, saved) and inline messages for anything the person must act on or can reproduce. Copy and download buttons confirm with a toast and, where space allows, a 1.5 s check icon.
+**Feedback:** copy actions use `CopyButton` (check icon for 1.5 s plus a toast). Use `sonner` toasts for completed actions (copied, downloaded, saved) and inline messages for anything the person must act on or can reproduce. Copy and download buttons confirm with a toast and, where space allows, a 1.5 s check icon.
 
 **Empty states:** dashed border panel, one sentence saying what to do, optionally one example action ("Load sample"). Never a blank panel.
 
@@ -116,6 +116,8 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 | Tokens, global focus, motion, scrollbars | `src/index.css`, `tailwind.config.ts` |
 | Shell: sidebar, sticky top bar, padding | `src/components/AppLayout.tsx`, `AppSidebar.tsx` |
 | Page header and rhythm | `src/components/ToolHeader.tsx`, `ToolPageLayout.tsx`, `src/lib/toolLayout.ts` |
+| Copy control | `src/components/CopyButton.tsx` (use it for every copy action) |
+| Command palette (Ctrl/Cmd+K) | `src/components/CommandPalette.tsx`; add search aliases there for new tools |
 | Collapsed long text | `src/components/AboutTool.tsx` |
 | Privacy chip | `src/components/json-formatter/PrivacyBadge.tsx` |
 | Buttons, tabs, inputs | `src/components/ui/*` |
@@ -124,11 +126,12 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 
 ## 11. Adding or changing a tool
 
-1. Wrap the page in `ToolPageLayout` with a title, a one-line description and (rarely) a `width`. Check the page at 1920 px: the workspace should use the width and height, with no large empty bands.
-2. Compose from the shared controls; do not restyle them per tool. If a new pattern is needed in two places, add it to `ui/` and document it here.
-3. Check every state in section 6 (hover, focus, pressed, selected, disabled, busy, error, empty) and the 390 px layout.
-4. Run the page in the browser, take a screenshot at 1280 px and 390 px, and compare it with a sibling tool for header, spacing and control size.
-5. Keep the end-to-end checks passing (`README.md` lists the validation record).
+1. Register the tool in `toolNav.tsx`, `App.tsx`, `Index.tsx`, the palette aliases, `sitemap.xml` and `llms.txt`.
+2. Wrap the page in `ToolPageLayout` with a title, a one-line description and (rarely) a `width`. Check the page at 1920 px: the workspace should use the width and height, with no large empty bands.
+3. Compose from the shared controls; do not restyle them per tool. If a new pattern is needed in two places, add it to `ui/` and document it here.
+4. Check every state in section 6 (hover, focus, pressed, selected, disabled, busy, error, empty) and the 390 px layout.
+5. Run the page in the browser, take a screenshot at 1280 px and 390 px, and compare it with a sibling tool for header, spacing and control size.
+6. Keep the end-to-end checks passing (`README.md` lists the validation record).
 
 ## 12. Rollout plan
 
@@ -139,4 +142,5 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 5. **Launcher:** compact home page with focus-on-load search and `/` shortcut.
 6. **Verify:** screenshots before and after at 1280 and 390 px, hover and focus captures, unit tests, build, end-to-end run.
 7. **Density pass (done):** fluid left-aligned pages, tighter padding and 16 px rhythm, viewport-filling panels, `AboutTool` for long copy, 1920 px and 390 px audits.
-8. **Later:** a light theme, a command palette (Ctrl/Cmd+K), per-tool keyboard shortcut hints, shared `ResultPanel` and `CopyButton` components.
+8. **Navigation and capabilities (done):** command palette, `CopyButton`, Text Utilities, regex replace, JSON to TypeScript, `.env` example/JSON conversion.
+9. **Later:** a light theme, per-tool keyboard shortcut hints, a shared `ResultPanel`, migrating remaining clipboard call sites to `CopyButton`.

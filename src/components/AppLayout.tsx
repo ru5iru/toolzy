@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { toolNav } from "@/components/toolNav";
+import { CommandPalette } from "@/components/CommandPalette";
 import { useLocation } from "react-router-dom";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="sticky top-0 z-20 flex h-11 shrink-0 items-center gap-3 border-b border-border bg-background/90 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
             <SidebarTrigger />
             {current && <span className="truncate font-mono text-xs text-muted-foreground">{current}</span>}
+            <CommandPalette />
           </div>
           <main className={workspace ? "flex-1 min-h-0 overflow-hidden" : "flex-1 p-3 sm:p-4 lg:p-5 overflow-auto"}>{children}</main>
         </div>

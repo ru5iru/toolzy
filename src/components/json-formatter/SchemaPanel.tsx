@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { generateJsonSchema, validateJsonAgainstSchema } from "./jsonUtils";
+import { CopyButton } from "@/components/CopyButton";
+import { jsonToTypeScript } from "@/lib/json/toTypeScript";
 import { FileJson, CheckCircle2, XCircle } from "lucide-react";
 
 interface SchemaPanelProps {
@@ -11,6 +13,7 @@ interface SchemaPanelProps {
 
 export const SchemaPanel = ({ parsedData }: SchemaPanelProps) => {
   const [schema, setSchema] = useState("");
+  const [ts, setTs] = useState("");
   const [validationErrors, setValidationErrors] = useState<string[] | null>(null);
 
   const handleGenerate = () => {
@@ -22,6 +25,12 @@ export const SchemaPanel = ({ parsedData }: SchemaPanelProps) => {
     setSchema(JSON.stringify(s, null, 2));
     setValidationErrors(null);
     toast.success("Schema generated");
+  };
+
+  const handleTypeScript = () => {
+    if (parsedData === null) { toast.error("No valid JSON to convert"); return; }
+    setTs(jsonToTypeScript(parsedData));
+    toast.success("TypeScript generated");
   };
 
   const handleValidate = () => {
@@ -48,6 +57,7 @@ export const SchemaPanel = ({ parsedData }: SchemaPanelProps) => {
         </h3>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleGenerate} className="h-7 text-xs">Generate</Button>
+          <Button variant="outline" size="sm" onClick={handleTypeScript} className="h-7 text-xs">TypeScript</Button>
           <Button variant="outline" size="sm" onClick={handleValidate} disabled={!schema} className="h-7 text-xs">Validate</Button>
         </div>
       </div>
@@ -55,8 +65,17 @@ export const SchemaPanel = ({ parsedData }: SchemaPanelProps) => {
         value={schema}
         onChange={(e) => { setSchema(e.target.value); setValidationErrors(null); }}
         placeholder="Generate a schema from your JSON or paste one to validate against..."
-        className="min-h-[120px] font-mono text-xs bg-background border-border resize-none"
+        className="code-surface min-h-[120px] bg-background border-border resize-none"
       />
+      {ts && (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">TypeScript interfaces</span>
+            <CopyButton value={ts} label="Copy" variant="outline" className="h-7 text-xs" />
+          </div>
+          <pre className="code-surface max-h-[260px] overflow-auto rounded-md border border-border bg-background p-3">{ts}</pre>
+        </div>
+      )}
       {validationErrors !== null && (
         <div className="text-xs space-y-1">
           {validationErrors.length === 0 ? (

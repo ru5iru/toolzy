@@ -1,7 +1,7 @@
 {
-  "name": "Toolzy",
+  "name": "Toolzy — Free Developer Tools",
   "short_name": "Toolzy",
-  "description": "Free online developer tools",
+  "description": "15+ free, browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, hash generator, regex tester, color converter, text utilities, Markdown editor, and more. Nothing uploaded.",
   "icons": [
     { "src": "android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
@@ -9,5 +9,6 @@
   "theme_color": "#0F172A",
   "background_color": "#0F172A",
   "display": "standalone",
-  "start_url": "./"
+  "start_url": "./",
+  "scope": "/"
 }

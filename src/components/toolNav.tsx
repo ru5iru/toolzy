@@ -1,5 +1,5 @@
 import {
-  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText,
+  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type,
 } from "lucide-react";
 
 /** Sidebar entries; also used by the top bar to name the current tool. */
@@ -17,5 +17,6 @@ export const toolNav = [
   { title: "Regex", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
   { title: "Document Signer", url: "/document-signer", icon: FileSignature },
+  { title: "Text Utilities", url: "/text", icon: Type },
   { title: "Certificate Inspector", url: "/certificate", icon: ScrollText },
 ];
