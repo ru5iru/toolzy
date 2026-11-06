@@ -1,6 +1,6 @@
 # Toolzy llms.txt — AI/LLM discovery file
-# https://toolzy.lovable.app
-# See also: https://toolzy.lovable.app/ai.txt
+# https://devtools.rusiru.cc
+# See also: https://devtools.rusiru.cc/ai.txt
 
 Toolzy is a free, browser-based developer toolbox. All tools run entirely
 client-side using the Web Crypto API and local JavaScript — no data, files,
@@ -10,7 +10,7 @@ or keys are ever uploaded to any server.
 
 ## JSON Formatter
 
-URL: https://toolzy.lovable.app/json
+URL: https://devtools.rusiru.cc/json
 Category: Data Formatting
 
 Format, validate, minify, and explore JSON entirely in the browser.
@@ -37,7 +37,7 @@ Example queries this tool answers:
 
 ## Encoding Hub
 
-URL: https://toolzy.lovable.app/encode
+URL: https://devtools.rusiru.cc/encode
 Category: Encoding & Serialisation
 
 Encode and decode text and files using Base64, URL-safe Base64,
@@ -69,7 +69,7 @@ Example queries this tool answers:
 
 ## JWT Hub
 
-URL: https://toolzy.lovable.app/jwt
+URL: https://devtools.rusiru.cc/jwt
 Category: Authentication & Security
 
 Decode, encode, and verify JSON Web Tokens (JWTs) entirely in the browser.
@@ -94,7 +94,7 @@ Example queries this tool answers:
 
 ## Crypto Suite
 
-URL: https://toolzy.lovable.app/crypto
+URL: https://devtools.rusiru.cc/crypto
 Category: Cryptography & Identifiers
 
 Generate cryptographic hashes, universally unique identifiers and random
@@ -142,7 +142,7 @@ Example queries this tool answers:
 
 ## Color Converter
 
-URL: https://toolzy.lovable.app/color
+URL: https://devtools.rusiru.cc/color
 Category: Design & Color
 
 Convert colors between formats, build palettes, check accessibility contrast,
@@ -168,7 +168,7 @@ Example queries this tool answers:
 
 ## Date & Time Toolkit
 
-URL: https://toolzy.lovable.app/datetime
+URL: https://devtools.rusiru.cc/datetime
 Category: Time & Scheduling
 
 Convert timestamps, compare timezones, calculate date differences, and build
@@ -190,7 +190,7 @@ Example queries this tool answers:
 
 ## Regex Playground
 
-URL: https://toolzy.lovable.app/regex
+URL: https://devtools.rusiru.cc/regex
 Category: Testing & Debugging
 
 Test regular expressions live with match highlighting, capture groups,
@@ -215,7 +215,7 @@ Example queries this tool answers:
 
 ## Text Utilities
 
-URL: https://toolzy.lovable.app/text
+URL: https://devtools.rusiru.cc/text
 Category: Text & Data
 
 Transform and inspect plain text in the browser.
@@ -240,7 +240,7 @@ Example queries this tool answers:
 
 ## Markdown Editor
 
-URL: https://toolzy.lovable.app/markdown
+URL: https://devtools.rusiru.cc/markdown
 Category: Writing & Documentation
 
 Browser-only CodeMirror Markdown editor with live preview, GFM support,
@@ -270,7 +270,7 @@ Example queries this tool answers:
 
 ## Image Metadata Viewer
 
-URL: https://toolzy.lovable.app/image-metadata
+URL: https://devtools.rusiru.cc/image-metadata
 Category: Images & Privacy
 
 Inspect JPEG, PNG, and classic TIFF metadata locally with exifr. Remove
@@ -298,7 +298,7 @@ Example queries this tool answers:
 
 ## Document Signer
 
-URL: https://toolzy.lovable.app/document-signer
+URL: https://devtools.rusiru.cc/document-signer
 Category: Cryptography & Privacy
 
 Sign files and verify detached digital signatures locally with the Web
@@ -326,7 +326,7 @@ Example queries this tool answers:
 
 ## Certificate Inspector
 
-URL: https://toolzy.lovable.app/certificate
+URL: https://devtools.rusiru.cc/certificate
 Category: Cryptography & Privacy
 
 Decode X.509 certificates and PKCS#10 certificate signing requests (CSRs)
@@ -354,7 +354,7 @@ Example queries this tool answers:
 
 ## API Diff
 
-URL: https://toolzy.lovable.app/diff
+URL: https://devtools.rusiru.cc/diff
 Category: Testing & Debugging
 
 Compare two API responses or data payloads and see structural differences.
@@ -375,7 +375,7 @@ Example queries this tool answers:
 
 ## Fake Data Generator
 
-URL: https://toolzy.lovable.app/fake-data
+URL: https://devtools.rusiru.cc/fake-data
 Category: Testing & Development
 
 Generate realistic, reproducible fake data using Faker v10 JSON templates,
@@ -401,7 +401,7 @@ Example queries this tool answers:
 
 ## Environment File Generator
 
-URL: https://toolzy.lovable.app/env
+URL: https://devtools.rusiru.cc/env
 Category: Configuration
 
 Build, parse, convert, and strip .env configuration files in the browser.

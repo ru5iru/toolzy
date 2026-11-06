@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Home / launcher -->
   <url>
-    <loc>https://toolzy.lovable.app/</loc>
+    <loc>https://devtools.rusiru.cc/</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,25 +10,25 @@
 
   <!-- Core data tools -->
   <url>
-    <loc>https://toolzy.lovable.app/json</loc>
+    <loc>https://devtools.rusiru.cc/json</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/encode</loc>
+    <loc>https://devtools.rusiru.cc/encode</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/crypto</loc>
+    <loc>https://devtools.rusiru.cc/crypto</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/jwt</loc>
+    <loc>https://devtools.rusiru.cc/jwt</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -36,31 +36,31 @@
 
   <!-- Developer utilities -->
   <url>
-    <loc>https://toolzy.lovable.app/regex</loc>
+    <loc>https://devtools.rusiru.cc/regex</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/datetime</loc>
+    <loc>https://devtools.rusiru.cc/datetime</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/diff</loc>
+    <loc>https://devtools.rusiru.cc/diff</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/fake-data</loc>
+    <loc>https://devtools.rusiru.cc/fake-data</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/env</loc>
+    <loc>https://devtools.rusiru.cc/env</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -68,19 +68,19 @@
 
   <!-- Design and text -->
   <url>
-    <loc>https://toolzy.lovable.app/color</loc>
+    <loc>https://devtools.rusiru.cc/color</loc>
     <lastmod>2026-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/text</loc>
+    <loc>https://devtools.rusiru.cc/text</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/markdown</loc>
+    <loc>https://devtools.rusiru.cc/markdown</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -88,19 +88,19 @@
 
   <!-- Privacy and security tools -->
   <url>
-    <loc>https://toolzy.lovable.app/image-metadata</loc>
+    <loc>https://devtools.rusiru.cc/image-metadata</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/document-signer</loc>
+    <loc>https://devtools.rusiru.cc/document-signer</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://toolzy.lovable.app/certificate</loc>
+    <loc>https://devtools.rusiru.cc/certificate</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

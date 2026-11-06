@@ -25,7 +25,7 @@ interface ToolSEOProps {
   isApp?: boolean;
 }
 
-const BASE_URL = "https://toolzy.lovable.app";
+const BASE_URL = "https://devtools.rusiru.cc";
 
 /** Shared OG image (1200×630) used as the fallback for all tool pages. */
 const DEFAULT_OG_IMAGE =

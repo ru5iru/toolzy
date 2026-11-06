@@ -1,12 +1,12 @@
 # Toolzy robots.txt
-# https://toolzy.lovable.app
+# https://devtools.rusiru.cc
 
 # All crawlers: allow full access
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://toolzy.lovable.app/sitemap.xml
+Sitemap: https://devtools.rusiru.cc/sitemap.xml
 
 # AI / LLM crawlers — explicitly welcome for indexing and answer generation.
 # Toolzy is a browser-only tool suite with no user data or private content.
