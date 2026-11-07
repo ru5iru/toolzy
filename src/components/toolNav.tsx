@@ -1,5 +1,5 @@
 import {
-  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2,
+  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal,
 } from "lucide-react";
 
 /** Sidebar entries; also used by the top bar to name the current tool. */
@@ -13,7 +13,7 @@ export const toolNav = [
   { title: "JWT Hub", url: "/jwt", icon: ShieldCheck },
   { title: "API Diff", url: "/diff", icon: GitCompare },
   { title: "Fake Data", url: "/fake-data", icon: Users },
-  { title: "Env Generator", url: "/env", icon: FileText },
+  { title: "Env Generator", url: "/env", icon: Terminal },
   { title: "Date & Time", url: "/datetime", icon: Clock },
   { title: "Regex", url: "/regex", icon: Regex },
   { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
