@@ -37,9 +37,9 @@ export const TokenHistory = ({ onSelect }: Props) => {
             <Clock className="w-3 h-3 text-muted-foreground shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="text-xs font-medium text-foreground truncate">{entry.label}</div>
-              <div className="text-xs text-muted-foreground font-mono truncate">{entry.token.slice(0, 40)}...</div>
+              <div className="text-[10px] text-muted-foreground font-mono truncate">{entry.token.slice(0, 40)}...</div>
             </div>
-            <span className="text-xs text-muted-foreground shrink-0">
+            <span className="text-[10px] text-muted-foreground shrink-0">
               {new Date(entry.timestamp).toLocaleDateString()}
             </span>
           </button>

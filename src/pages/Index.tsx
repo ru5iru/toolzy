@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, Globe } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2 } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
+  { title: "HTML WYSIWYG Editor", description: "Create rich text with instant HTML source, tables, links, local images, and HTML exports", url: "/html-editor", icon: Braces },
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
-  { title: "HTML Editor", description: "Visual WYSIWYG HTML editor with live source code, tables, images, and instant download", url: "/html-editor", icon: Globe },
+  { title: "HTML Editor", description: "Visual WYSIWYG HTML editor with live source code, tables, images, and instant download", url: "/html-editor", icon: FileCode2 },
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
   { title: "Base64", description: "Encode & decode Base64 strings", url: "/base64", icon: Binary },
   { title: "URL Encode", description: "Encode & decode URL components", url: "/url-encode", icon: Link },

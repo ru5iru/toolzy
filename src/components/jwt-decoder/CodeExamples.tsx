@@ -20,7 +20,7 @@ export const CodeExamples = ({ token }: { token: string }) => {
           <button
             key={l.key}
             onClick={() => setLang(l.key)}
-            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${lang === l.key ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${lang === l.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
           >
             {l.label}
           </button>

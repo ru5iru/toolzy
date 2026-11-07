@@ -52,7 +52,13 @@ export function validateOptions({ bytes, count }: Pick<GenerateOptions, "bytes" 
 }
 
 /** Random secrets from the browser's CSPRNG. `fill` is injectable for tests only. */
-export function generateSecrets(options: GenerateOptions, fill: RandomFill = (b) => crypto.getRandomValues(b)): string[] {
+export function generateSecrets(
+  options: GenerateOptions,
+  fill: RandomFill = (b) => {
+    b.set(crypto.getRandomValues(new Uint8Array(b.byteLength)));
+    return b;
+  },
+): string[] {
   validateOptions(options);
   return Array.from({ length: options.count }, () => encode(fill(new Uint8Array(options.bytes)), options.format));
 }

@@ -154,6 +154,19 @@ See [`DESIGN.md`](DESIGN.md) for the design principles, page anatomy, spacing sc
 
 ## Tools — Full Catalog & Capabilities
 
+### HTML WYSIWYG Editor — `/html-editor`
+
+Visual rich-text editing with immediately generated HTML source. Uses the shared ToolPageLayout, theme tokens, and shadcn controls. Desktop panes resize independently; on mobile the visual editor and source stack. The source pane is read-only; use Import HTML to edit existing source.
+
+- Format bold, italic, underline, strike, inline code, headings H1–H4, bullet/numbered lists, code blocks, blockquotes, and left/center/right alignment. Clear formatting, undo, and redo; Tiptap's native editing shortcuts remain available.
+- Insert/edit/remove safe links, horizontal rules, and 3×3 tables with header rows. When the cursor is in a table, its menu offers add/delete row/column and delete table.
+- Insert local PNG/JPEG/GIF/WebP images up to 5 MiB, embedded as data URLs; remote images and SVG are intentionally excluded.
+- Import pasted HTML or open `.html`, `.htm`, and `.txt` files up to 5 MiB. Supported schema content replaces the document; scripts, frames, event handlers, remote resources, unsupported tags, and styles other than text alignment are removed.
+- Copy the sanitized HTML fragment or download a complete standalone `document.html`. Downloads revoke temporary object URLs. Sanitization is a safety boundary, not a guarantee of fidelity to arbitrary HTML/CSS.
+- Processing stays in the browser; no autosave, backend, or requests carrying documents. Download before navigating away. Clearing content is confirmed and can be undone while the page remains open.
+
+Important files: `src/pages/HtmlEditor.tsx` owns Tiptap state, toolbar, dialogs, and local IO; `src/components/html-editor/htmlUtils.ts` sanitizes imports/exports, validates link protocols, formats source, and wraps complete HTML documents; `html-editor.css` scopes rich-text typography to semantic tokens. Tiptap React/starter-kit/text-align/table/image and DOMPurify load with the lazy route. Run `bunx vitest run src/components/html-editor` for safety tests. Integration follows App routes, sidebar/home arrays, ToolSEO, sitemap, and llms.txt.
+
 ### Document Signer — `/document-signer`
 
 Sign files and verify **detached** digital signatures with the browser's Web Crypto API; no new dependencies. Five tabs (`?tab=sign|verify|batch|keys|inspector`), registered like the other tools.
@@ -315,6 +328,25 @@ Convert between Unix timestamps (s/ms), ISO 8601, RFC 2822, and human-readable f
 
 ### 10. Regex Playground — `/regex`
 Test regular expressions against sample text with live match highlighting, flags toggle (`g`, `i`, `m`, `s`, `u`, `y`), capture-group inspection, and replace preview.
+
+### 11. HTML WYSIWYG Editor — `/html-editor`
+Write rich text in a visual editor and get the matching HTML source immediately, entirely in the browser.
+
+- **Two-pane workspace**: visual editor beside a live, read-only HTML source panel with a drag handle to resize them; on narrow screens the panes stack.
+- **Text marks**: bold, italic, underline, strikethrough, and inline code.
+- **Blocks**: headings 1-4, bullet lists, numbered lists, blockquotes, code blocks, and horizontal rules.
+- **Alignment**: left, center, and right for headings and paragraphs.
+- **Links**: insert or edit through a dialog restricted to `http`, `https`, `mailto`, `tel`, and in-page anchors; unsafe URLs are dropped.
+- **Tables**: insert a 3×3 table with a header row, then add/delete rows and columns from the "more" menu.
+- **Images**: insert a local PNG/JPEG/GIF/WebP (≤ 5 MiB) as a data URL; remote images are never loaded.
+- **Import**: paste HTML source or open a local `.html`/`.htm`/`.txt` file; scripts, event handlers, remote assets, and unsupported markup are stripped on the way in.
+- **Export**: copy the HTML fragment or download a standalone HTML document.
+- **Toolbar**: every control is labelled, shows its active state, and stays reachable when the pane is narrowed.
+- **Privacy**: nothing is uploaded, no autosave, and no request carries document content. Clearing the editor is confirmed and undoable while the page stays open.
+
+Important files: `src/pages/HtmlEditor.tsx` owns the workspace, toolbar, dialogs, and IO; `src/components/html-editor/htmlUtils.ts` owns sanitization (DOMPurify allowlist), link safety, formatting, and standalone-document wrapping; `html-editor.css` scopes editor styles to semantic tokens. Tests: `bunx vitest run src/components/html-editor`.
+
+Dependencies: `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-text-align`, `@tiptap/extension-table`, `@tiptap/extension-image`, and `dompurify`, all loaded by the lazy route.
 
 ---
 
