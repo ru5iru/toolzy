@@ -1,8 +1,9 @@
 import { toast } from "sonner";
 import { localObjectUrl } from "@/components/image-metadata/inspectionSession";
 
-export function downloadBytes(filename: string, data: BlobPart, type = "application/octet-stream") {
-  const resource = localObjectUrl(new Blob([data], { type }));
+export function downloadBytes(filename: string, data: BlobPart | Uint8Array<ArrayBufferLike>, type = "application/octet-stream") {
+  const bytes: BlobPart = data instanceof Uint8Array ? data.slice() : data;
+  const resource = localObjectUrl(new Blob([bytes], { type }));
   const anchor = document.createElement("a");
   anchor.href = resource.url;
   anchor.download = filename;

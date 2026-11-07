@@ -22,6 +22,7 @@ const ImageMetadataViewer = lazy(() => import("./pages/ImageMetadataViewer"));
 const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
 const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const MarkdownEditor = lazy(() => import("./pages/MarkdownEditor"));
+const HtmlEditor = lazy(() => import("./pages/HtmlEditor"));
 const TextUtilities = lazy(() => import("./pages/TextUtilities"));
 const HtmlEditor = lazy(() => import("./pages/HtmlEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
