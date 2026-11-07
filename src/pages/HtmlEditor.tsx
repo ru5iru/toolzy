@@ -4,7 +4,8 @@ import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import Image from "@tiptap/extension-image";
-import { Bold, Italic, Strikethrough, Underline, Code, Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Braces, Quote, AlignLeft, AlignCenter, AlignRight, RemoveFormatting, Undo2, Redo2, Link, Unlink, Table, ImagePlus, Minus, Copy, Download, FileCode2, MoreHorizontal, Upload, Trash2 } from "lucide-react";
+import { Bold, Italic, Strikethrough, Underline, Code, Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Braces, Quote, AlignLeft, AlignCenter, AlignRight, RemoveFormatting, Undo2, Redo2, Link, Unlink, Table, ImagePlus, Minus, Download, FileCode2, MoreHorizontal, Upload, Trash2 } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -71,7 +72,6 @@ export default function HtmlEditor() {
     { label: "Undo", icon: Undo2, disabled: !active?.undo, run: (e: Editor) => e.chain().focus().undo().run() },
     { label: "Redo", icon: Redo2, disabled: !active?.redo, run: (e: Editor) => e.chain().focus().redo().run() },
   ];
-  const copy = async () => { try { await navigator.clipboard.writeText(formatHTML(sanitizeHTML(html))); toast.success("HTML copied"); } catch { toast.error("Clipboard access failed"); } };
   const download = () => {
     const objectUrl = URL.createObjectURL(new Blob([htmlDocument(html)], { type: "text/html;charset=utf-8" }));
     const anchor = document.createElement("a"); anchor.href = objectUrl; anchor.download = "document.html"; anchor.click(); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
@@ -102,7 +102,7 @@ export default function HtmlEditor() {
     </div>
     <EditorContent editor={editor} className="html-rich-text flex-1 min-h-0 overflow-auto p-5 text-sm text-foreground" />
   </section>;
-  const sourcePane = <section className="rounded-lg border border-border bg-card overflow-hidden h-full flex flex-col min-w-0" aria-labelledby="source-heading"><header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2"><h2 id="source-heading" className="font-mono text-xs text-muted-foreground">HTML SOURCE</h2><Tooltip><TooltipTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Copy HTML source" onClick={() => void copy()}><Copy className="h-4 w-4" /></Button></TooltipTrigger><TooltipContent>Copy HTML source</TooltipContent></Tooltip></header><Textarea readOnly aria-label="Generated HTML source" value={formatHTML(html)} spellCheck={false} className="flex-1 min-h-[340px] resize-none rounded-none border-0 bg-transparent p-5 font-mono text-xs leading-relaxed focus-visible:ring-inset" /><footer className="border-t border-border px-3 py-2 text-xs font-mono text-muted-foreground">{html.length.toLocaleString()} characters · HTML fragment</footer></section>;
+  const sourcePane = <section className="rounded-lg border border-border bg-card overflow-hidden h-full flex flex-col min-w-0" aria-labelledby="source-heading"><header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2"><h2 id="source-heading" className="font-mono text-xs text-muted-foreground">HTML SOURCE</h2><Tooltip><TooltipTrigger asChild><CopyButton value={() => formatHTML(sanitizeHTML(html))} message="HTML copied" ariaLabel="Copy HTML source" size="icon" variant="ghost" className="h-8 w-8" /></TooltipTrigger><TooltipContent>Copy HTML source</TooltipContent></Tooltip></header><Textarea readOnly aria-label="Generated HTML source" value={formatHTML(html)} spellCheck={false} className="flex-1 min-h-[340px] resize-none rounded-none border-0 bg-transparent p-5 font-mono text-xs leading-relaxed focus-visible:ring-inset" /><footer className="border-t border-border px-3 py-2 text-xs font-mono text-muted-foreground">{html.length.toLocaleString()} characters · HTML fragment</footer></section>;
 
   return <ToolPageLayout title="HTML WYSIWYG Editor" icon={FileCode2} description="Edit rich text and HTML source side by side. Your content stays in this browser.">
     <ToolSEO title="HTML WYSIWYG Editor" canonicalPath="/html-editor" description="Free browser-only rich-text HTML editor with instant source code, headings, lists, links, tables, local images, and HTML download." keywords={["HTML WYSIWYG editor", "rich text editor", "online HTML editor", "visual HTML editor"]} faq={faq} howToSteps={["Write or import content into the visual editor.", "Apply formatting and inspect the instantly generated HTML.", "Copy the HTML fragment or download a standalone document."]} />

@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Copy, Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 
 // Classic jwt.io demo token (HS256, secret "your-256-bit-secret") for instant demos
 const SAMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
@@ -183,9 +184,7 @@ function TokenPreview({ token }: { token: string }) {
         <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet — paste, encode, or verify a JWT.</p>
       )}
       {token && (
-        <Button variant="ghost" size="sm" className="h-6 text-xs w-full" onClick={() => copyPart(token, "Full JWT")}>
-          <Copy className="w-3 h-3 mr-1" /> Copy full token
-        </Button>
+        <CopyButton value={token} message="Full JWT copied" label="Copy full token" variant="ghost" size="sm" className="h-6 text-xs w-full" />
       )}
     </div>
   );
@@ -268,9 +267,7 @@ function JsonBlock({ title, data, accent }: { title: string; data: any; accent: 
     <div className={`rounded-md border ${cls} bg-card`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
         <span className={`text-xs uppercase tracking-wider font-semibold ${titleCls}`}>{title}</span>
-        <Button variant="ghost" size="sm" className="h-5 text-xs px-1.5" onClick={() => { navigator.clipboard.writeText(text); toast.success(`${title} copied`); }}>
-          <Copy className="w-2.5 h-2.5 mr-1" /> Copy
-        </Button>
+        <CopyButton value={text} message={`${title} copied`} label="Copy" variant="ghost" size="sm" className="h-5 text-xs px-1.5" />
       </div>
       <pre className="p-3 font-mono text-[11px] overflow-auto max-h-[280px] text-foreground">{text}</pre>
     </div>

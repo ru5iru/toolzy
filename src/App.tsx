@@ -23,6 +23,7 @@ const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
 const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const MarkdownEditor = lazy(() => import("./pages/MarkdownEditor"));
 const TextUtilities = lazy(() => import("./pages/TextUtilities"));
+const HtmlEditor = lazy(() => import("./pages/HtmlEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/certificate" element={<CertificateInspector />} />
               <Route path="/text" element={<TextUtilities />} />
               <Route path="/markdown" element={<MarkdownEditor />} />
+              <Route path="/html-editor" element={<HtmlEditor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

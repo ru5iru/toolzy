@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
+import { Download, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
@@ -106,7 +107,6 @@ const JsonFormatter = () => {
     }
   };
 
-  const copy = () => { navigator.clipboard.writeText(output); toast.success("Copied to clipboard"); };
   const expandAll = () => { setTreeExpanded(true); setTreeKey((k) => k + 1); };
   const collapseAll = () => { setTreeExpanded(false); setTreeKey((k) => k + 1); };
 
@@ -168,7 +168,7 @@ const JsonFormatter = () => {
       <div role="toolbar" aria-label="JSON formatter actions" className="flex flex-wrap items-center gap-1.5 mb-2 p-2 rounded-lg bg-card border border-border text-xs">
         <Button size="sm" className="h-7 px-3 text-xs" onClick={format}>Format</Button>
         <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" onClick={minify}><Minimize2 className="w-3 h-3 mr-1" />Minify</Button>
-        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={copy} disabled={!output} aria-label="Copy output to clipboard"><Copy className="w-3 h-3 mr-1" aria-hidden="true" />Copy</Button>
+        <CopyButton value={output} message="Copied to clipboard" label="Copy" variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={!output} />
 
         <div className="border-l border-border h-5 mx-0.5" />
 
