@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shuffle, Download, Copy, Users } from "lucide-react";
+import { Shuffle, Download, Users } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { createFaker, localeIds } from "@/lib/fakeTemplate/locales";
 import { validateTemplate, type Json, type Issue } from "@/lib/fakeTemplate/engine";
 import { presets } from "@/lib/fakeTemplate/presets";
@@ -111,10 +112,6 @@ const FakeDataGenerator = () => {
     finally { if(id === revision.current) setBusy(false); }
   };
 
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(output); toast.success("Copied to clipboard"); }
-    catch { toast.error("Clipboard unavailable"); }
-  };
 
   return (
     <div className={toolPageClass("fluid")}>
@@ -142,7 +139,7 @@ const FakeDataGenerator = () => {
         {format==='sql'&&<div className="space-y-2"><label htmlFor="fake-table" className={labelStyle}>Table name</label><Input id="fake-table" value={table} onChange={e=>setTable(e.target.value)} className="w-40 bg-card border-border"/></div>}
         <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
         {busy&&<Button variant="outline" onClick={()=>{revision.current++;abortRef.current?.abort();setBusy(false);}}>Cancel</Button>}
-        <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-2" />Copy</Button>
+        <CopyButton value={output} message="Copied to clipboard" label="Copy" variant="outline" disabled={!output} />
         <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,`fake-data.${formats[format].extension}`,formats[format].mime)}><Download className="w-4 h-4 mr-2" />Download</Button>
       </div>
       {output && (

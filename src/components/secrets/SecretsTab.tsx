@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Copy, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { CopyButton } from "@/components/CopyButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,10 +38,6 @@ export const SecretsTab = () => {
     run(next);
   };
 
-  const copy = async (value: string, label: string) => {
-    try { await navigator.clipboard.writeText(value); toast.success(label); }
-    catch { toast.error("Clipboard access failed. Select and copy the value manually."); }
-  };
 
   const bytesNumber = Number(bytes);
   return (
@@ -84,13 +81,13 @@ export const SecretsTab = () => {
             <h2 id="secrets-output" className="font-mono text-sm font-semibold">
               Generated ({values.length}) <span className="text-muted-foreground font-normal">· {bytesNumber} bytes · {entropyBits(bytesNumber)} bits of randomness each</span>
             </h2>
-            {values.length > 1 && <Button size="sm" variant="outline" onClick={() => copy(values.join("\n"), "All values copied")}><Copy />Copy all</Button>}
+            {values.length > 1 && <CopyButton value={() => values.join("\n")} message="All values copied" label="Copy all" size="sm" variant="outline" />}
           </div>
           <ul className="border border-border rounded-lg divide-y divide-border" aria-label="Generated secrets">
             {values.map((value, index) => (
               <li key={`${index}-${value}`} className="flex items-start gap-2 px-3 py-2">
                 <code className="flex-1 min-w-0 text-xs font-mono break-all select-all">{value}</code>
-                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" title="Copy" aria-label={`Copy value ${index + 1}`} onClick={() => copy(value, "Copied to clipboard")}><Copy /></Button>
+                <CopyButton value={value} message="Copied to clipboard" ariaLabel={`Copy value ${index + 1}`} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
               </li>
             ))}
           </ul>

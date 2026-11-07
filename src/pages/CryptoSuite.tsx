@@ -18,7 +18,8 @@ import {
   loadUUIDHistory, saveUUIDHistory,
   type UUIDValidation
 } from "@/components/uuid/uuidUtils";
-import { Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
+import { Check, ChevronDown, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { SecretsTab } from "@/components/secrets/SecretsTab";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
@@ -370,7 +371,6 @@ function HashTab() {
     if (f) void hashFile(f);
   };
 
-  const copyVal = (v: string) => { void navigator.clipboard.writeText(v); toast.success("Copied"); };
 
   const toggleAlgo = (a: HashAlgo) => {
     setVisible((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]));
@@ -533,9 +533,7 @@ function HashTab() {
                   <Badge variant="outline" className="text-xs">{label}</Badge>
                   {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken — not for security</span>}
                 </div>
-                <Button variant="ghost" size="sm" aria-label={`Copy ${label}`} disabled={!val} onClick={() => copyVal(val)}>
-                  <Copy className="h-3 w-3 mr-1" /> Copy
-                </Button>
+                <CopyButton value={val} message="Copied" label="Copy" ariaLabel={`Copy ${label}`} variant="ghost" size="sm" disabled={!val} />
               </div>
               <p className="font-mono text-sm text-foreground break-all min-h-[1.25rem]">{val || <span className="text-muted-foreground">—</span>}</p>
             </div>
@@ -702,11 +700,6 @@ function UuidTab() {
   const startIdx = virtualise ? Math.max(0, Math.floor(scrollTop / ROW_H) - 5) : 0;
   const endIdx = virtualise ? Math.min(displayed.length, startIdx + Math.ceil(VIEW_H / ROW_H) + 10) : displayed.length;
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(displayed.map(formatted).join("\n"));
-    toast.success(`Copied ${displayed.length} UUIDs`);
-  };
-  const copyOne = (u: string) => { navigator.clipboard.writeText(formatted(u)); toast.success("Copied"); };
 
   const exportUuids = (format: ExportFormat) => {
     setExportFmt(format);
@@ -789,12 +782,8 @@ function UuidTab() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" className="h-7 text-xs" title="All-zero UUID (RFC 9562 Nil)" onClick={() => { navigator.clipboard.writeText(NIL_UUID); toast.success("Nil UUID copied"); }}>
-              Copy Nil UUID
-            </Button>
-            <Button size="sm" variant="outline" className="h-7 text-xs" title="All-ones UUID (RFC 9562 Max)" onClick={() => { navigator.clipboard.writeText(MAX_UUID); toast.success("Max UUID copied"); }}>
-              Copy Max UUID
-            </Button>
+            <CopyButton value={NIL_UUID} message="Nil UUID copied" label="Copy Nil UUID" size="sm" variant="outline" className="h-7 text-xs" ariaLabel="Copy Nil UUID (RFC 9562)" />
+            <CopyButton value={MAX_UUID} message="Max UUID copied" label="Copy Max UUID" size="sm" variant="outline" className="h-7 text-xs" ariaLabel="Copy Max UUID (RFC 9562)" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Count: {count.toLocaleString()}</label>
@@ -863,7 +852,7 @@ function UuidTab() {
 
       <div className="flex gap-2 flex-wrap items-center">
         <Button onClick={generate}><RotateCcw className="h-4 w-4 mr-1" /> Generate</Button>
-        <Button variant="outline" onClick={copyAll} disabled={!displayed.length}><Copy className="h-4 w-4 mr-1" /> Copy all</Button>
+        <CopyButton value={() => displayed.map(formatted).join("\n")} message={`Copied ${displayed.length} UUIDs`} label="Copy all" variant="outline" disabled={!displayed.length} />
         {progress && (
           <span className="text-xs text-muted-foreground">Generating… {progress.done.toLocaleString()} / {progress.total.toLocaleString()}</span>
         )}
@@ -884,7 +873,7 @@ function UuidTab() {
                 <div key={i} style={{ position: "absolute", top: i * ROW_H, left: 0, right: 0, height: ROW_H }} className="flex items-center gap-3 px-4 border-b border-border">
                   <span className="text-xs text-muted-foreground w-12 font-mono shrink-0">{i + 1}</span>
                   <code className="font-mono text-xs text-foreground flex-1 truncate">{formatted(u)}</code>
-                  <Button variant="ghost" size="sm" className="h-6 px-2" onClick={() => copyOne(u)} aria-label="Copy UUID"><Copy className="h-3 w-3" /></Button>
+                  <CopyButton value={() => formatted(u)} message="Copied" ariaLabel="Copy UUID" variant="ghost" size="sm" className="h-6 px-2" />
                 </div>
               );
             })}
@@ -896,7 +885,7 @@ function UuidTab() {
             <div key={i} className="flex items-center gap-3 rounded-md border border-border bg-card px-4 py-2.5">
               <span className="text-xs text-muted-foreground w-6 shrink-0 font-mono">{i + 1}</span>
               <code className="font-mono text-sm text-foreground flex-1 select-all break-all">{formatted(u)}</code>
-              <Button variant="ghost" size="sm" className="h-7 px-2 shrink-0" onClick={() => copyOne(u)} aria-label="Copy UUID"><Copy className="h-3 w-3" /></Button>
+              <CopyButton value={() => formatted(u)} message="Copied" ariaLabel="Copy UUID" variant="ghost" size="sm" className="h-7 px-2 shrink-0" />
             </div>
           ))}
         </div>
@@ -975,9 +964,7 @@ function UuidTab() {
           ))}
         </div>
         <pre className="bg-background rounded-lg p-4 text-sm font-mono text-foreground overflow-auto"><code>{CODE_SNIPPETS[snippetLang].code}</code></pre>
-        <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(CODE_SNIPPETS[snippetLang].code); toast.success("Copied"); }}>
-          <Copy className="h-3 w-3 mr-1" /> Copy
-        </Button>
+        <CopyButton value={() => CODE_SNIPPETS[snippetLang].code} message="Copied" label="Copy" size="sm" variant="outline" />
       </div>
     </div>
   );

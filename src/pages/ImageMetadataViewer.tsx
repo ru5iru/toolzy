@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Copy, Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, RotateCcw, Search, X } from "lucide-react";
+import { Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, RotateCcw, Search, X } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -147,7 +148,7 @@ const ImageMetadataViewer = () => {
             {rows.length ? rows.map(row => <div key={row.tag} className="grid grid-cols-[minmax(0,1fr)_36px] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_36px] gap-3 p-3 border-b border-border last:border-b-0 items-start">
               <div className="min-w-0 col-start-1 row-start-1"><div className="text-sm font-medium break-words">{row.label}</div><div className="text-xs text-muted-foreground font-mono break-all mt-1">{row.tag}</div></div>
               <div className="text-sm font-mono whitespace-pre-wrap break-all min-w-0 col-start-1 row-start-2 sm:col-start-2 sm:row-start-1">{row.value}</div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 col-start-2 row-start-1 sm:col-start-3" title={`Copy ${row.label}`} aria-label={`Copy ${row.label}`} onClick={() => copy(row.value)}><Copy /></Button>
+              <CopyButton value={row.value} message="Copied to clipboard" ariaLabel={`Copy ${row.label}`} variant="ghost" size="icon" className="h-8 w-8 col-start-2 row-start-1 sm:col-start-3" />
             </div>) : <p className="p-4 text-sm text-muted-foreground">{query ? "No matching fields in this category." : "No fields detected in this category."}</p>}
           </div>
         </section>

@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, Globe } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
+  { title: "HTML Editor", description: "Visual WYSIWYG HTML editor with live source code, tables, images, and instant download", url: "/html-editor", icon: Globe },
   { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
   { title: "Base64", description: "Encode & decode Base64 strings", url: "/base64", icon: Binary },
   { title: "URL Encode", description: "Encode & decode URL components", url: "/url-encode", icon: Link },
@@ -46,12 +47,12 @@ const Index = () => {
     <div className="max-w-[1600px]">
       <ToolSEO
         title="Toolzy — Free Online Developer Tools"
-        description="Toolzy offers 15+ free browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, text utilities, and more. No sign-up. Nothing uploaded."
+        description="Toolzy offers 16+ free browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, HTML editor, text utilities, and more. No sign-up. Nothing uploaded."
         canonicalPath="/"
         isApp={false}
         keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator", "JWT decoder", "regex tester", "hash generator"]}
         faq={[
-          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 15+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, image metadata viewer, document signer, and certificate inspector." },
+          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 16+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, and certificate inspector." },
           { question: "Are these developer tools free?", answer: "Yes. All tools are 100% free, run entirely in your browser, and require no sign-up or installation." },
           { question: "Is my data safe when using Toolzy?", answer: "Yes. All processing happens client-side in your browser using the Web Crypto API and local JavaScript. No data, files, or keys are ever sent to any server." },
           { question: "Do the tools work offline?", answer: "Yes. After the page loads, all tools work without a network connection. The only exceptions are static locale files that the Fake Data Generator downloads on demand." },

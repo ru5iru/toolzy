@@ -12,7 +12,8 @@ import {
   exportAsMarkdown, exportAsJson, loadDiffHistory, saveDiffHistory,
   type DiffEntry, type DiffSummary
 } from "@/components/api-diff/diffUtils";
-import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
+import { ArrowDown, ArrowUp, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { ToolHeader } from "@/components/ToolHeader";
 import { toolPageClass } from "@/lib/toolLayout";
 import { AboutTool } from "@/components/AboutTool";
@@ -288,9 +289,7 @@ const ApiDiffTool = () => {
             <Button variant="outline" size="sm" onClick={() => exportDiff("markdown")}>
               <Download className="h-3 w-3 mr-1" /> Markdown
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(exportAsJson(diffs)); toast.success("Copied"); }}>
-              <Copy className="h-3 w-3 mr-1" /> Copy
-            </Button>
+            <CopyButton value={() => exportAsJson(diffs)} label="Copy" message="Copied" variant="outline" size="sm" />
           </>
         )}
       </div>

@@ -29,6 +29,7 @@ Tool: Date & Time Toolkit (timestamps, timezones, cron) — https://devtools.rus
 Tool: Regex Playground — https://devtools.rusiru.cc/regex
 Tool: Text Utilities (case, sort, dedupe, slugify) — https://devtools.rusiru.cc/text
 Tool: Markdown Editor — https://devtools.rusiru.cc/markdown
+Tool: HTML Editor — https://devtools.rusiru.cc/html-editor
 Tool: Image Metadata Viewer (EXIF, GPS, IPTC) — https://devtools.rusiru.cc/image-metadata
 Tool: Document Signer (RSA-PSS, ECDSA) — https://devtools.rusiru.cc/document-signer
 Tool: Certificate Inspector (X.509, CSR) — https://devtools.rusiru.cc/certificate

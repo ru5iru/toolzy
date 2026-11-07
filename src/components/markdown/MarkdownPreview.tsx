@@ -1,20 +1,28 @@
-import { memo, useMemo, type ReactNode } from "react";
+import { memo, useMemo, useRef, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeHighlight from "rehype-highlight";
-import { Copy, ImageIcon } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { ImageIcon } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { headingAnchors } from "./documentUtils";
 
 function CodeBlock({ children }: { children?: ReactNode }) {
-  return <div className="markdown-code-block"><Button className="markdown-copy h-7 w-7" size="icon" variant="ghost" aria-label="Copy code" onClick={async event => {
-    const code = event.currentTarget.parentElement?.querySelector("code")?.textContent;
-    if (!code) return;
-    try { await navigator.clipboard.writeText(code); toast.success("Code copied"); } catch { toast.error("Clipboard access failed"); }
-  }}><Copy className="h-3 w-3" /></Button><pre>{children}</pre></div>;
+  const preRef = useRef<HTMLPreElement>(null);
+  return (
+    <div className="markdown-code-block">
+      <CopyButton
+        value={() => preRef.current?.querySelector("code")?.textContent ?? preRef.current?.textContent ?? ""}
+        message="Code copied"
+        ariaLabel="Copy code"
+        className="markdown-copy h-7 w-7"
+        size="icon"
+        variant="ghost"
+      />
+      <pre ref={preRef}>{children}</pre>
+    </div>
+  );
 }
 
 export const MarkdownPreview = memo(function MarkdownPreview({ text }: { text: string }) {

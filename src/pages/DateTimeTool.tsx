@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Copy, Clock, ArrowRightLeft, Calendar, Timer, Search } from "lucide-react";
+import { Clock, ArrowRightLeft, Calendar, Timer, Search } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { ToolHeader } from "@/components/ToolHeader";
 import { toolPageClass } from "@/lib/toolLayout";
 
@@ -55,10 +56,6 @@ function groupTimezones(tzList: string[]): Record<string, string[]> {
   return groups;
 }
 
-const copyText = (text: string, label: string) => {
-  navigator.clipboard.writeText(text);
-  toast.success(`${label} copied`);
-};
 
 const TimezoneSelect = ({
   value,
@@ -229,9 +226,7 @@ const DateTimeTool = () => {
             <div className="flex gap-1.5">
               <Input value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="bg-background border-border font-mono text-sm" />
               <Button variant="secondary" size="sm" className="h-9 px-3 shrink-0" onClick={nowTs}>Now</Button>
-              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(timestamp, "Timestamp")}>
-                <Copy className="h-3.5 w-3.5" />
-              </Button>
+              <CopyButton value={timestamp} message="Timestamp copied" ariaLabel="Copy timestamp" variant="ghost" size="sm" className="h-9 px-2 shrink-0" />
             </div>
           </div>
 
@@ -244,9 +239,7 @@ const DateTimeTool = () => {
             <div className="flex gap-1.5">
               <Input value={dateStr} onChange={(e) => setDateStr(e.target.value)} className="bg-background border-border font-mono text-sm" />
               <Button variant="outline" size="sm" className="h-9 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
-              <Button variant="ghost" size="sm" className="h-9 px-2 shrink-0" onClick={() => copyText(dateStr, "Date")}>
-                <Copy className="h-3.5 w-3.5" />
-              </Button>
+              <CopyButton value={dateStr} message="Date copied" ariaLabel="Copy date" variant="ghost" size="sm" className="h-9 px-2 shrink-0" />
             </div>
           </div>
         </div>
@@ -323,9 +316,7 @@ const DateTimeTool = () => {
         </div>
         <div className="flex gap-2 items-center">
           <Input value={cron} onChange={(e) => setCron(e.target.value)} className="w-56 bg-background border-border font-mono text-sm" placeholder="* * * * *" />
-          <Button variant="ghost" size="sm" className="h-9 px-2" onClick={() => copyText(cron, "Cron")}>
-            <Copy className="h-3.5 w-3.5" />
-          </Button>
+          <CopyButton value={cron} message="Cron copied" ariaLabel="Copy cron expression" variant="ghost" size="sm" className="h-9 px-2" />
         </div>
 
         {/* Visual cron breakdown */}

@@ -12,7 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolHeader } from "@/components/ToolHeader";
-import { Copy, Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
+import { Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 
 import {
   encodeText, decodeBase64, decodeToText, encodeFile as encodeFileToB64,
@@ -285,17 +286,9 @@ const EncodingHub = () => {
   );
 
   // --- Actions ---
-  const handleCopy = () => {
-    if (!output) return;
-    navigator.clipboard.writeText(output);
-    toast.success("Copied to clipboard");
-  };
-
-  const handleCopyDataUri = () => {
-    if (!output) return;
+  const getDataUri = () => {
     const mime = detectedContent?.mimeType || "text/plain";
-    navigator.clipboard.writeText(`data:${mime};base64,${output.replace(/\s+/g, "")}`);
-    toast.success("Copied as Data URI");
+    return `data:${mime};base64,${output.replace(/\s+/g, "")}`;
   };
 
   const handlePaste = async () => {
@@ -593,9 +586,9 @@ const EncodingHub = () => {
                   )}
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy} disabled={!output} aria-label="Copy output" title="Copy"><Copy className="w-3 h-3" /></Button>
+                  <CopyButton value={output} message="Copied to clipboard" ariaLabel="Copy output" variant="ghost" size="icon" className="h-6 w-6" disabled={!output} />
                   {(mode === "base64" || mode === "base64url") && direction === "encode" && (
-                    <Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs" onClick={handleCopyDataUri} disabled={!output} aria-label="Copy as Data URI" title="Copy as Data URI">data:</Button>
+                    <CopyButton value={getDataUri} message="Copied as Data URI" label="data:" ariaLabel="Copy as Data URI" variant="ghost" size="sm" className="h-6 px-1.5 text-xs" disabled={!output} />
                   )}
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleDownload} disabled={!output} aria-label="Download" title="Download"><Download className="w-3 h-3" /></Button>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSwap} disabled={!output} aria-label="Swap" title="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
