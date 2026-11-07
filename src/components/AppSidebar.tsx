@@ -1,5 +1,17 @@
-import { Wrench } from "lucide-react";
-import { toolNav } from "@/components/toolNav";
+import {
+  Braces,
+  Code2,
+  Palette,
+  Wrench,
+  ShieldCheck,
+  GitCompare,
+  Users,
+  FileText,
+  KeyRound,
+  Clock,
+  Regex,
+  FileSearch,
+} from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -15,6 +27,21 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+const tools = [
+  { title: "HTML WYSIWYG Editor", url: "/html-editor", icon: Code2 },
+  { title: "Markdown Editor", url: "/markdown", icon: FileText },
+  { title: "JSON Formatter", url: "/json", icon: Braces },
+  { title: "Encoding Hub", url: "/encode", icon: Code2 },
+  { title: "Crypto Suite", url: "/crypto", icon: KeyRound },
+  { title: "Color Converter", url: "/color", icon: Palette },
+  { title: "JWT Hub", url: "/jwt", icon: ShieldCheck },
+  { title: "API Diff", url: "/diff", icon: GitCompare },
+  { title: "Fake Data", url: "/fake-data", icon: Users },
+  { title: "Env Generator", url: "/env", icon: FileText },
+  { title: "Date & Time", url: "/datetime", icon: Clock },
+  { title: "Regex", url: "/regex", icon: Regex },
+  { title: "Image Metadata Viewer", url: "/image-metadata", icon: FileSearch },
+];
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -40,7 +67,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {toolNav.map((item) => (
+              {tools.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
@@ -48,7 +75,7 @@ export function AppSidebar() {
                       end
                       aria-label={item.title}
                       title={item.title}
-                      className="transition-colors duration-150 hover:bg-secondary hover:text-foreground"
+                      className="hover:bg-secondary"
                       activeClassName="bg-secondary text-primary font-medium"
                     >
                       <item.icon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
