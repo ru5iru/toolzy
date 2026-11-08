@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
+import { Download, Minimize2, Maximize2, Upload, Search, X, Share2, Trash2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
@@ -51,6 +51,7 @@ const JsonFormatter = () => {
   const [treeExpanded, setTreeExpanded] = useState(true);
   const [treeKey, setTreeKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [formatOnPaste, setFormatOnPaste] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load from URL on mount
@@ -105,6 +106,30 @@ const JsonFormatter = () => {
       toast.error("Invalid JSON");
     }
   };
+
+  const handleClear = () => {
+    setInput("");
+    setOutput("");
+    setSearchTerm("");
+    // Clear URL param if present
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("d")) { url.searchParams.delete("d"); window.history.replaceState(null, "", url.toString()); }
+  };
+
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    if (!formatOnPaste) return;
+    const pasted = e.clipboardData.getData("text");
+    if (!pasted.trim()) return;
+    // Schedule after state update
+    setTimeout(() => {
+      try {
+        const indent = indentOption === "tab" ? "\t" : Number(indentOption);
+        const parsed = JSON.parse(pasted);
+        const data = sortKeys ? sortKeysDeep(parsed) : parsed;
+        setOutput(JSON.stringify(data, null, indent));
+      } catch { /* not valid JSON, ignore */ }
+    }, 0);
+  }, [formatOnPaste, indentOption, sortKeys]);
 
   const expandAll = () => { setTreeExpanded(true); setTreeKey((k) => k + 1); };
   const collapseAll = () => { setTreeExpanded(false); setTreeKey((k) => k + 1); };
@@ -167,6 +192,9 @@ const JsonFormatter = () => {
         <Button size="sm" className="h-7 px-3 text-xs" onClick={format}>Format</Button>
         <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" onClick={minify}><Minimize2 className="w-3 h-3 mr-1" />Minify</Button>
         <CopyButton value={output} message="Copied to clipboard" label="Copy" variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={!output} />
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive" onClick={handleClear} disabled={!input && !output} aria-label="Clear input and output">
+          <Trash2 className="w-3 h-3 mr-1" />Clear
+        </Button>
 
         <div className="border-l border-border h-5 mx-0.5" />
 
@@ -195,6 +223,11 @@ const JsonFormatter = () => {
         <div className="flex items-center gap-1">
           <Switch id="sort-keys" checked={sortKeys} onCheckedChange={setSortKeys} className="scale-75" />
           <Label htmlFor="sort-keys" className="text-xs text-muted-foreground cursor-pointer">Sort</Label>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Switch id="format-paste" checked={formatOnPaste} onCheckedChange={setFormatOnPaste} className="scale-75" />
+          <Label htmlFor="format-paste" className="text-xs text-muted-foreground cursor-pointer">Auto-format</Label>
         </div>
 
         <div className="relative flex-1 min-w-[120px] max-w-[200px]">
@@ -230,12 +263,18 @@ const JsonFormatter = () => {
       <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border border-border">
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-9 shrink-0 flex items-center px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
+              {input && (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {input.length.toLocaleString()} chars · {input.split("\n").length} lines · {new TextEncoder().encode(input).length.toLocaleString()} B
+                </span>
+              )}
             </div>
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onPaste={handlePaste}
               placeholder='{"key": "value"}'
               className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />

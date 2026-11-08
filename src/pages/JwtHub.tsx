@@ -241,6 +241,18 @@ function SecurityCard({ result }: { result: SecurityResult }) {
   );
 }
 
+// ---------- Countdown helper ----------
+function formatCountdown(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  if (totalSec < 60) return `${totalSec}s`;
+  const totalMin = Math.floor(totalSec / 60);
+  if (totalMin < 60) return `${totalMin}m ${totalSec % 60}s`;
+  const hrs = Math.floor(totalMin / 60);
+  if (hrs < 24) return `${hrs}h ${totalMin % 60}m`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ${hrs % 24}h`;
+}
+
 // ---------- Claims checklist (used in Decode & Verify) ----------
 const STANDARD_CLAIMS = ["exp", "nbf", "iat", "iss", "aud", "sub"];
 function ClaimsChecklist({ payload }: { payload: Record<string, any> | null }) {
@@ -410,9 +422,23 @@ function DecodeTab({
                   const v = shared.decodedPayload?.[k];
                   if (typeof v !== "number") return null;
                   const info = formatTimestamp(v);
+                  const isExp = k === "exp";
+                  const expiredMs = isExp ? (v * 1000 - Date.now()) : null;
+                  const isExpired = expiredMs !== null && expiredMs < 0;
+                  const countdownStr = expiredMs !== null
+                    ? isExpired
+                      ? `expired ${formatCountdown(-expiredMs)} ago`
+                      : `expires in ${formatCountdown(expiredMs)}`
+                    : null;
                   return (
-                    <div key={k} className="rounded border border-border bg-muted/30 px-2 py-1">
-                      <span className="text-muted-foreground">{k}:</span> {v} <span className="text-muted-foreground">→ {info.date}</span>
+                    <div key={k} className={`rounded border px-2 py-1 ${isExp && isExpired ? "border-destructive/40 bg-destructive/10" : isExp ? "border-green-500/30 bg-green-500/10" : "border-border bg-muted/30"}`}>
+                      <span className="text-muted-foreground">{k}:</span> {v}{" "}
+                      <span className="text-muted-foreground">→ {info.date}</span>
+                      {countdownStr && (
+                        <span className={`ml-2 font-semibold ${isExpired ? "text-destructive" : "text-green-400"}`}>
+                          ({countdownStr})
+                        </span>
+                      )}
                     </div>
                   );
                 })}
