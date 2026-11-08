@@ -29,6 +29,8 @@ const SqlFormatter = lazy(() => import("./pages/SqlFormatter"));
 const NumberBaseConverter = lazy(() => import("./pages/NumberBaseConverter"));
 const CronBuilder = lazy(() => import("./pages/CronBuilder"));
 const TextDiff = lazy(() => import("./pages/TextDiff"));
+const YamlConverter = lazy(() => import("./pages/YamlConverter"));
+const ChmodCalculator = lazy(() => import("./pages/ChmodCalculator"));
 
 const queryClient = new QueryClient();
 
@@ -74,6 +76,8 @@ const App = () => (
               <Route path="/number-base" element={<NumberBaseConverter />} />
               <Route path="/cron" element={<CronBuilder />} />
               <Route path="/text-diff" element={<TextDiff />} />
+              <Route path="/yaml" element={<YamlConverter />} />
+              <Route path="/chmod" element={<ChmodCalculator />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

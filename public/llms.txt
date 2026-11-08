@@ -571,3 +571,44 @@ Example queries this tool answers:
 - "What lines differ between these two SQL queries?"
 - "Show me a side-by-side diff of these two code files"
 - "Download this diff as a patch file"
+
+## YAML / JSON / TOML Converter
+
+URL: https://devtools.rusiru.cc/yaml
+Category: Data Formatting
+
+Convert between YAML, JSON, and TOML configuration formats.
+
+Capabilities:
+- Convert in any direction: YAML↔JSON, YAML↔TOML, JSON↔TOML
+- Live conversion as you type
+- Swap input and output with one click
+- Download converted output
+- Sample data for each format
+- Uses js-yaml and @iarna/toml libraries
+- Runs entirely in the browser; nothing is uploaded
+
+Example queries:
+- "Convert this YAML to JSON"
+- "Convert this JSON to TOML"
+- "Transform my Docker Compose YAML to JSON"
+
+## chmod Calculator
+
+URL: https://devtools.rusiru.cc/chmod
+Category: Developer Utilities
+
+Interactively calculate Unix/Linux file permissions.
+
+Capabilities:
+- Toggle read/write/execute checkboxes for owner, group, and others
+- Instant octal (e.g. 755), symbolic (e.g. -rwxr-xr-x) and chmod command output
+- Load any 3-digit octal to set checkboxes
+- Directory mode toggle (shows d prefix in symbolic notation)
+- Common presets: 644, 755, 600, 700, 777, etc.
+- All computation is client-side; nothing is transmitted
+
+Example queries:
+- "What is chmod 755 in symbolic notation?"
+- "Build a chmod command for owner read/write, group read-only"
+- "What octal is rwxr-xr-x?"

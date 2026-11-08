@@ -21,6 +21,8 @@ const aliases: Record<string, string> = {
   "/number-base": "binary decimal hex octal bitwise base converter",
   "/cron": "cron expression schedule crontab aws github actions timer",
   "/text-diff": "diff compare text code side by side unified patch",
+  "/yaml": "yaml json toml convert config format converter",
+  "/chmod": "chmod permissions octal unix linux file permission calculator",
 };
 
 export function CommandPalette() {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -26,6 +26,8 @@ const tools = [
   { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Binary },
   { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
   { title: "Text & Code Diff", description: "Compare two texts or code snippets — side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
+  { title: "YAML / JSON / TOML", description: "Convert between YAML, JSON, and TOML — instant live conversion, swap inputs, download result", url: "/yaml", icon: FileJson2 },
+  { title: "chmod Calculator", description: "Build Unix file permissions interactively — toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
 ];
 
 const Index = () => {

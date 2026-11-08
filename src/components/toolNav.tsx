@@ -1,5 +1,5 @@
 import {
-  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff,
+  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff, FileJson2, Lock,
 } from "lucide-react";
 
 /** Sidebar entries; also used by the top bar to name the current tool. */
@@ -24,4 +24,6 @@ export const toolNav = [
   { title: "Number Base Converter", url: "/number-base", icon: Binary },
   { title: "Cron Builder", url: "/cron", icon: Timer },
   { title: "Text & Code Diff", url: "/text-diff", icon: Diff },
+  { title: "YAML / JSON / TOML", url: "/yaml", icon: FileJson2 },
+  { title: "chmod Calculator", url: "/chmod", icon: Lock },
 ];
