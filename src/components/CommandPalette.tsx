@@ -20,6 +20,7 @@ const aliases: Record<string, string> = {
   "/sql": "sql formatter mysql postgresql sqlite tsql plsql bigquery snowflake beautifier",
   "/number-base": "binary decimal hex octal bitwise base converter",
   "/cron": "cron expression schedule crontab aws github actions timer",
+  "/text-diff": "diff compare text code side by side unified patch",
 };
 
 export function CommandPalette() {

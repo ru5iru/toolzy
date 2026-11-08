@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -25,6 +25,7 @@ const tools = [
   { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects — MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
   { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Binary },
   { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
+  { title: "Text & Code Diff", description: "Compare two texts or code snippets — side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
 ];
 
 const Index = () => {

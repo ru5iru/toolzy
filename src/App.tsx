@@ -28,6 +28,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const SqlFormatter = lazy(() => import("./pages/SqlFormatter"));
 const NumberBaseConverter = lazy(() => import("./pages/NumberBaseConverter"));
 const CronBuilder = lazy(() => import("./pages/CronBuilder"));
+const TextDiff = lazy(() => import("./pages/TextDiff"));
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
               <Route path="/sql" element={<SqlFormatter />} />
               <Route path="/number-base" element={<NumberBaseConverter />} />
               <Route path="/cron" element={<CronBuilder />} />
+              <Route path="/text-diff" element={<TextDiff />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
