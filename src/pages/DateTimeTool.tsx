@@ -204,7 +204,7 @@ const DateTimeTool = () => {
   };
 
   return (
-    <ToolPageLayout title="Date & Time Toolkit" toolbar={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
+    <ToolPageLayout title="Date & Time Toolkit" description="Unix timestamps, timezone conversion and cron expression builder" toolbar={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
           <Clock className="h-3.5 w-3.5 text-primary" />
           <span>{liveNow.toISOString().replace("T", " ").slice(0, 19)} UTC</span>
         </div>}>

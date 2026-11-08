@@ -723,7 +723,7 @@ const JwtHub = () => {
   );
 
   return (
-    <ToolPageLayout title="JWT Hub">
+    <ToolPageLayout title="JWT Hub" description="Decode, encode and verify JSON Web Tokens · HMAC, RSA, ECDSA">
       <ToolSEO
         title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
         description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
@@ -744,7 +744,8 @@ const JwtHub = () => {
       />
 
 
-      <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-220px)] rounded-lg border border-border">
+      <div className="h-[clamp(500px,calc(100dvh-180px),1000px)]">
+      <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border border-border">
         <ResizablePanel defaultSize={60} minSize={35}>
           <div className="p-4 h-full overflow-auto">
             <Tabs defaultValue="decode" className="space-y-3">
@@ -772,6 +773,7 @@ const JwtHub = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      </div>
     </ToolPageLayout>
   );
 };

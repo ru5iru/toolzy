@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { CopyButton } from "@/components/CopyButton";
 import { Heart, Trash2, Upload, RotateCcw, Star, Pipette } from "lucide-react";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -143,7 +144,7 @@ const ColorConverter = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <ToolPageLayout title="Color Converter" description="Convert between HEX, RGB, HSL, HSV, CMYK · pick, palette, contrast and gradient tools.">
       <ToolSEO
         title="Color Converter & Toolkit"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
@@ -162,8 +163,6 @@ const ColorConverter = () => {
           "Generate color palettes, check contrast, or create gradients",
         ]}
       />
-
-      <h1 className="text-2xl font-mono font-bold text-foreground">Color Converter & Toolkit</h1>
 
       {/* === Top: Input + Preview + Formats === */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4">
@@ -556,7 +555,7 @@ const ColorConverter = () => {
           </p>
         </section>
       </div>
-    </div>
+    </ToolPageLayout>
   );
 };
 
