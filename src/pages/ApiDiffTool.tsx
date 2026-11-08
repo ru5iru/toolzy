@@ -149,7 +149,7 @@ const ApiDiffTool = () => {
   };
 
   return (
-    <ToolPageLayout title="API Response Diff" toolbar={<>
+    <ToolPageLayout title="API Response Diff" description="Compare JSON responses structurally · Ctrl+Enter to compare" toolbar={<>
         <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
           <History className="h-4 w-4 mr-1" /> History
         </Button>

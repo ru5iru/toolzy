@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 
@@ -388,7 +388,7 @@ const EncodingHub = () => {
   const outputBadgeText = mode === "auto" ? `${MODE_LABELS[detectedSubMode]} (auto)` : MODE_LABELS[mode];
 
   return (
-    <div className="mx-0 flex h-full w-full max-w-none flex-col gap-3">
+    <ToolPageLayout title="Encoding Hub" description="Base64, URL encoding and Data URL converter.">
       <ToolSEO
         title="Encoding Hub — Base64, URL Encode & Data URL Converter"
         description="Free browser-based encoding tool. Encode and decode Base64, URL-safe Base64, percent-encoded URLs, and Data URLs — with auto-detect, file support, and query-string editing. Nothing leaves your browser."
@@ -412,11 +412,6 @@ const EncodingHub = () => {
           "Copy the result or download it as a file",
         ]}
       />
-
-      <header className="flex items-center justify-between gap-2 flex-wrap">
-        <h1 className="text-lg font-mono font-bold text-foreground">Encoding Hub</h1>
-        <PrivacyBadge />
-      </header>
 
       {/* Mode selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Encoding mode">
@@ -528,7 +523,7 @@ const EncodingHub = () => {
       )}
 
       {/* Main split-pane */}
-      <div className="flex-1 min-h-[360px]" onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop}>
+      <div className="h-[clamp(360px,calc(100dvh-14rem),900px)]" onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop}>
         <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border h-full">
           {/* Input panel */}
           <ResizablePanel defaultSize={50} minSize={25}>
@@ -780,7 +775,7 @@ const EncodingHub = () => {
       )}
 
       <h2 className="sr-only">Encoding Hub features</h2>
-    </div>
+    </ToolPageLayout>
   );
 };
 
