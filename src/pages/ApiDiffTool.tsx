@@ -14,8 +14,7 @@ import {
 } from "@/components/api-diff/diffUtils";
 import { ArrowDown, ArrowUp, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { AboutTool } from "@/components/AboutTool";
 
 const colorMap: Record<string, string> = {
@@ -150,7 +149,12 @@ const ApiDiffTool = () => {
   };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="API Response Diff" toolbar={<>
+        <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
+          <History className="h-4 w-4 mr-1" /> History
+        </Button>
+        <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
+      </>}>
       <ToolSEO
         title="API Response Diff Tool"
         description="Compare two JSON API responses side-by-side with structural diff, ignore rules, type change detection, and export. Free, browser-only developer tool."
@@ -171,12 +175,6 @@ const ApiDiffTool = () => {
         ]}
       />
 
-      <ToolHeader title="API Response Diff" icon={GitCompare} description="Compare JSON responses structurally · Ctrl+Enter to compare" actions={<>
-          <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
-            <History className="h-4 w-4 mr-1" /> History
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
-      </>} />
 
       {/* History panel */}
       {showHistory && history.length > 0 && (
@@ -448,7 +446,7 @@ const ApiDiffTool = () => {
           </div>
         </div>
       </AboutTool>
-    </div>
+    </ToolPageLayout>
   );
 };
 

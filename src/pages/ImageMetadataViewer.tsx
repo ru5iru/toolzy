@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Eraser, FileSearch, ImagePlus, Loader2, MapPin, RotateCcw, Search, X } from "lucide-react";
+import { Download, Eraser, FileSearch, ImagePlus, Loader2, RotateCcw, Search, X } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -54,10 +54,6 @@ const ImageMetadataViewer = () => {
     setPreview(undefined);
     setQuery("");
     if (picker.current) picker.current.value = "";
-  };
-  const copy = async (value: string) => {
-    try { await navigator.clipboard.writeText(value); toast.success("Copied to clipboard"); }
-    catch { toast.error("Clipboard access failed. Select and copy the value manually."); }
   };
   const result = state.result;
   const coords = result ? gpsCoordinates(result.rows) : undefined;
@@ -125,7 +121,7 @@ const ImageMetadataViewer = () => {
             </ul>
             <p className="text-xs text-muted-foreground mt-3">{result.thumbnailStatus}</p>
             <div className="flex flex-wrap gap-2 mt-3">{file && !cleaning && <Button size="sm" onClick={() => setCleaning(true)} disabled={!!result.removal?.error} title={result.removal?.error}><Eraser />Create clean copy</Button>}
-            {coords && <Button variant="outline" size="sm" className="max-w-full" onClick={() => copy(coords)} aria-label="Copy GPS coordinates"><MapPin />Copy coordinates</Button>}</div>
+            {coords && <span><CopyButton value={coords} label="Copy coordinates" variant="outline" className="max-w-full" message="GPS coordinates copied" /></span>}</div>
             {result.removal?.error && <p className="text-xs text-muted-foreground mt-2">{result.removal.error}</p>}
           </section>
         </div>

@@ -23,8 +23,7 @@ import {
 } from "@/components/jwt-encoder/encoderUtils";
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
 import { importKeyInput } from "@/lib/crypto/keyInput";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -154,26 +153,44 @@ async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: strin
 // ---------- Token Preview (right column, shared) ----------
 function TokenPreview({ token }: { token: string }) {
   const parts = token ? token.split(".") : [];
-  const copyPart = (p: string, label: string) => {
+  const [copied, setCopied] = useState<"header" | "payload" | "signature" | null>(null);
+  const copyPart = (p: string, segment: "header" | "payload" | "signature") => {
     if (!p) return;
-    navigator.clipboard.writeText(p);
-    toast.success(`${label} copied`);
+    navigator.clipboard.writeText(p).then(() => {
+      setCopied(segment);
+      setTimeout(() => setCopied(null), 1500);
+    });
   };
   return (
     <div className="rounded-lg border border-border bg-card p-3 space-y-2">
       <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Token Preview</div>
       {token ? (
         <div className="font-mono text-xs break-all leading-relaxed">
-          <button onClick={() => copyPart(parts[0], "Header")} className="px-1.5 py-0.5 rounded bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/25 transition-colors" title="Copy header">
+          <button
+            onClick={() => copyPart(parts[0], "header")}
+            className={`px-1.5 py-0.5 rounded transition-colors ${copied === "header" ? "bg-[hsl(var(--info))]/40 text-[hsl(var(--info))]" : "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/25"}`}
+            title="Click to copy header"
+            aria-label="Copy JWT header"
+          >
             {parts[0]}
           </button>
           <span className="text-muted-foreground">.</span>
-          <button onClick={() => copyPart(parts[1], "Payload")} className="px-1.5 py-0.5 rounded bg-[hsl(var(--success))]/15 text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/25 transition-colors" title="Copy payload">
+          <button
+            onClick={() => copyPart(parts[1], "payload")}
+            className={`px-1.5 py-0.5 rounded transition-colors ${copied === "payload" ? "bg-[hsl(var(--success))]/40 text-[hsl(var(--success-foreground))]" : "bg-[hsl(var(--success))]/15 text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/25"}`}
+            title="Click to copy payload"
+            aria-label="Copy JWT payload"
+          >
             {parts[1]}
           </button>
           <span className="text-muted-foreground">.</span>
           {parts[2] ? (
-            <button onClick={() => copyPart(parts[2], "Signature")} className="px-1.5 py-0.5 rounded bg-destructive/15 text-destructive hover:bg-destructive/25 transition-colors" title="Copy signature">
+            <button
+              onClick={() => copyPart(parts[2], "signature")}
+              className={`px-1.5 py-0.5 rounded transition-colors ${copied === "signature" ? "bg-destructive/40 text-destructive" : "bg-destructive/15 text-destructive hover:bg-destructive/25"}`}
+              title="Click to copy signature"
+              aria-label="Copy JWT signature"
+            >
               {parts[2]}
             </button>
           ) : (
@@ -182,6 +199,9 @@ function TokenPreview({ token }: { token: string }) {
         </div>
       ) : (
         <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet — paste, encode, or verify a JWT.</p>
+      )}
+      {copied && (
+        <p className="text-xs text-[hsl(var(--success-foreground))] text-center capitalize">{copied} copied ✓</p>
       )}
       {token && (
         <CopyButton value={token} message="Full JWT copied" label="Copy full token" variant="ghost" size="sm" className="h-6 text-xs w-full" />
@@ -703,7 +723,7 @@ const JwtHub = () => {
   );
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="JWT Hub">
       <ToolSEO
         title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
         description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
@@ -723,7 +743,6 @@ const JwtHub = () => {
         ]}
       />
 
-      <ToolHeader title="JWT Hub" icon={ShieldCheck} description="Decode, encode and verify JSON Web Tokens." />
 
       <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-220px)] rounded-lg border border-border">
         <ResizablePanel defaultSize={60} minSize={35}>
@@ -753,7 +772,7 @@ const JwtHub = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
-    </div>
+    </ToolPageLayout>
   );
 };
 

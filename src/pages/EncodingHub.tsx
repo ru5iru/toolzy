@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { ToolHeader } from "@/components/ToolHeader";
+import { PrivacyBadge } from "@/components/json-formatter/PrivacyBadge";
 import { Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 
@@ -413,7 +413,10 @@ const EncodingHub = () => {
         ]}
       />
 
-      <ToolHeader title="Encoding Hub" icon={Code2} description="Base64, URL encoding and Data URL converter." />
+      <header className="flex items-center justify-between gap-2 flex-wrap">
+        <h1 className="text-lg font-mono font-bold text-foreground">Encoding Hub</h1>
+        <PrivacyBadge />
+      </header>
 
       {/* Mode selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Encoding mode">

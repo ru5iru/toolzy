@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
+import { Heart, Trash2, Upload, RotateCcw, Star, Pipette } from "lucide-react";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -37,7 +38,6 @@ const ColorConverter = () => {
   const [gradType, setGradType] = useState<"linear" | "radial">("linear");
   const [batchInput, setBatchInput] = useState("");
   const [bgToggle, setBgToggle] = useState<"dark" | "light">("dark");
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const [extractedColors, setExtractedColors] = useState<RGB[]>([]);
@@ -69,13 +69,6 @@ const ColorConverter = () => {
       });
     }
   }, [hex, rgb]);
-
-  const copy = useCallback((text: string, key?: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key || text);
-    toast.success("Copied!");
-    setTimeout(() => setCopiedKey(null), 1500);
-  }, []);
 
   const toggleFavorite = (color: string) => {
     setFavorites(prev => {
@@ -137,19 +130,13 @@ const ColorConverter = () => {
     ? `linear-gradient(${gradAngle}deg, ${gradStops.join(", ")})`
     : `radial-gradient(circle, ${gradStops.join(", ")})`;
 
-  const CopyBtn = ({ text, k }: { text: string; k: string }) => (
-    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => copy(text, k)}>
-      {copiedKey === k ? <Check className="h-3.5 w-3.5 text-[hsl(var(--success-foreground))]" /> : <Copy className="h-3.5 w-3.5" />}
-    </Button>
-  );
-
   const ColorSwatch = ({ color, small, onClick }: { color: RGB; small?: boolean; onClick?: () => void }) => {
     const h = rgbToHex(color);
     return (
       <div
         className={`${small ? "w-8 h-8" : "w-12 h-12"} rounded-md border border-border cursor-pointer hover:scale-105 transition-transform`}
         style={{ backgroundColor: h }}
-        onClick={() => { onClick?.(); copy(h, h); }}
+        onClick={() => onClick?.()}
         title={h}
       />
     );
@@ -298,7 +285,7 @@ const ColorConverter = () => {
               <div key={row.label} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 group hover:border-primary/40 transition-colors">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-14">{row.label}</span>
                 <code className="font-mono text-xs text-foreground flex-1 text-right mr-2 truncate">{row.value}</code>
-                <CopyBtn text={row.value} k={row.label} />
+                <CopyButton value={row.value} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
               </div>
             ))}
           </div>
@@ -419,7 +406,7 @@ const ColorConverter = () => {
             <code className="flex-1 text-xs font-mono text-muted-foreground bg-muted/50 p-2 rounded border border-border truncate">
               background: {gradientCss};
             </code>
-            <CopyBtn text={`background: ${gradientCss};`} k="gradient" />
+            <CopyButton value={`background: ${gradientCss};`} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
           </div>
         </TabsContent>
 
@@ -488,7 +475,7 @@ const ColorConverter = () => {
                         <td className="px-3 py-2">{r.hex}</td>
                         <td className="px-3 py-2">{r.rgb}</td>
                         <td className="px-3 py-2">{r.hsl}</td>
-                        <td className="px-3 py-2">{r.hex !== "Invalid" && <CopyBtn text={r.hex} k={`batch-${i}`} />}</td>
+                        <td className="px-3 py-2">{r.hex !== "Invalid" && <CopyButton value={r.hex} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />}</td>
                       </tr>
                     ))}
                   </tbody>

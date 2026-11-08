@@ -80,6 +80,25 @@ export async function signRSA(
   return `${h}.${p}.${base64UrlEncode(new Uint8Array(sig))}`;
 }
 
+export async function signRSAPSS(
+  header: string,
+  payload: string,
+  privateKeyPem: string,
+  hashAlg: string
+): Promise<string> {
+  const h = base64UrlEncodeString(header);
+  const p = base64UrlEncodeString(payload);
+  const data = new TextEncoder().encode(`${h}.${p}`);
+  const keyBuf = pemToArrayBuffer(privateKeyPem);
+  const key = await crypto.subtle.importKey(
+    "pkcs8", keyBuf,
+    { name: "RSA-PSS", hash: hashAlg },
+    false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign({ name: "RSA-PSS", saltLength: 32 }, key, data);
+  return `${h}.${p}.${base64UrlEncode(new Uint8Array(sig))}`;
+}
+
 export async function signECDSA(
   header: string,
   payload: string,
