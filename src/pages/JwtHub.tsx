@@ -23,8 +23,7 @@ import {
 } from "@/components/jwt-encoder/encoderUtils";
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
 import { importKeyInput } from "@/lib/crypto/keyInput";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -724,7 +723,7 @@ const JwtHub = () => {
   );
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="JWT Hub">
       <ToolSEO
         title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
         description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
@@ -744,7 +743,6 @@ const JwtHub = () => {
         ]}
       />
 
-      <ToolHeader title="JWT Hub" icon={ShieldCheck} description="Decode, encode and verify JSON Web Tokens." />
 
       <ResizablePanelGroup direction="horizontal" className="min-h-[calc(100vh-220px)] rounded-lg border border-border">
         <ResizablePanel defaultSize={60} minSize={35}>
@@ -774,7 +772,7 @@ const JwtHub = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
-    </div>
+    </ToolPageLayout>
   );
 };
 
