@@ -476,3 +476,75 @@ Example queries this tool answers:
 - "Build a small HTML table without writing markup by hand"
 - "Download a standalone HTML page from rich text I typed"
 - "Edit HTML without a server or account"
+
+## SQL Formatter
+
+URL: https://devtools.rusiru.cc/sql
+Category: Data Formatting
+
+Format, beautify and minify SQL queries for 15 dialects, entirely in the browser.
+
+Capabilities:
+- Format SQL with configurable indentation (2 spaces, 4 spaces, tabs)
+- Keyword casing: UPPERCASE, lowercase, or preserve
+- Minify SQL to a single line
+- Supports 15 dialects: MySQL, PostgreSQL, SQLite, MariaDB, T-SQL (SQL Server),
+  PL/SQL (Oracle), BigQuery, Redshift, Snowflake, Spark SQL, Hive, ClickHouse,
+  DuckDB, Trino, Generic SQL
+- Download formatted output as .sql file
+- Nothing is uploaded; runs entirely in the browser
+
+Example queries this tool answers:
+- "Format this MySQL query with uppercase keywords"
+- "Minify this SQL for production use"
+- "Beautify this PostgreSQL query with 4-space indentation"
+- "Format this BigQuery SQL"
+
+## Number Base Converter
+
+URL: https://devtools.rusiru.cc/number-base
+Category: Developer Utilities
+
+Convert integers between binary, octal, decimal and hexadecimal, with bitwise operations.
+
+Capabilities:
+- Simultaneous conversion between binary (base 2), octal (base 8), decimal
+  (base 10), and hexadecimal (base 16)
+- Arbitrary-precision integers via BigInt (no overflow at 32-bit or 64-bit)
+- Bit pattern visualization with 4-bit grouping
+- Bitwise operations: AND, OR, XOR, NOT, left shift (LSH), right shift (RSH)
+- Results shown in decimal, hex and binary
+- All computation is client-side; nothing is transmitted
+
+Example queries this tool answers:
+- "Convert 255 to binary and hex"
+- "What is 0xFF in decimal?"
+- "What is the binary representation of 1024?"
+- "Compute 170 AND 85 in binary"
+- "What is 255 XOR 170?"
+
+## Cron Expression Builder
+
+URL: https://devtools.rusiru.cc/cron
+Category: Time & Scheduling
+
+Build, decode, and explain cron expressions visually.
+
+Capabilities:
+- Five-field visual editor (minute, hour, day of month, month, day of week)
+- Plain-English description of any cron expression (powered by cronstrue)
+- Next 10 scheduled run times from the current moment
+- Preset schedules: every minute, every 5 minutes, weekdays at 9 AM, etc.
+- Load any existing cron expression and edit it field by field
+- Platform-specific output:
+  - Standard cron (5-field)
+  - AWS EventBridge cron (6-field with year and ? for unspecified day fields)
+  - GitHub Actions schedule trigger YAML
+- Runs entirely in the browser; no data is transmitted
+
+Example queries this tool answers:
+- "Build a cron expression that runs every weekday at 9 AM"
+- "What does the cron expression '*/5 * * * *' mean?"
+- "When will '0 0 1 * *' next run?"
+- "Convert this cron to AWS EventBridge format"
+- "Generate the GitHub Actions YAML for a daily midnight schedule"

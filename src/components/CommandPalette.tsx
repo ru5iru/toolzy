@@ -17,6 +17,9 @@ const aliases: Record<string, string> = {
   "/document-signer": "sign verify signature pdf",
   "/image-metadata": "exif gps strip",
   "/text": "case slug sort dedupe lines count",
+  "/sql": "sql formatter mysql postgresql sqlite tsql plsql bigquery snowflake beautifier",
+  "/number-base": "binary decimal hex octal bitwise base converter",
+  "/cron": "cron expression schedule crontab aws github actions timer",
 };
 
 export function CommandPalette() {

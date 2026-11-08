@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2 } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -22,6 +22,9 @@ const tools = [
   { title: "Text Utilities", description: "Change case, sort and dedupe lines, slugify, number lines, and count words & characters", url: "/text", icon: Type },
   { title: "Certificate Inspector", description: "Decode X.509 certificates and CSRs: subject, issuer, validity, SANs, key usage, fingerprints", url: "/certificate", icon: ScrollText },
   { title: "URL Encode", description: "Encode & decode URL components and full URLs", url: "/url-encode", icon: Link },
+  { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects — MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
+  { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Binary },
+  { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
 ];
 
 const Index = () => {

@@ -25,6 +25,9 @@ const TextUtilities = lazy(() => import("./pages/TextUtilities"));
 const DocumentSigner = lazy(() => import("./pages/DocumentSigner"));
 const CertificateInspector = lazy(() => import("./pages/CertificateInspector"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const SqlFormatter = lazy(() => import("./pages/SqlFormatter"));
+const NumberBaseConverter = lazy(() => import("./pages/NumberBaseConverter"));
+const CronBuilder = lazy(() => import("./pages/CronBuilder"));
 
 const queryClient = new QueryClient();
 
@@ -66,6 +69,9 @@ const App = () => (
               <Route path="/text" element={<TextUtilities />} />
               <Route path="/markdown" element={<MarkdownEditor />} />
               <Route path="/html-editor" element={<HtmlEditor />} />
+              <Route path="/sql" element={<SqlFormatter />} />
+              <Route path="/number-base" element={<NumberBaseConverter />} />
+              <Route path="/cron" element={<CronBuilder />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
