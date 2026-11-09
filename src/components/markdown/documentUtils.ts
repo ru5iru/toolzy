@@ -34,6 +34,27 @@ export function documentStats(text: string) {
   const words = text.trim() ? text.trim().split(/\s+/u).length : 0;
   return { words, chars: text.length, lines: text.split("\n").length, minutes: Math.max(1, Math.ceil(words / 200)) };
 }
+export function generateTOC(text: string): string {
+  let fence = "";
+  const headings: { level: number; title: string; slug: string }[] = [];
+  const seen = new Map<string, number>();
+  for (const line of text.split("\n")) {
+    const marker = line.match(/^\s*(`{3,}|~{3,})/);
+    if (marker) { fence = fence ? "" : marker[1][0]; continue; }
+    if (fence) continue;
+    const m = line.match(/^(#{1,6})\s+(.+?)(?:\s+#+)?$/);
+    if (!m) continue;
+    const level = m[1].length;
+    const heading = m[2];
+    const base = heading.toLowerCase().replace(/<[^>]*>/g, "").replace(/[^\p{L}\p{N}_\-\s]/gu, "").trim().replace(/\s/g, "-");
+    const count = seen.get(base) ?? 0; seen.set(base, count + 1);
+    headings.push({ level, title: heading, slug: count ? `${base}-${count}` : base });
+  }
+  if (headings.length === 0) return "";
+  const minLevel = Math.min(...headings.map((h) => h.level));
+  return headings.map((h) => `${"  ".repeat(h.level - minLevel)}- [${h.title}](#${h.slug})`).join("\n");
+}
+
 export function headingAnchors(text: string) {
   const seen = new Map<string, number>();
   let fence = "";
