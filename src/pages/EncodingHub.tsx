@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2 } from "lucide-react";
+import { Download, Trash2, ArrowLeftRight, Upload, Clipboard, AlertTriangle, Shield, ChevronDown, Plus, X, FileText, Image as ImageIcon, Loader2, Code2, Hash } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 
 import {
@@ -27,7 +27,7 @@ import {
   type EncodingMode, type QueryParam, type HistoryItem,
 } from "@/components/url-encode/urlEncodeUtils";
 
-type HubMode = "auto" | "base64" | "base64url" | "url" | "dataurl";
+type HubMode = "auto" | "base64" | "base64url" | "url" | "dataurl" | "hex" | "html";
 
 const MODE_LABELS: Record<HubMode, string> = {
   auto: "Auto-Detect",
@@ -35,6 +35,8 @@ const MODE_LABELS: Record<HubMode, string> = {
   base64url: "Base64 URL-Safe",
   url: "URL Encode",
   dataurl: "Data URL",
+  hex: "Hex Dump",
+  html: "HTML Entities",
 };
 
 const MIME_SUGGESTIONS = [
@@ -43,6 +45,55 @@ const MIME_SUGGESTIONS = [
 ];
 
 const LARGE_INPUT_THRESHOLD = 50 * 1024; // 50 KB
+
+// --- Hex dump helpers ---
+interface HexRow { offset: number; bytes: number[]; ascii: string; }
+
+function buildHexDump(data: Uint8Array, bytesPerRow = 16): HexRow[] {
+  const rows: HexRow[] = [];
+  for (let offset = 0; offset < data.length; offset += bytesPerRow) {
+    const slice = Array.from(data.slice(offset, offset + bytesPerRow));
+    const ascii = slice.map((b) => (b >= 32 && b < 127 ? String.fromCharCode(b) : "·")).join("");
+    rows.push({ offset, bytes: slice, ascii });
+  }
+  return rows;
+}
+
+function parseHexInput(text: string): Uint8Array | null {
+  // Accept "0x..." prefix, raw hex pairs with any separator, or pure hex
+  const clean = text.trim().replace(/^0x/i, "").replace(/\s+|[^0-9a-fA-F]/g, "");
+  if (!clean || clean.length % 2 !== 0) return null;
+  try {
+    const bytes = new Uint8Array(clean.length / 2);
+    for (let i = 0; i < clean.length; i += 2) bytes[i / 2] = parseInt(clean.slice(i, i + 2), 16);
+    return bytes;
+  } catch { return null; }
+}
+
+// --- HTML entity helpers ---
+const HTML_NAMED: Record<string, string> = {
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  "©": "&copy;", "®": "&reg;", "™": "&trade;", "€": "&euro;", "£": "&pound;",
+  "¥": "&yen;", "°": "&deg;", "±": "&plusmn;", "×": "&times;", "÷": "&divide;",
+  "—": "&mdash;", "–": "&ndash;", " ": "&nbsp;", "…": "&hellip;",
+  "«": "&laquo;", "»": "&raquo;", "¡": "&iexcl;", "¿": "&iquest;",
+};
+
+function htmlEntityEncode(text: string, encodeNonASCII = true): string {
+  return text.split("").map((ch) => {
+    if (HTML_NAMED[ch]) return HTML_NAMED[ch];
+    const cp = ch.codePointAt(0) ?? 0;
+    if (encodeNonASCII && cp > 127) return `&#${cp};`;
+    return ch;
+  }).join("");
+}
+
+function htmlEntityDecode(text: string): string {
+  try {
+    const doc = new DOMParser().parseFromString(text, "text/html");
+    return doc.documentElement.textContent ?? text;
+  } catch { return text; }
+}
 
 // --- Detection for Auto mode ---
 function detectMode(input: string): Exclude<HubMode, "auto"> {
@@ -111,7 +162,7 @@ const EncodingHub = () => {
   const initialMode = (searchParams.get("mode") as HubMode) || "auto";
 
   const [mode, setMode] = useState<HubMode>(
-    ["auto", "base64", "base64url", "url", "dataurl"].includes(initialMode) ? initialMode : "auto"
+    ["auto", "base64", "base64url", "url", "dataurl", "hex", "html"].includes(initialMode) ? initialMode : "auto"
   );
   const [direction, setDirection] = useState<"encode" | "decode">("encode");
   const [input, setInput] = useState("");
@@ -137,9 +188,24 @@ const EncodingHub = () => {
   const [dataUrlParsed, setDataUrlParsed] = useState<DataUrlParts | null>(null);
   const [dataUrlPreviewBlobUrl, setDataUrlPreviewBlobUrl] = useState<string | null>(null);
 
+  // Hex dump state
+  const [hexBytes, setHexBytes] = useState<Uint8Array | null>(null);
+  const [hexFileMeta, setHexFileMeta] = useState<{ name: string; size: number } | null>(null);
+  const [hexDragOver, setHexDragOver] = useState(false);
+
+  // HTML entities state
+  const [htmlSubMode, setHtmlSubMode] = useState<"encode" | "decode">("encode");
+  const [htmlEncodeNonAscii, setHtmlEncodeNonAscii] = useState(true);
+
+  // Base64 file sub-mode
+  const [b64SubMode, setB64SubMode] = useState<"text" | "file">("text");
+  const [b64DragOver, setB64DragOver] = useState(false);
+
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const fileRef = useRef<HTMLInputElement>(null);
   const dataUrlFileRef = useRef<HTMLInputElement>(null);
+  const hexFileRef = useRef<HTMLInputElement>(null);
+  const b64FileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
   // Persist mode in URL
@@ -151,6 +217,13 @@ const EncodingHub = () => {
       setSearchParams(next, { replace: true });
     }
   }, [mode, searchParams, setSearchParams]);
+
+  // HTML entities: live process on input change when in html mode
+  useEffect(() => {
+    if (mode !== "html") return;
+    if (!input.trim()) { setOutput(""); return; }
+    setOutput(htmlSubMode === "encode" ? htmlEntityEncode(input, htmlEncodeNonAscii) : htmlEntityDecode(input));
+  }, [mode, input, htmlSubMode, htmlEncodeNonAscii]);
 
   // Load history once
   useEffect(() => { setHistory(getUrlHistory()); }, []);
@@ -253,13 +326,26 @@ const EncodingHub = () => {
     } else run();
   }, [urlSubMode, dataUrlMime, output]);
 
-  // Debounced reprocess on input/mode change
+  // Debounced reprocess on input/mode change (not for hex/html — those have their own effects)
   useEffect(() => {
+    if (mode === "hex" || mode === "html") return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => processNow(input, mode, direction), 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, mode, direction, urlSubMode, dataUrlMime]);
+
+  // Hex: also parse plain text input as UTF-8 bytes if no file loaded
+  useEffect(() => {
+    if (mode !== "hex") return;
+    if (hexBytes) return; // file loaded — already shown
+    if (!input.trim()) return;
+    // Try to interpret input as a hex string; fall back to UTF-8 bytes
+    const parsed = parseHexInput(input);
+    if (parsed) setHexBytes(parsed);
+    else setHexBytes(new TextEncoder().encode(input));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input, mode]);
 
   // Keyboard shortcut
   useEffect(() => {
@@ -324,7 +410,7 @@ const EncodingHub = () => {
 
   const handleClear = () => {
     setInput(""); setOutput(""); setError(null); setDetectedContent(null); setFileMeta(null);
-    setDataUrlParsed(null);
+    setDataUrlParsed(null); setHexBytes(null); setHexFileMeta(null);
   };
 
   const handleSwap = () => {
@@ -335,7 +421,26 @@ const EncodingHub = () => {
   };
 
   // --- File handling ---
+  const handleHexFile = async (file: File) => {
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    setHexBytes(bytes);
+    setHexFileMeta({ name: file.name, size: file.size });
+    toast.success(`Loaded ${file.name} (${formatBytes(file.size)})`);
+  };
+
+  const handleB64File = async (file: File) => {
+    setFileMeta({ name: file.name, size: file.size, type: file.type });
+    const b64 = await encodeFileToB64(file);
+    const finalB64 = mode === "base64url" ? toUrlSafe(b64) : b64;
+    setDirection("encode");
+    setInput(`[File: ${file.name} — ${formatBytes(file.size)}]`);
+    setOutput(finalB64);
+    toast.success(`Encoded ${file.name}`);
+  };
+
   const handleFile = async (file: File) => {
+    if (mode === "hex") { handleHexFile(file); return; }
     setFileMeta({ name: file.name, size: file.size, type: file.type });
     if (mode === "dataurl") {
       const b64 = await encodeFileToB64(file);
@@ -444,7 +549,7 @@ const EncodingHub = () => {
 
       {/* Direction toggle + sub-mode controls */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        {mode !== "auto" && mode !== "dataurl" && (
+        {mode !== "auto" && mode !== "dataurl" && mode !== "hex" && mode !== "html" && (
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">Direction:</span>
             <Button size="sm" variant={direction === "encode" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setDirection("encode")}>Encode →</Button>
@@ -474,6 +579,27 @@ const EncodingHub = () => {
               <TabsTrigger value="decoder" className="text-xs h-6">Decoder</TabsTrigger>
             </TabsList>
           </Tabs>
+        )}
+
+        {(mode === "base64" || mode === "base64url") && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Input:</span>
+            <Button size="sm" variant={b64SubMode === "text" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setB64SubMode("text")}>Text</Button>
+            <Button size="sm" variant={b64SubMode === "file" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setB64SubMode("file")}>File</Button>
+          </div>
+        )}
+
+        {mode === "html" && (
+          <div className="flex items-center gap-1.5">
+            <Button size="sm" variant={htmlSubMode === "encode" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setHtmlSubMode("encode")}>Encode →</Button>
+            <Button size="sm" variant={htmlSubMode === "decode" ? "selected" : "outline"} className="h-7 text-xs px-3" onClick={() => setHtmlSubMode("decode")}>← Decode</Button>
+            {htmlSubMode === "encode" && (
+              <label className="flex items-center gap-1.5 cursor-pointer select-none ml-2">
+                <input type="checkbox" checked={htmlEncodeNonAscii} onChange={(e) => setHtmlEncodeNonAscii(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
+                <span className="text-muted-foreground">Encode non-ASCII</span>
+              </label>
+            )}
+          </div>
         )}
 
         <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
@@ -522,7 +648,158 @@ const EncodingHub = () => {
         </div>
       )}
 
-      {/* Main split-pane */}
+      {/* Hidden file inputs */}
+      <input ref={hexFileRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleHexFile(f); }} />
+      <input ref={b64FileRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleB64File(f); }} />
+
+      {/* === HEX DUMP MODE === */}
+      {mode === "hex" && (
+        <div className="space-y-3">
+          {/* Drop zone */}
+          <div
+            className={`relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer
+              ${hexDragOver ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-muted/30"}`}
+            onDragOver={(e) => { e.preventDefault(); setHexDragOver(true); }}
+            onDragLeave={() => setHexDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setHexDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleHexFile(f); }}
+            onClick={() => hexFileRef.current?.click()}
+          >
+            <Hash className="w-8 h-8 text-muted-foreground" />
+            <div>
+              <p className="font-medium text-sm">Drop any file here to inspect its bytes</p>
+              <p className="text-xs text-muted-foreground mt-1">Or paste a hex string in the text area below</p>
+            </div>
+            {hexFileMeta && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <FileText className="w-3.5 h-3.5" />{hexFileMeta.name} ({formatBytes(hexFileMeta.size)})
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs ml-1" onClick={(e) => { e.stopPropagation(); setHexBytes(null); setHexFileMeta(null); }}>Clear</Button>
+              </div>
+            )}
+          </div>
+
+          {/* Text input fallback */}
+          {!hexBytes && (
+            <Textarea
+              value={input}
+              onChange={(e) => { setInput(e.target.value); setHexBytes(null); }}
+              placeholder="Or paste hex bytes: 48 65 6c 6c 6f or 0x48656c6c6f..."
+              className="font-mono text-sm min-h-[80px] resize-none"
+            />
+          )}
+
+          {/* Hex dump table */}
+          {hexBytes && hexBytes.length > 0 && (
+            <div className="rounded-lg border border-border overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Hex Dump</span>
+                  <Badge variant="secondary" className="text-xs h-4 px-1.5">{hexBytes.length.toLocaleString()} bytes</Badge>
+                </div>
+                <div className="flex gap-1">
+                  <CopyButton
+                    value={() => buildHexDump(hexBytes).map(r =>
+                      `${r.offset.toString(16).padStart(8, "0")}  ${r.bytes.slice(0,8).map(b=>b.toString(16).padStart(2,"0")).join(" ").padEnd(23)} ${r.bytes.slice(8).map(b=>b.toString(16).padStart(2,"0")).join(" ").padEnd(23)}  |${r.ascii}|`
+                    ).join("\n")}
+                    message="Hex dump copied"
+                    label="Copy"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-xs px-2"
+                  />
+                </div>
+              </div>
+              <div className="overflow-auto max-h-[500px]">
+                <table className="w-full text-xs font-mono border-collapse">
+                  <thead className="sticky top-0 bg-muted/80 backdrop-blur-sm">
+                    <tr>
+                      <th className="text-left px-3 py-1.5 text-muted-foreground font-medium w-24">Offset</th>
+                      <th className="text-left px-3 py-1.5 text-muted-foreground font-medium">Hex</th>
+                      <th className="text-left px-3 py-1.5 text-muted-foreground font-medium w-24">ASCII</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {buildHexDump(hexBytes).slice(0, 512).map((row) => (
+                      <tr key={row.offset} className="border-t border-border/50 hover:bg-muted/20">
+                        <td className="px-3 py-0.5 text-muted-foreground">{row.offset.toString(16).padStart(8, "0")}</td>
+                        <td className="px-3 py-0.5 tracking-wider">
+                          <span>{row.bytes.slice(0, 8).map((b) => b.toString(16).padStart(2, "0")).join(" ")}</span>
+                          {row.bytes.length > 8 && <span className="ml-2">{row.bytes.slice(8).map((b) => b.toString(16).padStart(2, "0")).join(" ")}</span>}
+                        </td>
+                        <td className="px-3 py-0.5 text-muted-foreground">{row.ascii}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {hexBytes.length > 512 * 16 && (
+                  <p className="text-xs text-muted-foreground px-3 py-2">Showing first 512 rows of {Math.ceil(hexBytes.length / 16).toLocaleString()} rows — {formatBytes(hexBytes.length)} total</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* === HTML ENTITIES MODE === */}
+      {mode === "html" && (
+        <div className="h-[clamp(360px,calc(100dvh-14rem),900px)]">
+          <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border h-full">
+            <ResizablePanel defaultSize={50} minSize={25}>
+              <div className="h-full flex flex-col">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {htmlSubMode === "encode" ? "Plain Text / HTML" : "Encoded HTML"}
+                  </span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePaste} aria-label="Paste"><Clipboard className="w-3 h-3" /></Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleClear} aria-label="Clear"><Trash2 className="w-3 h-3" /></Button>
+                  </div>
+                </div>
+                <Textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={htmlSubMode === "encode" ? "Paste HTML or text with special characters…" : "Paste entity-encoded HTML…"}
+                  className="flex-1 font-mono text-sm border-0 rounded-none resize-none focus-visible:ring-0 bg-card"
+                />
+                <div className="px-3 py-1 border-t border-border bg-muted/20 text-xs text-muted-foreground">{input.length.toLocaleString()} chars</div>
+              </div>
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={50} minSize={25}>
+              <div className="h-full flex flex-col">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Output</span>
+                    <Badge variant="secondary" className="text-xs h-4 px-1.5">{htmlSubMode === "encode" ? "Encoded" : "Decoded"}</Badge>
+                  </div>
+                  <div className="flex gap-1">
+                    <CopyButton value={output} message="Copied" ariaLabel="Copy" variant="ghost" size="icon" className="h-6 w-6" disabled={!output} />
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSwap} disabled={!output} aria-label="Swap"><ArrowLeftRight className="w-3 h-3" /></Button>
+                  </div>
+                </div>
+                <Textarea value={output} readOnly className="flex-1 font-mono text-sm border-0 rounded-none resize-none focus-visible:ring-0 bg-card" />
+                <div className="px-3 py-1 border-t border-border bg-muted/20 text-xs text-muted-foreground">{output.length.toLocaleString()} chars</div>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+
+          {/* Quick reference */}
+          {output && htmlSubMode === "encode" && (
+            <div className="mt-2 p-3 rounded-lg border border-border bg-card">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Common entities encoded</p>
+              <div className="flex flex-wrap gap-2">
+                {[["&", "&amp;"], ["<", "&lt;"], [">", "&gt;"], ['"', "&quot;"], ["'", "&#39;"], ["©", "&copy;"], ["®", "&reg;"], ["€", "&euro;"]].map(([ch, ent]) => (
+                  <code key={ch} className="text-[11px] bg-muted px-2 py-0.5 rounded font-mono">{ch} → {ent}</code>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main split-pane (all other modes) */}
+      {mode !== "hex" && mode !== "html" && (
       <div className="h-[clamp(360px,calc(100dvh-14rem),900px)]" onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop}>
         <ResizablePanelGroup direction="horizontal" className="rounded-lg border border-border h-full">
           {/* Input panel */}
@@ -624,6 +901,47 @@ const EncodingHub = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+      )}
+
+      {/* Base64 file drop zone (shown when b64SubMode === "file") */}
+      {(mode === "base64" || mode === "base64url") && b64SubMode === "file" && (
+        <div
+          className={`flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer
+            ${b64DragOver ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-muted/30"}`}
+          onDragOver={(e) => { e.preventDefault(); setB64DragOver(true); }}
+          onDragLeave={() => setB64DragOver(false)}
+          onDrop={(e) => { e.preventDefault(); setB64DragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleB64File(f); }}
+          onClick={() => b64FileRef.current?.click()}
+        >
+          <Upload className="w-8 h-8 text-muted-foreground" />
+          <div>
+            <p className="font-medium text-sm">Drop a file here to encode it to {mode === "base64url" ? "URL-safe Base64" : "Base64"}</p>
+            <p className="text-xs text-muted-foreground mt-1">Any file type — the raw bytes will be encoded</p>
+          </div>
+          {fileMeta && (
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5" />{fileMeta.name} ({formatBytes(fileMeta.size)}) — {fileMeta.type || "unknown"}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Show output for b64 file mode */}
+      {(mode === "base64" || mode === "base64url") && b64SubMode === "file" && output && (
+        <div className="rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/20">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Base64 Output</span>
+              <Badge variant="secondary" className="text-xs h-4 px-1.5">{output.length.toLocaleString()} chars</Badge>
+            </div>
+            <div className="flex gap-1">
+              <CopyButton value={output} message="Copied!" variant="ghost" size="sm" className="h-6 text-xs px-2" label="Copy" />
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleDownload} aria-label="Download"><Download className="w-3 h-3" /></Button>
+            </div>
+          </div>
+          <Textarea value={output} readOnly className="font-mono text-xs border-0 rounded-none resize-none focus-visible:ring-0 bg-card min-h-[120px]" />
+        </div>
+      )}
 
       {/* URL mode advanced panels */}
       {mode === "url" && (
