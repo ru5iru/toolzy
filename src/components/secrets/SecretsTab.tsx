@@ -11,6 +11,28 @@ import {
   type SecretFormat, type SecretPreset,
 } from "./secretsUtils";
 
+function EntropyMeter({ bits }: { bits: number }) {
+  // 128-bit = "Good", 256-bit = "Excellent" for cryptographic use
+  const tiers = [
+    { min: 0,   label: "Very weak",  color: "bg-destructive" },
+    { min: 64,  label: "Weak",       color: "bg-destructive" },
+    { min: 112, label: "Fair",       color: "bg-[hsl(var(--warning))]" },
+    { min: 128, label: "Good",       color: "bg-[hsl(var(--info))]" },
+    { min: 192, label: "Strong",     color: "bg-[hsl(var(--success))]" },
+    { min: 256, label: "Excellent",  color: "bg-[hsl(var(--success))]" },
+  ];
+  const tier = [...tiers].reverse().find(t => bits >= t.min) ?? tiers[0];
+  const pct = Math.min(100, Math.round((bits / 256) * 100));
+  return (
+    <div className="flex items-center gap-3" role="status" aria-label={`Entropy strength: ${tier.label}`}>
+      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${tier.color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-muted-foreground w-20 text-right shrink-0">{tier.label} ({bits} bits)</span>
+    </div>
+  );
+}
+
 export const SecretsTab = () => {
   const [bytes, setBytes] = useState("32");
   const [count, setCount] = useState("1");
@@ -83,6 +105,7 @@ export const SecretsTab = () => {
             </h2>
             {values.length > 1 && <CopyButton value={() => values.join("\n")} message="All values copied" label="Copy all" size="sm" variant="outline" />}
           </div>
+          <EntropyMeter bits={entropyBits(bytesNumber)} />
           <ul className="border border-border rounded-lg divide-y divide-border" aria-label="Generated secrets">
             {values.map((value, index) => (
               <li key={`${index}-${value}`} className="flex items-start gap-2 px-3 py-2">

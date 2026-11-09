@@ -18,9 +18,10 @@ import {
   loadUUIDHistory, saveUUIDHistory,
   type UUIDValidation
 } from "@/components/uuid/uuidUtils";
-import { Check, ChevronDown, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
+import { Check, ChevronDown, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText, Lock, ShieldCheck, ShieldX, Loader2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { SecretsTab } from "@/components/secrets/SecretsTab";
+import bcrypt from "bcryptjs";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -123,7 +124,7 @@ type ExportFormat = "txt" | "csv" | "json" | "sql";
 const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
-type CryptoTab = "hash" | "uuid" | "secrets";
+type CryptoTab = "hash" | "uuid" | "secrets" | "bcrypt";
 
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
@@ -172,6 +173,7 @@ const CryptoSuite = () => {
           <TabsTrigger value="hash">Hashing</TabsTrigger>
           <TabsTrigger value="uuid">UUID Generator</TabsTrigger>
           <TabsTrigger value="secrets">Secrets</TabsTrigger>
+          <TabsTrigger value="bcrypt">bcrypt</TabsTrigger>
         </TabsList>
         <TabsContent value="hash" forceMount className={tab === "hash" ? "space-y-6" : "hidden"}>
           <HashTab />
@@ -181,6 +183,9 @@ const CryptoSuite = () => {
         </TabsContent>
         <TabsContent value="secrets" className="space-y-6">
           <SecretsTab />
+        </TabsContent>
+        <TabsContent value="bcrypt" className="space-y-6">
+          <BcryptTab />
         </TabsContent>
       </Tabs>
     </ToolPageLayout>
@@ -963,6 +968,158 @@ function UuidTab() {
         </div>
         <pre className="bg-background rounded-lg p-4 text-sm font-mono text-foreground overflow-auto"><code>{CODE_SNIPPETS[snippetLang].code}</code></pre>
         <CopyButton value={() => CODE_SNIPPETS[snippetLang].code} message="Copied" label="Copy" size="sm" variant="outline" />
+      </div>
+    </div>
+  );
+}
+
+// ===================================================================
+// BCRYPT TAB
+// ===================================================================
+function BcryptTab() {
+  // Hash section
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [rounds, setRounds] = useState(12);
+  const [hashing, setHashing] = useState(false);
+  const [hash, setHash] = useState("");
+
+  // Verify section
+  const [verifyPw, setVerifyPw] = useState("");
+  const [verifyHash, setVerifyHash] = useState("");
+  const [showVerifyPw, setShowVerifyPw] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<"valid" | "invalid" | null>(null);
+
+  const doHash = async () => {
+    if (!password) { toast.error("Enter a password"); return; }
+    setHashing(true); setHash("");
+    try {
+      const salt = await bcrypt.genSalt(rounds);
+      const h = await bcrypt.hash(password, salt);
+      setHash(h);
+      toast.success("Hash generated");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setHashing(false); }
+  };
+
+  const doVerify = async () => {
+    if (!verifyPw || !verifyHash) { toast.error("Enter both password and hash"); return; }
+    setVerifying(true); setVerifyResult(null);
+    try {
+      const ok = await bcrypt.compare(verifyPw, verifyHash.trim());
+      setVerifyResult(ok ? "valid" : "invalid");
+    } catch { setVerifyResult("invalid"); }
+    finally { setVerifying(false); }
+  };
+
+  const costMs: Record<number, string> = { 10: "~100ms", 11: "~200ms", 12: "~400ms", 13: "~800ms", 14: "~1.6s" };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Hash column */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Lock className="w-4 h-4 text-primary" />Hash a password</h3>
+
+        <div className="space-y-1.5">
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password</label>
+          <div className="relative">
+            <Input
+              type={showPw ? "text" : "password"}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Enter password to hash…"
+              className="font-mono text-xs pr-9 h-9"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-0.5 top-0.5 h-8 w-8" onClick={() => setShowPw(v => !v)} aria-label="Toggle visibility">
+              {showPw ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+          {password && <PasswordStrength text={password} />}
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Cost rounds: {rounds}</label>
+            <span className="text-xs text-muted-foreground font-mono">{costMs[rounds] ?? "slow"}</span>
+          </div>
+          <Slider min={10} max={14} step={1} value={[rounds]} onValueChange={([v]) => setRounds(v)} className="w-full" />
+          <p className="text-xs text-muted-foreground">Higher rounds = more secure but slower. 12 is the production baseline.</p>
+        </div>
+
+        <Button onClick={doHash} disabled={hashing} className="w-full">
+          {hashing ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Hashing…</> : "Generate Hash"}
+        </Button>
+
+        {hash && (
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+              <span className="text-xs font-medium text-muted-foreground">bcrypt hash</span>
+              <CopyButton value={hash} message="Hash copied" size="sm" />
+            </div>
+            <pre className="p-3 font-mono text-xs text-foreground break-all whitespace-pre-wrap">{hash}</pre>
+            <div className="px-3 py-1.5 border-t border-border flex flex-wrap gap-3 text-xs text-muted-foreground">
+              <span>Algorithm: <code className="font-mono text-foreground">{hash.slice(0, 4)}</code></span>
+              <span>Rounds: <code className="font-mono text-foreground">{rounds}</code></span>
+              <span>Length: <code className="font-mono text-foreground">{hash.length} chars</code></span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Verify column */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-primary" />Verify a hash</h3>
+
+        <div className="space-y-1.5">
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password to verify</label>
+          <div className="relative">
+            <Input
+              type={showVerifyPw ? "text" : "password"}
+              value={verifyPw}
+              onChange={e => { setVerifyPw(e.target.value); setVerifyResult(null); }}
+              placeholder="Enter plaintext password…"
+              className="font-mono text-xs pr-9 h-9"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-0.5 top-0.5 h-8 w-8" onClick={() => setShowVerifyPw(v => !v)} aria-label="Toggle visibility">
+              {showVerifyPw ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">bcrypt hash</label>
+            {hash && <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setVerifyHash(hash); setVerifyResult(null); }}>Use generated hash</Button>}
+          </div>
+          <Input
+            value={verifyHash}
+            onChange={e => { setVerifyHash(e.target.value); setVerifyResult(null); }}
+            placeholder="$2b$12$…"
+            className="font-mono text-xs h-9"
+          />
+        </div>
+
+        <Button onClick={doVerify} disabled={verifying} className="w-full">
+          {verifying ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Verifying…</> : "Verify"}
+        </Button>
+
+        {verifyResult && (
+          <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm font-medium ${verifyResult === "valid" ? "bg-green-500/10 border-green-500/40 text-green-400" : "bg-destructive/10 border-destructive/40 text-destructive"}`}>
+            {verifyResult === "valid" ? <ShieldCheck className="w-4 h-4" /> : <ShieldX className="w-4 h-4" />}
+            {verifyResult === "valid" ? "Password matches the hash" : "Password does not match"}
+          </div>
+        )}
+
+        <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-muted-foreground">About bcrypt</p>
+          <ul className="text-xs text-muted-foreground space-y-0.5">
+            <li>• Adaptive — cost factor slows brute-force as hardware improves</li>
+            <li>• Built-in salt — every hash is unique even for identical passwords</li>
+            <li>• Max input: 72 bytes (passwords longer than that are truncated)</li>
+            <li>• Never store plaintext passwords — always hash before saving</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
