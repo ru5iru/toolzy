@@ -25,6 +25,7 @@ const aliases: Record<string, string> = {
   "/chmod": "chmod permissions octal unix linux file permission calculator",
   "/password": "password generator passphrase secure random crypto entropy strength",
   "/csv": "csv tsv parser viewer filter sort export json delimited table data",
+  "/curl": "curl converter python javascript go php ruby fetch requests http code",
 };
 
 export function CommandPalette() {

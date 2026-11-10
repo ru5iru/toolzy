@@ -33,6 +33,7 @@ const YamlConverter = lazy(() => import("./pages/YamlConverter"));
 const ChmodCalculator = lazy(() => import("./pages/ChmodCalculator"));
 const PasswordGenerator = lazy(() => import("./pages/PasswordGenerator"));
 const CsvTool = lazy(() => import("./pages/CsvTool"));
+const CurlConverter = lazy(() => import("./pages/CurlConverter"));
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/chmod" element={<ChmodCalculator />} />
               <Route path="/password" element={<PasswordGenerator />} />
               <Route path="/csv" element={<CsvTool />} />
+              <Route path="/curl" element={<CurlConverter />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

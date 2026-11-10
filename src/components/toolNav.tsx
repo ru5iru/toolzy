@@ -1,5 +1,5 @@
 import {
-  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff, FileJson2, Lock, KeySquare, Table2,
+  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight,
 } from "lucide-react";
 
 /** Sidebar entries; also used by the top bar to name the current tool. */
@@ -28,4 +28,5 @@ export const toolNav = [
   { title: "chmod Calculator", url: "/chmod", icon: Lock },
   { title: "Password Generator", url: "/password", icon: KeySquare },
   { title: "CSV Tool", url: "/csv", icon: Table2 },
+  { title: "curl ↔ Code", url: "/curl", icon: ArrowLeftRight },
 ];

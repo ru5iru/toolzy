@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2 } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -30,6 +30,7 @@ const tools = [
   { title: "chmod Calculator", description: "Build Unix file permissions interactively — toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
   { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases — configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
   { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
+  { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
 ];
 
 const Index = () => {
