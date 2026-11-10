@@ -31,6 +31,7 @@ const CronBuilder = lazy(() => import("./pages/CronBuilder"));
 const TextDiff = lazy(() => import("./pages/TextDiff"));
 const YamlConverter = lazy(() => import("./pages/YamlConverter"));
 const ChmodCalculator = lazy(() => import("./pages/ChmodCalculator"));
+const PasswordGenerator = lazy(() => import("./pages/PasswordGenerator"));
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/text-diff" element={<TextDiff />} />
               <Route path="/yaml" element={<YamlConverter />} />
               <Route path="/chmod" element={<ChmodCalculator />} />
+              <Route path="/password" element={<PasswordGenerator />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

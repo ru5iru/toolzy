@@ -1,5 +1,5 @@
 import {
-  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff, FileJson2, Lock,
+  Braces, Code2, Palette, ShieldCheck, GitCompare, Users, FileText, KeyRound, Clock, Regex, FileSearch, FileSignature, ScrollText, Type, FileCode2, Terminal, Database, Binary, Timer, Diff, FileJson2, Lock, KeySquare,
 } from "lucide-react";
 
 /** Sidebar entries; also used by the top bar to name the current tool. */
@@ -26,4 +26,5 @@ export const toolNav = [
   { title: "Text & Code Diff", url: "/text-diff", icon: Diff },
   { title: "YAML / JSON / TOML", url: "/yaml", icon: FileJson2 },
   { title: "chmod Calculator", url: "/chmod", icon: Lock },
+  { title: "Password Generator", url: "/password", icon: KeySquare },
 ];

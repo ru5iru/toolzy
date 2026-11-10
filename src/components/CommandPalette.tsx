@@ -23,6 +23,7 @@ const aliases: Record<string, string> = {
   "/text-diff": "diff compare text code side by side unified patch",
   "/yaml": "yaml json toml convert config format converter",
   "/chmod": "chmod permissions octal unix linux file permission calculator",
+  "/password": "password generator passphrase secure random crypto entropy strength",
 };
 
 export function CommandPalette() {
