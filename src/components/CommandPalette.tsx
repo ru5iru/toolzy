@@ -26,6 +26,7 @@ const aliases: Record<string, string> = {
   "/password": "password generator passphrase secure random crypto entropy strength",
   "/csv": "csv tsv parser viewer filter sort export json delimited table data",
   "/curl": "curl converter python javascript go php ruby fetch requests http code",
+  "/json-transform": "json transformer jq filter map select sort group flatten query transform",
 };
 
 export function CommandPalette() {

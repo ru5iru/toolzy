@@ -29,4 +29,5 @@ export const toolNav = [
   { title: "Password Generator", url: "/password", icon: KeySquare },
   { title: "CSV Tool", url: "/csv", icon: Table2 },
   { title: "curl ↔ Code", url: "/curl", icon: ArrowLeftRight },
+  { title: "JSON Transformer", url: "/json-transform", icon: Braces },
 ];

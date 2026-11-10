@@ -31,6 +31,7 @@ const tools = [
   { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases — configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
   { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
   { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
+  { title: "JSON Transformer", description: "Filter and transform JSON with jq-compatible expressions — map, select, sort_by, group_by, to_entries, flatten and more, live in your browser", url: "/json-transform", icon: Braces },
 ];
 
 const Index = () => {
