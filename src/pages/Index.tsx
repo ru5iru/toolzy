@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2 } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
@@ -22,6 +22,15 @@ const tools = [
   { title: "Text Utilities", description: "Change case, sort and dedupe lines, slugify, number lines, and count words & characters", url: "/text", icon: Type },
   { title: "Certificate Inspector", description: "Decode X.509 certificates and CSRs: subject, issuer, validity, SANs, key usage, fingerprints", url: "/certificate", icon: ScrollText },
   { title: "URL Encode", description: "Encode & decode URL components and full URLs", url: "/url-encode", icon: Link },
+  { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects — MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
+  { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Binary },
+  { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
+  { title: "Text & Code Diff", description: "Compare two texts or code snippets — side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
+  { title: "YAML / JSON / TOML", description: "Convert between YAML, JSON, and TOML — instant live conversion, swap inputs, download result", url: "/yaml", icon: FileJson2 },
+  { title: "chmod Calculator", description: "Build Unix file permissions interactively — toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
+  { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases — configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
+  { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
+  { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
 ];
 
 const Index = () => {

@@ -2,12 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { Regex, Share2 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { parseRegex } from "@/lib/regex/parseRegex";
+import { buildRailroad } from "@/lib/regex/buildRailroad";
 
 const encodeShare = (pattern: string, flags: string, text: string) =>
   btoa(unescape(encodeURIComponent(JSON.stringify({ p: pattern, f: flags, t: text }))));
@@ -97,6 +100,15 @@ const RegexPlayground = () => {
     }
   }, [debouncedPattern, flags, debouncedText]);
 
+  // Railroad diagram
+  const diagram = useMemo(() => {
+    if (!debouncedPattern || error) return null;
+    try {
+      const ast = parseRegex(debouncedPattern);
+      return buildRailroad(ast);
+    } catch { return null; }
+  }, [debouncedPattern, error]);
+
   const [replacement, setReplacement] = useState("");
   const replaced = useMemo(() => {
     if (!debouncedPattern || error || !replacement) return null;
@@ -154,62 +166,97 @@ const RegexPlayground = () => {
         <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter text to test against…" className="min-h-[150px] font-mono text-sm bg-card border-border resize-none" />
       </div>
 
-      {pattern && text && (
-        <>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Highlighted Matches</label>
-              {matches.length > 0 && (
-                <span className="inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-xs font-mono text-primary">
-                  {matches.length} match{matches.length !== 1 ? "es" : ""}
-                </span>
-              )}
-              {pattern && !error && matches.length === 0 && (
-                <span className="text-xs text-muted-foreground">— no matches</span>
-              )}
-            </div>
-            <pre className="bg-card border border-border rounded-lg p-4 font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[300px] leading-relaxed">
-              {segments.map((seg, i) =>
-                seg.highlight ? (
-                  <mark key={i} className="bg-primary/25 text-primary font-semibold rounded-sm px-0.5 not-italic">{seg.text}</mark>
-                ) : (
-                  <span key={i} className="text-foreground">{seg.text}</span>
-                )
-              )}
-            </pre>
-          </div>
+      {pattern && (
+        <Tabs defaultValue="matches">
+          <TabsList>
+            <TabsTrigger value="matches">Matches</TabsTrigger>
+            <TabsTrigger value="diagram">Diagram</TabsTrigger>
+          </TabsList>
 
-          {replaced !== null && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">Replaced text</label>
-                <CopyButton value={replaced} label="Copy" variant="outline" />
-              </div>
-              <pre className="code-surface max-h-[300px] overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-card p-4">{replaced}</pre>
-            </div>
-          )}
-
-          {matches.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Match details</label>
-              <div className="space-y-1">
-                {matches.slice(0, 50).map((m, i) => (
-                  <div key={i} className="border border-border rounded p-2 bg-card font-mono text-sm flex flex-wrap gap-x-4 gap-y-1 items-baseline">
-                    <span className="text-muted-foreground text-xs">#{i + 1}</span>
-                    <span className="text-primary font-medium">{m.match || <em className="not-italic text-muted-foreground">empty</em>}</span>
-                    <span className="text-muted-foreground text-xs">@{m.index}</span>
-                    {m.groups && Object.keys(m.groups).length > 0 && (
-                      <span className="text-muted-foreground text-xs">groups: {JSON.stringify(m.groups)}</span>
+          {/* ── Matches tab ── */}
+          <TabsContent value="matches" className="space-y-4 mt-4">
+            {text && (
+              <>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-muted-foreground uppercase tracking-wider">Highlighted Matches</label>
+                    {matches.length > 0 && (
+                      <span className="inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-xs font-mono text-primary">
+                        {matches.length} match{matches.length !== 1 ? "es" : ""}
+                      </span>
+                    )}
+                    {!error && matches.length === 0 && (
+                      <span className="text-xs text-muted-foreground">— no matches</span>
                     )}
                   </div>
-                ))}
-                {matches.length > 50 && (
-                  <p className="text-xs text-muted-foreground">… and {matches.length - 50} more matches</p>
+                  <pre className="bg-card border border-border rounded-lg p-4 font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[300px] leading-relaxed">
+                    {segments.map((seg, i) =>
+                      seg.highlight ? (
+                        <mark key={i} className="bg-primary/25 text-primary font-semibold rounded-sm px-0.5 not-italic">{seg.text}</mark>
+                      ) : (
+                        <span key={i} className="text-foreground">{seg.text}</span>
+                      )
+                    )}
+                  </pre>
+                </div>
+
+                {replaced !== null && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-muted-foreground uppercase tracking-wider">Replaced text</label>
+                      <CopyButton value={replaced} label="Copy" variant="outline" />
+                    </div>
+                    <pre className="code-surface max-h-[300px] overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-card p-4">{replaced}</pre>
+                  </div>
                 )}
+
+                {matches.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-xs text-muted-foreground uppercase tracking-wider">Match details</label>
+                    <div className="space-y-1">
+                      {matches.slice(0, 50).map((m, i) => (
+                        <div key={i} className="border border-border rounded p-2 bg-card font-mono text-sm flex flex-wrap gap-x-4 gap-y-1 items-baseline">
+                          <span className="text-muted-foreground text-xs">#{i + 1}</span>
+                          <span className="text-primary font-medium">{m.match || <em className="not-italic text-muted-foreground">empty</em>}</span>
+                          <span className="text-muted-foreground text-xs">@{m.index}</span>
+                          {m.groups && Object.keys(m.groups).length > 0 && (
+                            <span className="text-muted-foreground text-xs">groups: {JSON.stringify(m.groups)}</span>
+                          )}
+                        </div>
+                      ))}
+                      {matches.length > 50 && (
+                        <p className="text-xs text-muted-foreground">… and {matches.length - 50} more matches</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {!text && <p className="text-sm text-muted-foreground">Enter test text above to see matches.</p>}
+          </TabsContent>
+
+          {/* ── Diagram tab ── */}
+          <TabsContent value="diagram" className="mt-4">
+            {error && (
+              <p className="text-sm text-muted-foreground">Fix the pattern error to see the diagram.</p>
+            )}
+            {!error && diagram && (
+              <div className="rounded-lg border border-border bg-card p-4 overflow-x-auto">
+                <div
+                  className="text-foreground"
+                  dangerouslySetInnerHTML={{ __html: diagram.svg }}
+                  style={{ minHeight: diagram.height }}
+                />
               </div>
-            </div>
-          )}
-        </>
+            )}
+            {!error && !diagram && (
+              <p className="text-sm text-muted-foreground">Enter a pattern to see the railroad diagram.</p>
+            )}
+            <p className="mt-2 text-xs text-muted-foreground">
+              Railroad diagrams show the paths your regex can match. Rounded boxes are literals or classes; dashed borders are groups.
+            </p>
+          </TabsContent>
+        </Tabs>
       )}
     </ToolPageLayout>
   );

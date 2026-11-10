@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Trash2, AlertTriangle, CheckCircle, XCircle, ChevronDown, History, ShieldCheck, ShieldAlert, ShieldX, Plus, Sparkles, Globe, Key, RefreshCw } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 
 // Classic jwt.io demo token (HS256, secret "your-256-bit-secret") for instant demos
@@ -24,6 +24,45 @@ import {
 import { base64UrlToBytes, toArrayBuffer } from "@/lib/crypto/base64";
 import { importKeyInput } from "@/lib/crypto/keyInput";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
+
+// ---------- Algorithm metadata ----------
+const ALG_META: Record<string, { family: string; grade: "best" | "good" | "weak" | "critical"; note: string }> = {
+  HS256: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
+  HS384: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
+  HS512: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
+  RS256: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
+  RS384: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
+  RS512: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
+  PS256: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
+  PS384: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
+  PS512: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
+  ES256: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
+  ES384: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
+  ES512: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
+  none:  { family: "None", grade: "critical", note: "No signature — NEVER use in production" },
+};
+
+const ALG_GRADE_COLOR: Record<string, string> = {
+  best: "bg-green-500/15 text-green-400 border-green-500/30",
+  good: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  weak: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+  critical: "bg-destructive/15 text-destructive border-destructive/40",
+};
+
+function AlgoBadge({ alg }: { alg: string }) {
+  const meta = ALG_META[alg?.toUpperCase()] || { family: "Unknown", grade: "weak" as const, note: "Unrecognised algorithm" };
+  return (
+    <div className="flex flex-wrap items-center gap-2 mt-2">
+      <span className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 font-mono text-xs font-semibold ${ALG_GRADE_COLOR[meta.grade]}`}>
+        <Key className="w-3 h-3" />
+        {alg?.toUpperCase()}
+      </span>
+      <span className={`rounded border px-2 py-0.5 text-xs ${ALG_GRADE_COLOR[meta.grade]}`}>{meta.family}</span>
+      <span className={`rounded border px-2 py-0.5 text-xs capitalize ${ALG_GRADE_COLOR[meta.grade]}`}>{meta.grade}</span>
+      <span className="text-xs text-muted-foreground">{meta.note}</span>
+    </div>
+  );
+}
 
 // ---------- Shared types & helpers ----------
 type SigStatus = "unverified" | "valid" | "invalid" | "unsigned";
@@ -241,6 +280,18 @@ function SecurityCard({ result }: { result: SecurityResult }) {
   );
 }
 
+// ---------- Countdown helper ----------
+function formatCountdown(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  if (totalSec < 60) return `${totalSec}s`;
+  const totalMin = Math.floor(totalSec / 60);
+  if (totalMin < 60) return `${totalMin}m ${totalSec % 60}s`;
+  const hrs = Math.floor(totalMin / 60);
+  if (hrs < 24) return `${hrs}h ${totalMin % 60}m`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ${hrs % 24}h`;
+}
+
 // ---------- Claims checklist (used in Decode & Verify) ----------
 const STANDARD_CLAIMS = ["exp", "nbf", "iat", "iss", "aud", "sub"];
 function ClaimsChecklist({ payload }: { payload: Record<string, any> | null }) {
@@ -391,8 +442,9 @@ function DecodeTab({
           <CollapsibleTrigger className="flex items-center gap-2 text-xs font-semibold text-foreground hover:text-primary w-full">
             <ChevronDown className="w-3 h-3" /> Header
           </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2">
+          <CollapsibleContent className="pt-2 space-y-2">
             <JsonBlock title="Header" data={shared.decodedHeader} accent="blue" />
+            {shared.decodedHeader.alg && <AlgoBadge alg={String(shared.decodedHeader.alg)} />}
           </CollapsibleContent>
         </Collapsible>
       )}
@@ -410,9 +462,23 @@ function DecodeTab({
                   const v = shared.decodedPayload?.[k];
                   if (typeof v !== "number") return null;
                   const info = formatTimestamp(v);
+                  const isExp = k === "exp";
+                  const expiredMs = isExp ? (v * 1000 - Date.now()) : null;
+                  const isExpired = expiredMs !== null && expiredMs < 0;
+                  const countdownStr = expiredMs !== null
+                    ? isExpired
+                      ? `expired ${formatCountdown(-expiredMs)} ago`
+                      : `expires in ${formatCountdown(expiredMs)}`
+                    : null;
                   return (
-                    <div key={k} className="rounded border border-border bg-muted/30 px-2 py-1">
-                      <span className="text-muted-foreground">{k}:</span> {v} <span className="text-muted-foreground">→ {info.date}</span>
+                    <div key={k} className={`rounded border px-2 py-1 ${isExp && isExpired ? "border-destructive/40 bg-destructive/10" : isExp ? "border-green-500/30 bg-green-500/10" : "border-border bg-muted/30"}`}>
+                      <span className="text-muted-foreground">{k}:</span> {v}{" "}
+                      <span className="text-muted-foreground">→ {info.date}</span>
+                      {countdownStr && (
+                        <span className={`ml-2 font-semibold ${isExpired ? "text-destructive" : "text-green-400"}`}>
+                          ({countdownStr})
+                        </span>
+                      )}
                     </div>
                   );
                 })}
@@ -698,6 +764,158 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
   );
 }
 
+// ---------- JWKS tab ----------
+interface JwksKey { kid?: string; kty: string; alg?: string; use?: string; n?: string; e?: string; x?: string; y?: string; crv?: string; [k: string]: any; }
+
+function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Partial<SharedState>) => void }) {
+  const [url, setUrl] = useState("");
+  const [keys, setKeys] = useState<JwksKey[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedKid, setSelectedKid] = useState<string | null>(null);
+  const [verifyResult, setVerifyResult] = useState<"valid" | "invalid" | null>(null);
+  const [verifying, setVerifying] = useState(false);
+
+  const fetchJwks = async () => {
+    if (!url.trim()) return;
+    setLoading(true); setError(""); setKeys([]); setSelectedKid(null);
+    try {
+      const res = await fetch(url.trim(), { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      const ks: JwksKey[] = Array.isArray(data.keys) ? data.keys : [];
+      if (ks.length === 0) throw new Error("No keys found in JWKS response");
+      setKeys(ks);
+      toast.success(`Loaded ${ks.length} key${ks.length !== 1 ? "s" : ""}`);
+    } catch (e: any) {
+      setError(e.message || "Fetch failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectedKey = keys.find(k => (k.kid ?? keys.indexOf(k).toString()) === selectedKid);
+
+  const verifyWithKey = async () => {
+    if (!selectedKey || !shared.activeToken) { toast.error("Load a JWT and select a key first"); return; }
+    setVerifying(true); setVerifyResult(null);
+    try {
+      const alg = (selectedKey.alg || shared.decodedHeader?.alg || "RS256").toUpperCase();
+      const jwk = { ...selectedKey } as JsonWebKey;
+      const keyUsage: KeyUsage[] = ["verify"];
+      let cryptoKey: CryptoKey;
+      if (alg.startsWith("RS")) {
+        cryptoKey = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: `SHA-${alg.slice(2)}` }, false, keyUsage);
+      } else if (alg.startsWith("PS")) {
+        cryptoKey = await crypto.subtle.importKey("jwk", jwk, { name: "RSA-PSS", hash: `SHA-${alg.slice(2)}` }, false, keyUsage);
+      } else if (alg.startsWith("ES")) {
+        const namedCurve = alg === "ES384" ? "P-384" : alg === "ES512" ? "P-521" : "P-256";
+        cryptoKey = await crypto.subtle.importKey("jwk", jwk, { name: "ECDSA", namedCurve }, false, keyUsage);
+      } else {
+        throw new Error(`Algorithm ${alg} not supported for JWKS verification`);
+      }
+      const parts = shared.activeToken.split(".");
+      const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+      const sig = toArrayBuffer(base64UrlToBytes(parts[2]));
+      let ok: boolean;
+      if (alg.startsWith("RS")) ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", cryptoKey, sig, data);
+      else if (alg.startsWith("PS")) ok = await crypto.subtle.verify({ name: "RSA-PSS", saltLength: Number(alg.slice(2)) / 8 }, cryptoKey, sig, data);
+      else ok = await crypto.subtle.verify({ name: "ECDSA", hash: `SHA-${alg.slice(2)}` }, cryptoKey, sig, data);
+      setVerifyResult(ok ? "valid" : "invalid");
+      setShared({ signatureStatus: ok ? "valid" : "invalid" });
+      toast[ok ? "success" : "error"](ok ? "Signature valid" : "Signature invalid");
+    } catch (e: any) {
+      setError(e.message); setVerifyResult("invalid");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const WELL_KNOWN_EXAMPLES = [
+    { label: "Google", url: "https://www.googleapis.com/oauth2/v3/certs" },
+    { label: "Microsoft", url: "https://login.microsoftonline.com/common/discovery/v2.0/keys" },
+    { label: "Auth0 (example)", url: "https://<your-domain>.auth0.com/.well-known/jwks.json" },
+  ];
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <Label className="text-xs uppercase tracking-wider text-muted-foreground">JWKS Endpoint URL</Label>
+        <div className="flex gap-2">
+          <Input value={url} onChange={e => setUrl(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchJwks()} placeholder="https://example.com/.well-known/jwks.json" className="font-mono text-xs h-8 flex-1" />
+          <Button size="sm" onClick={fetchJwks} disabled={loading} className="h-8 shrink-0">
+            {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5 mr-1" />}
+            {loading ? "" : "Fetch"}
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-1 pt-1">
+          {WELL_KNOWN_EXAMPLES.map(ex => (
+            <button key={ex.label} onClick={() => setUrl(ex.url)} className="text-xs rounded border border-border px-2 py-0.5 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors">{ex.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="text-xs text-destructive flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{error}</p>}
+
+      {keys.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Keys ({keys.length})</Label>
+          <div className="space-y-1.5 max-h-[300px] overflow-auto">
+            {keys.map((k, i) => {
+              const id = k.kid ?? i.toString();
+              const sel = selectedKid === id;
+              return (
+                <button key={id} onClick={() => setSelectedKid(sel ? null : id)}
+                  className={`w-full text-left rounded-md border p-2.5 text-xs transition-colors ${sel ? "border-primary/60 bg-primary/5" : "border-border bg-card hover:border-border/80"}`}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono font-semibold text-foreground">{k.kid ? `kid: ${k.kid}` : `Key ${i + 1}`}</span>
+                    {k.kty && <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-muted-foreground">{k.kty}</span>}
+                    {k.alg && <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-muted-foreground">{k.alg}</span>}
+                    {k.use && <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">{k.use}</span>}
+                    {sel && <span className="ml-auto text-primary text-xs font-medium">Selected ✓</span>}
+                  </div>
+                  {k.crv && <div className="mt-1 text-muted-foreground">curve: {k.crv}</div>}
+                </button>
+              );
+            })}
+          </div>
+
+          {selectedKid !== null && (
+            <div className="space-y-2">
+              {shared.activeToken ? (
+                <>
+                  <Button onClick={verifyWithKey} disabled={verifying} className="w-full" size="sm">
+                    {verifying ? "Verifying..." : "Verify Token Against Key"}
+                  </Button>
+                  {verifyResult && (
+                    <div className={`flex items-center gap-2 rounded-md border p-2.5 text-sm font-medium ${verifyResult === "valid" ? "bg-green-500/10 border-green-500/40 text-green-400" : "bg-destructive/10 border-destructive/40 text-destructive"}`}>
+                      {verifyResult === "valid" ? <ShieldCheck className="w-4 h-4" /> : <ShieldX className="w-4 h-4" />}
+                      {verifyResult === "valid" ? "Signature valid with selected key" : "Signature invalid with selected key"}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-muted-foreground">Paste a JWT in the Decode tab, then come back to verify it.</p>
+              )}
+              <div className="rounded-md border border-border bg-muted/30">
+                <div className="px-3 py-1.5 border-b border-border flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">JWK (public key)</span>
+                  <CopyButton value={JSON.stringify(selectedKey, null, 2)} size="sm" />
+                </div>
+                <pre className="p-3 font-mono text-[11px] text-foreground overflow-auto max-h-[200px]">{JSON.stringify(selectedKey, null, 2)}</pre>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {keys.length === 0 && !loading && !error && (
+        <p className="text-xs text-muted-foreground py-6 text-center">Enter a JWKS URL and click Fetch to load public keys.</p>
+      )}
+    </div>
+  );
+}
+
 // ---------- Shared state ----------
 interface SharedState {
   activeToken: string;
@@ -753,10 +971,12 @@ const JwtHub = () => {
                 <TabsTrigger value="decode" className="text-xs">Decode</TabsTrigger>
                 <TabsTrigger value="encode" className="text-xs">Encode</TabsTrigger>
                 <TabsTrigger value="verify" className="text-xs">Verify</TabsTrigger>
+                <TabsTrigger value="jwks" className="text-xs">JWKS</TabsTrigger>
               </TabsList>
               <TabsContent value="decode"><DecodeTab shared={shared} setShared={setShared} /></TabsContent>
               <TabsContent value="encode"><EncodeTab shared={shared} setShared={setShared} /></TabsContent>
               <TabsContent value="verify"><VerifyTab shared={shared} setShared={setShared} /></TabsContent>
+              <TabsContent value="jwks"><JwksTab shared={shared} setShared={setShared} /></TabsContent>
             </Tabs>
           </div>
         </ResizablePanel>

@@ -294,7 +294,7 @@ const ColorConverter = () => {
       {/* === Tabs for advanced features === */}
       <Tabs defaultValue="palette" className="w-full">
         <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
-          {["palette", "contrast", "gradient", "extract", "batch", "history"].map(t => (
+          {["palette", "contrast", "gradient", "extract", "batch", "history", "export"].map(t => (
             <TabsTrigger key={t} value={t} className="text-xs capitalize">{t}</TabsTrigger>
           ))}
         </TabsList>
@@ -526,6 +526,15 @@ const ColorConverter = () => {
             </div>
           </div>
         </TabsContent>
+
+        {/* Export */}
+        <TabsContent value="export" className="space-y-4 mt-4">
+          {!rgb ? (
+            <p className="text-xs text-muted-foreground">Enter a valid color above to generate exports.</p>
+          ) : (
+            <ExportPanel rgb={rgb} hsl={hsl!} hex={hex} closestTailwindFn={closestTailwind} generatePaletteFn={generatePalette} rgbToHexFn={rgbToHex} rgbToHslFn={rgbToHsl} />
+          )}
+        </TabsContent>
       </Tabs>
 
       {/* === SEO Content === */}
@@ -558,5 +567,96 @@ const ColorConverter = () => {
     </ToolPageLayout>
   );
 };
+
+// ---------- Export Panel ----------
+interface ExportPanelProps {
+  rgb: { r: number; g: number; b: number; a: number };
+  hsl: { h: number; s: number; l: number; a: number };
+  hex: string;
+  closestTailwindFn: (c: any) => string;
+  generatePaletteFn: (c: any, type: string) => any[];
+  rgbToHexFn: (c: any) => string;
+  rgbToHslFn: (c: any) => any;
+}
+
+function ExportPanel({ rgb, hsl, hex, closestTailwindFn, generatePaletteFn, rgbToHexFn, rgbToHslFn }: ExportPanelProps) {
+  const h6 = hex.substring(0, 7);
+  const twClass = closestTailwindFn(rgb);
+  const shadeSwatch = generatePaletteFn(rgb, "shades");
+
+  // CSS custom properties
+  const cssVars = `/* Color: ${h6} */
+:root {
+  --color-primary: ${h6};
+  --color-primary-rgb: ${rgb.r}, ${rgb.g}, ${rgb.b};
+  --color-primary-hsl: ${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%;
+}`;
+
+  // CSS vars with shades
+  const cssVarsShades = shadeSwatch.length > 0 ? `/* ${h6} shade scale */\n:root {\n` + shadeSwatch.map((c: any, i: number) => {
+    const h = rgbToHexFn(c).substring(0, 7);
+    const step = Math.round((i / (shadeSwatch.length - 1)) * 900 + 100);
+    return `  --color-primary-${step}: ${h};`;
+  }).join("\n") + "\n}" : "";
+
+  // Tailwind config
+  const twConfig = `// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '${h6}',
+${shadeSwatch.map((c: any, i: number) => {
+  const h = rgbToHexFn(c).substring(0, 7);
+  const step = Math.round((i / (shadeSwatch.length - 1)) * 900 + 100);
+  return `          ${step}: '${h}',`;
+}).join("\n")}
+        },
+      },
+    },
+  },
+};`;
+
+  // shadcn/ui HSL vars
+  const shadcnVars = `/* Add to your globals.css */
+:root {
+  --primary: ${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%;
+}
+
+.dark {
+  --primary: ${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%;
+}`;
+
+  const sections = [
+    { label: "CSS Variables", code: cssVars },
+    ...(cssVarsShades ? [{ label: "CSS Variables with Shades", code: cssVarsShades }] : []),
+    { label: "Tailwind Config", code: twConfig },
+    { label: "shadcn/ui (HSL)", code: shadcnVars },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Quick ref */}
+      <div className="flex flex-wrap gap-2 text-xs font-mono">
+        <div className="flex items-center gap-1.5 rounded border border-border bg-muted/30 px-2 py-1">
+          <span className="text-muted-foreground">Tailwind closest:</span>
+          <code className="font-semibold text-foreground">{twClass}</code>
+          <CopyButton value={`bg-${twClass}`} size="sm" />
+        </div>
+      </div>
+
+      {sections.map(({ label, code }) => (
+        <div key={label} className="rounded-lg border border-border bg-card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border px-3 py-2">
+            <span className="text-xs font-medium text-muted-foreground">{label}</span>
+            <CopyButton value={code} size="sm" />
+          </div>
+          <pre className="p-3 font-mono text-xs text-foreground whitespace-pre overflow-x-auto">{code}</pre>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default ColorConverter;
