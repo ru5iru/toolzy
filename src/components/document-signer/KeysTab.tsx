@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Copy, Download, HardDrive, KeyRound, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { FileDropzone } from "@/components/FileDropzone";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
@@ -37,6 +38,7 @@ export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSu
   const [genName, setGenName] = useState("");
   const [generating, setGenerating] = useState(false);
   const [importText, setImportText] = useState("");
+  const [importFile, setImportFile] = useState<File>();
   const [importName, setImportName] = useState("");
   const [importError, setImportError] = useState<string>();
   const [importing, setImporting] = useState(false);
@@ -67,11 +69,23 @@ export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSu
     setImporting(true); setImportError(undefined);
     try {
       const key = await importKeyText(importText, importName, importPassword);
-      onAdd(key); setSelectedId(key.id); setImportText(""); setImportName(""); setImportPassword("");
+      onAdd(key); setSelectedId(key.id); setImportText(""); setImportFile(undefined); setImportName(""); setImportPassword("");
       toast.success(key.pkcs8 ? "Private key imported; public key derived" : "Public key imported");
     } catch (e) {
       setImportError(e instanceof Error ? e.message : "The key could not be imported.");
     } finally { setImporting(false); }
+  };
+
+  const handleKeyFile = async (file: File) => {
+    setImportError(undefined);
+    try {
+      const text = await file.text();
+      setImportText(text);
+      setImportFile(file);
+      if (!importName) setImportName(file.name.replace(/\.(pem|key|jwk|json)$/i, ""));
+    } catch {
+      setImportError("Could not read the key file.");
+    }
   };
 
   const exportPublic = async (key: KeyRecord, format: "pem" | "jwk", action: "download" | "copy") => {
@@ -130,8 +144,16 @@ export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSu
 
         <section aria-labelledby="import-heading" className="space-y-3">
           <h2 id="import-heading" className="font-mono text-sm font-semibold">Import a key</h2>
-          <Textarea aria-label="Key to import" value={importText} spellCheck={false} onChange={(e) => { setImportText(e.target.value); setImportError(undefined); }}
+          <Textarea aria-label="Key to import" value={importText} spellCheck={false} onChange={(e) => { setImportText(e.target.value); setImportFile(undefined); setImportError(undefined); }}
             placeholder={"PKCS#8 private key (plain or encrypted), SPKI public key, or JWK\n-----BEGIN PRIVATE KEY-----"} className="min-h-[110px] font-mono text-xs resize-y bg-card" />
+          <FileDropzone
+            label="Key file"
+            onFile={handleKeyFile}
+            onClear={() => { setImportFile(undefined); setImportText(""); setImportName(""); setImportError(undefined); }}
+            file={importFile}
+            accept=".pem,.key,.jwk,.json"
+            hint="Or drop a .pem, .key, or .jwk file"
+          />
           {isEncryptedKeyText(importText) && (
             <Input type="password" aria-label="Password for encrypted key" autoComplete="off" value={importPassword} onChange={(e) => { setImportPassword(e.target.value); setImportError(undefined); }} placeholder="Password for this encrypted key" />
           )}

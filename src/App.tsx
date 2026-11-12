@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
+import { ThemeProvider } from "@/lib/theme";
 import Index from "./pages/Index";
 
 const JsonFormatter = lazy(() => import("./pages/JsonFormatter"));
@@ -34,6 +35,7 @@ const ChmodCalculator = lazy(() => import("./pages/ChmodCalculator"));
 const PasswordGenerator = lazy(() => import("./pages/PasswordGenerator"));
 const CsvTool = lazy(() => import("./pages/CsvTool"));
 const CurlConverter = lazy(() => import("./pages/CurlConverter"));
+const JsonTransformer = lazy(() => import("./pages/JsonTransformer"));
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,7 @@ const PageFallback = () => (
 );
 
 const App = () => (
+  <ThemeProvider>
   <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -84,6 +87,7 @@ const App = () => (
               <Route path="/password" element={<PasswordGenerator />} />
               <Route path="/csv" element={<CsvTool />} />
               <Route path="/curl" element={<CurlConverter />} />
+              <Route path="/json-transform" element={<JsonTransformer />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
@@ -92,6 +96,7 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
   </HelmetProvider>
+  </ThemeProvider>
 );
 
 export default App;

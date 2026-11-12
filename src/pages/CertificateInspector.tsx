@@ -47,8 +47,8 @@ const CertificateInspector = () => {
         </section>
         <section aria-live="polite" className="space-y-5 min-w-0">
           {certs.length === 0 ? (
-            <p className="text-sm text-muted-foreground border border-dashed border-border rounded-lg p-4"><ScrollText className="inline h-4 w-4 mr-1" aria-hidden="true" />Paste a certificate to see its details.</p>
-          ) : certs.map((cert, i) => <CertificateCard key={cert.fingerprints.sha256} cert={cert} index={i} />)}
+            <p className="text-sm text-muted-foreground border border-dashed border-border rounded-lg p-4"><ScrollText className="inline h-4 w-4 mr-1" aria-hidden="true" />Paste a certificate or chain to see its details.</p>
+          ) : certs.map((cert, i) => <CertificateCard key={cert.fingerprints.sha256} cert={cert} index={i} total={certs.length} />)}
         </section>
       </div>
     </ToolPageLayout>
