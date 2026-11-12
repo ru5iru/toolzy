@@ -1,6 +1,6 @@
 import type { CurlRequest } from "./curlParser";
 
-export type Lang = "python" | "javascript" | "go" | "php" | "ruby";
+export type Lang = "python" | "javascript" | "typescript" | "go" | "php" | "ruby";
 
 function headersEntries(h: Record<string, string>): [string, string][] {
   return Object.entries(h);
@@ -101,6 +101,51 @@ function toJavaScript(r: CurlRequest): string {
   lines.push("});");
   lines.push("");
   lines.push("const data = await response.json(); // or response.text()");
+  lines.push("console.log(data);");
+
+  return lines.join("\n");
+}
+
+// ─── TypeScript (fetch) ───────────────────────────────────────────────────────
+function toTypeScript(r: CurlRequest): string {
+  const lines: string[] = [];
+  const opts: string[] = [];
+
+  if (r.method !== "GET") opts.push(`  method: "${r.method}" as const`);
+
+  const headers = headersEntries(r.headers);
+  if (headers.length) {
+    opts.push(
+      "  headers: {\n" +
+      headers.map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(",\n") +
+      "\n  }"
+    );
+  }
+
+  if (r.body) {
+    if (r.bodyType === "json") {
+      try {
+        const parsed = JSON.parse(r.body);
+        opts.push("  body: JSON.stringify(" + JSON.stringify(parsed, null, 2).split("\n").map((l, i) => i === 0 ? l : "    " + l).join("\n") + ")");
+      } catch {
+        opts.push(`  body: ${JSON.stringify(r.body)}`);
+      }
+    } else {
+      opts.push(`  body: ${JSON.stringify(r.body)}`);
+    }
+  }
+
+  if (r.followRedirects) opts.push(`  redirect: "follow" as const`);
+
+  lines.push(`const response = await fetch(${JSON.stringify(r.url)}, {`);
+  lines.push(opts.join(",\n"));
+  lines.push("});");
+  lines.push("");
+  lines.push("if (!response.ok) {");
+  lines.push("  throw new Error(`HTTP error! status: ${response.status}`);");
+  lines.push("}");
+  lines.push("");
+  lines.push("const data: unknown = await response.json(); // or response.text()");
   lines.push("console.log(data);");
 
   return lines.join("\n");
@@ -266,6 +311,7 @@ export function generateCode(r: CurlRequest, lang: Lang): string {
   switch (lang) {
     case "python":     return toPython(r);
     case "javascript": return toJavaScript(r);
+    case "typescript": return toTypeScript(r);
     case "go":         return toGo(r);
     case "php":        return toPhp(r);
     case "ruby":       return toRuby(r);

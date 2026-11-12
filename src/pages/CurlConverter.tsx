@@ -13,6 +13,7 @@ import { generateCode, toCurl, type Lang } from "@/lib/curlCodegen";
 const LANGS: { key: Lang; label: string; ext: string }[] = [
   { key: "python",     label: "Python",     ext: "py"  },
   { key: "javascript", label: "JavaScript", ext: "js"  },
+  { key: "typescript", label: "TypeScript", ext: "ts"  },
   { key: "go",         label: "Go",         ext: "go"  },
   { key: "php",        label: "PHP",        ext: "php" },
   { key: "ruby",       label: "Ruby",       ext: "rb"  },
@@ -71,11 +72,11 @@ const CurlConverter = () => {
     <ToolPageLayout
       title="curl ↔ Code"
       icon={Terminal}
-      description="Convert curl commands to Python, JavaScript, Go, PHP, or Ruby — and back to a clean curl."
+      description="Convert curl commands to Python, JavaScript, TypeScript, Go, PHP, or Ruby — and back to a clean curl."
     >
       <ToolSEO
-        title="curl to Code Converter — Python, JS, Go, PHP, Ruby"
-        description="Paste a curl command and instantly get equivalent code in Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby net/http. Free and browser-only."
+        title="curl to Code Converter — Python, JS, TypeScript, Go, PHP, Ruby"
+        description="Paste a curl command and instantly get equivalent code in Python requests, JavaScript/TypeScript fetch, Go net/http, PHP curl, or Ruby net/http. Free and browser-only."
         canonicalPath="/curl"
         keywords={["curl to python", "curl to javascript", "curl converter", "curl to code", "curl to fetch", "curl to requests"]}
         faq={[
