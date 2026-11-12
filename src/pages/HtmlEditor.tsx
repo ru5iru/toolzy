@@ -2,9 +2,10 @@ import { useRef, useState } from "react";
 import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
+import { TextStyle, FontFamily } from "@tiptap/extension-text-style";
 import { TableKit } from "@tiptap/extension-table";
 import Image from "@tiptap/extension-image";
-import { Bold, Italic, Strikethrough, Underline, Code, Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Braces, Quote, AlignLeft, AlignCenter, AlignRight, RemoveFormatting, Undo2, Redo2, Link, Unlink, Table, ImagePlus, Minus, Download, FileCode2, MoreHorizontal, Upload, Trash2 } from "lucide-react";
+import { Bold, Italic, Strikethrough, Underline, Code, Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Braces, Quote, AlignLeft, AlignCenter, AlignRight, RemoveFormatting, Undo2, Redo2, Link, Unlink, Table, ImagePlus, Minus, Download, FileCode2, MoreHorizontal, Upload, Trash2, Type } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -14,11 +15,24 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { WELCOME_HTML, formatHTML, htmlDocument, safeLink, sanitizeHTML } from "@/components/html-editor/htmlUtils";
 import "@/components/html-editor/html-editor.css";
+
+const FONT_FAMILIES = [
+  { label: "Default (inherit)", value: "" },
+  { label: "Sans-serif", value: "ui-sans-serif, system-ui, sans-serif" },
+  { label: "Serif", value: "Georgia, 'Times New Roman', serif" },
+  { label: "Monospace", value: "ui-monospace, 'Cascadia Code', monospace" },
+  { label: "Inter", value: "Inter, sans-serif" },
+  { label: "Arial", value: "Arial, sans-serif" },
+  { label: "Verdana", value: "Verdana, sans-serif" },
+  { label: "Georgia", value: "Georgia, serif" },
+  { label: "Courier New", value: "'Courier New', monospace" },
+];
 
 const faq = [
   { question: "Is my content uploaded?", answer: "No. Editing, HTML generation, imports, copying, and downloads happen in your browser. Documents are not automatically saved; download a copy before leaving." },
@@ -35,7 +49,7 @@ export default function HtmlEditor() {
   const imagePicker = useRef<HTMLInputElement>(null);
   const mobile = useIsMobile();
   const editor = useEditor({
-    extensions: [StarterKit.configure({ link: { openOnClick: false, autolink: false, HTMLAttributes: { rel: "noopener noreferrer" } } }), TextAlign.configure({ types: ["heading", "paragraph"] }), TableKit.configure({ table: { resizable: false } }), Image.configure({ allowBase64: true })],
+    extensions: [StarterKit.configure({ link: { openOnClick: false, autolink: false, HTMLAttributes: { rel: "noopener noreferrer" } } }), TextStyle, FontFamily, TextAlign.configure({ types: ["heading", "paragraph"] }), TableKit.configure({ table: { resizable: false } }), Image.configure({ allowBase64: true })],
     content: WELCOME_HTML,
     editorProps: {
       attributes: { "aria-label": "Rich text editor", role: "textbox", "aria-multiline": "true" },
@@ -50,6 +64,26 @@ export default function HtmlEditor() {
     bullet: current.isActive("bulletList"), ordered: current.isActive("orderedList"), block: current.isActive("codeBlock"), quote: current.isActive("blockquote"), link: current.isActive("link"),
     left: current.isActive({ textAlign: "left" }), center: current.isActive({ textAlign: "center" }), right: current.isActive({ textAlign: "right" }),
     undo: current.can().undo(), redo: current.can().redo(), table: current.isActive("table"),
+    fontFamily: (current.getAttributes("textStyle").fontFamily as string | undefined) ?? "",
+    // Element inspector: resolve the innermost active block name
+    element: current.isActive("codeBlock") ? "code block"
+      : current.isActive("blockquote") ? "blockquote"
+      : current.isActive("heading", { level: 1 }) ? "heading 1"
+      : current.isActive("heading", { level: 2 }) ? "heading 2"
+      : current.isActive("heading", { level: 3 }) ? "heading 3"
+      : current.isActive("heading", { level: 4 }) ? "heading 4"
+      : current.isActive("bulletList") || current.isActive("listItem") ? "list item"
+      : current.isActive("orderedList") ? "list item"
+      : current.isActive("table") ? "table cell"
+      : "paragraph",
+    marks: [
+      current.isActive("bold") && "bold",
+      current.isActive("italic") && "italic",
+      current.isActive("underline") && "underline",
+      current.isActive("strike") && "strike",
+      current.isActive("code") && "code",
+      current.isActive("link") && "link",
+    ].filter(Boolean).join(", "),
   } : null });
   const commands = [
     { label: "Bold (Ctrl/Cmd+B)", icon: Bold, active: active?.bold, run: (e: Editor) => e.chain().focus().toggleBold().run() },
@@ -93,6 +127,37 @@ export default function HtmlEditor() {
     <div role="toolbar" aria-label="HTML formatting" className="flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1.5">
       {commands.map(item => <Tooltip key={item.label}><TooltipTrigger asChild><Button aria-label={item.label} aria-pressed={item.active ?? false} disabled={!editor || item.disabled} variant="ghost" size="icon" className={`h-8 w-8 shrink-0 ${item.active ? "bg-secondary text-primary" : ""}`} onMouseDown={event => event.preventDefault()} onClick={() => { if (editor) item.run(editor); }}><item.icon className="h-3.5 w-3.5" /></Button></TooltipTrigger><TooltipContent>{item.label}</TooltipContent></Tooltip>)}
       <Tooltip><TooltipTrigger asChild><Button aria-label="Insert or edit link" aria-pressed={active?.link ?? false} variant="ghost" size="icon" className="h-8 w-8" onMouseDown={event => event.preventDefault()} onClick={() => { const href: unknown = editor?.getAttributes("link").href; setUrl(typeof href === "string" ? href : ""); setDialog("link"); }}><Link className="h-3.5 w-3.5" /></Button></TooltipTrigger><TooltipContent>Insert or edit link</TooltipContent></Tooltip>
+      {/* Font family selector */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center">
+            <Select
+              value={active?.fontFamily ?? ""}
+              onValueChange={(val) => {
+                if (!editor) return;
+                if (val === "") editor.chain().focus().unsetFontFamily().run();
+                else editor.chain().focus().setFontFamily(val).run();
+              }}
+            >
+              <SelectTrigger className="h-8 w-32 text-xs border-0 shadow-none bg-transparent hover:bg-secondary" aria-label="Font family">
+                <Type className="h-3.5 w-3.5 mr-1 shrink-0 text-muted-foreground" />
+                <SelectValue placeholder="Font" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel className="text-xs">Font family</SelectLabel>
+                  {FONT_FAMILIES.map(f => (
+                    <SelectItem key={f.value} value={f.value} className="text-xs" style={{ fontFamily: f.value || undefined }}>
+                      {f.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>Font family</TooltipContent>
+      </Tooltip>
       <DropdownMenu><DropdownMenuTrigger asChild><Button aria-label="More formatting" variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent>
         <DropdownMenuItem onSelect={() => editor?.chain().focus().unsetLink().run()} disabled={!active?.link}><Unlink className="mr-2 h-4 w-4" />Remove link</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}><Table className="mr-2 h-4 w-4" />Insert table</DropdownMenuItem>
@@ -101,8 +166,17 @@ export default function HtmlEditor() {
       </DropdownMenuContent></DropdownMenu>
     </div>
     <EditorContent editor={editor} className="html-rich-text flex-1 min-h-0 overflow-auto p-5 text-sm text-foreground" />
+    {/* Element inspector status bar */}
+    {editor && (
+      <footer className="border-t border-border px-3 py-1.5 flex items-center gap-3 text-xs text-muted-foreground font-mono" aria-live="polite" aria-label="Selected element info">
+        <span className="text-primary">&lt;{active?.element ?? "paragraph"}&gt;</span>
+        {active?.marks && <span className="text-muted-foreground">{active.marks}</span>}
+        {active?.fontFamily && <span className="truncate max-w-[140px]" title={active.fontFamily}>font: {active.fontFamily.split(",")[0].replace(/['"]/g, "").trim()}</span>}
+        <span className="ml-auto">{html.length.toLocaleString()} chars</span>
+      </footer>
+    )}
   </section>;
-  const sourcePane = <section className="rounded-lg border border-border bg-card overflow-hidden h-full flex flex-col min-w-0" aria-labelledby="source-heading"><header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2"><h2 id="source-heading" className="font-mono text-xs text-muted-foreground">HTML SOURCE</h2><Tooltip><TooltipTrigger asChild><CopyButton value={() => formatHTML(sanitizeHTML(html))} message="HTML copied" ariaLabel="Copy HTML source" size="icon" variant="ghost" className="h-8 w-8" /></TooltipTrigger><TooltipContent>Copy HTML source</TooltipContent></Tooltip></header><Textarea readOnly aria-label="Generated HTML source" value={formatHTML(html)} spellCheck={false} className="flex-1 min-h-[340px] resize-none rounded-none border-0 bg-transparent p-5 font-mono text-xs leading-relaxed focus-visible:ring-inset" /><footer className="border-t border-border px-3 py-2 text-xs font-mono text-muted-foreground">{html.length.toLocaleString()} characters · HTML fragment</footer></section>;
+  const sourcePane = <section className="rounded-lg border border-border bg-card overflow-hidden h-full flex flex-col min-w-0" aria-labelledby="source-heading"><header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2"><h2 id="source-heading" className="font-mono text-xs text-muted-foreground">HTML SOURCE</h2><Tooltip><TooltipTrigger asChild><CopyButton value={() => formatHTML(sanitizeHTML(html))} message="HTML copied" ariaLabel="Copy HTML source" size="icon" variant="ghost" className="h-8 w-8" /></TooltipTrigger><TooltipContent>Copy HTML source</TooltipContent></Tooltip></header><Textarea readOnly aria-label="Generated HTML source" value={formatHTML(html)} spellCheck={false} className="flex-1 min-h-[340px] resize-none rounded-none border-0 bg-transparent p-5 font-mono text-xs leading-relaxed focus-visible:ring-inset" /><footer className="border-t border-border px-3 py-2 text-xs font-mono text-muted-foreground">HTML fragment</footer></section>;
 
   return <ToolPageLayout title="HTML WYSIWYG Editor" icon={FileCode2} description="Edit rich text and HTML source side by side. Your content stays in this browser.">
     <ToolSEO title="HTML WYSIWYG Editor" canonicalPath="/html-editor" description="Free browser-only rich-text HTML editor with instant source code, headings, lists, links, tables, local images, and HTML download." keywords={["HTML WYSIWYG editor", "rich text editor", "online HTML editor", "visual HTML editor"]} faq={faq} howToSteps={["Write or import content into the visual editor.", "Apply formatting and inspect the instantly generated HTML.", "Copy the HTML fragment or download a standalone document."]} />
