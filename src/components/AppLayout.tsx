@@ -1,11 +1,15 @@
+import { Moon, Sun } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { toolNav } from "@/components/toolNav";
 import { CommandPalette } from "@/components/CommandPalette";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/lib/theme";
 import { useLocation } from "react-router-dom";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
+  const { theme, toggle } = useTheme();
   const workspace = pathname === "/markdown";
   const current = toolNav.find((t) => t.url === pathname)?.title;
   return (
@@ -17,6 +21,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarTrigger />
             {current && <span className="truncate font-mono text-xs text-muted-foreground">{current}</span>}
             <CommandPalette />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto h-7 w-7 shrink-0"
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              onClick={toggle}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
           </div>
           <main className={workspace ? "flex-1 min-h-0 overflow-hidden" : "flex-1 p-3 sm:p-4 lg:p-5 overflow-auto"}>{children}</main>
         </div>

@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
+import { ThemeProvider } from "@/lib/theme";
 import Index from "./pages/Index";
 
 const JsonFormatter = lazy(() => import("./pages/JsonFormatter"));
@@ -45,6 +46,7 @@ const PageFallback = () => (
 );
 
 const App = () => (
+  <ThemeProvider>
   <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -94,6 +96,7 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
   </HelmetProvider>
+  </ThemeProvider>
 );
 
 export default App;
