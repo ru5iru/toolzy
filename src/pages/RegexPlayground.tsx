@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { Regex, Share2 } from "lucide-react";
+import { Download, Regex, Share2 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { parseRegex } from "@/lib/regex/parseRegex";
 import { buildRailroad } from "@/lib/regex/buildRailroad";
@@ -212,7 +212,38 @@ const RegexPlayground = () => {
 
                 {matches.length > 0 && (
                   <div className="space-y-2">
-                    <label className="text-xs text-muted-foreground uppercase tracking-wider">Match details</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-muted-foreground uppercase tracking-wider">Match details</label>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="outline" size="sm" className="h-7 text-xs gap-1"
+                          title="Copy all matched strings, one per line"
+                          onClick={() => {
+                            const text = matches.map(m => m.match).join("\n");
+                            navigator.clipboard.writeText(text);
+                            toast.success(`${matches.length} matches copied`);
+                          }}
+                        >
+                          <Download className="h-3 w-3" />
+                          Lines
+                        </Button>
+                        <Button
+                          variant="outline" size="sm" className="h-7 text-xs gap-1"
+                          title="Copy matches as a JSON array"
+                          onClick={() => {
+                            const data = matches.map(m => ({
+                              match: m.match, index: m.index,
+                              ...(m.groups && Object.keys(m.groups).length > 0 ? { groups: m.groups } : {}),
+                            }));
+                            navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+                            toast.success("Copied as JSON");
+                          }}
+                        >
+                          <Download className="h-3 w-3" />
+                          JSON
+                        </Button>
+                      </div>
+                    </div>
                     <div className="space-y-1">
                       {matches.slice(0, 50).map((m, i) => (
                         <div key={i} className="border border-border rounded p-2 bg-card font-mono text-sm flex flex-wrap gap-x-4 gap-y-1 items-baseline">

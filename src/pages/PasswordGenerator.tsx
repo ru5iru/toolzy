@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { AboutTool } from "@/components/AboutTool";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { RefreshCw, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, ShieldCheck } from "lucide-react";
 
 // ─── Character sets ───────────────────────────────────────────────────────────
 const UPPER   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -64,6 +64,7 @@ const PasswordGenerator = () => {
 
   const [passwords, setPasswords]  = useState<string[]>([]);
   const [seed, setSeed]            = useState(0); // bump to regenerate
+  const [revealed, setRevealed]    = useState(true);
 
   const pool = useMemo(() => {
     let p = "";
@@ -264,15 +265,39 @@ const PasswordGenerator = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Results</span>
-            <Button variant="ghost" size="sm" className="h-6 text-xs gap-1"
-              onClick={() => { navigator.clipboard.writeText(passwords.join("\n")); toast.success("All passwords copied"); }}>
-              Copy all
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                aria-label={revealed ? "Mask passwords" : "Reveal passwords"}
+                title={revealed ? "Mask passwords (useful for screensharing)" : "Reveal passwords"}
+                onClick={() => setRevealed(v => !v)}
+              >
+                {revealed ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+              </Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs gap-1"
+                onClick={() => { navigator.clipboard.writeText(passwords.join("\n")); toast.success("All passwords copied"); }}>
+                Copy all
+              </Button>
+            </div>
           </div>
           <div className="space-y-1.5">
             {passwords.map((pwd, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
-                <span className="flex-1 font-mono text-sm break-all">{pwd}</span>
+              <div key={i} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 group">
+                <span
+                  className="flex-1 font-mono text-sm break-all cursor-pointer select-all"
+                  title="Click to select"
+                  onClick={(e) => {
+                    const sel = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(e.currentTarget);
+                    sel?.removeAllRanges();
+                    sel?.addRange(range);
+                  }}
+                >
+                  {revealed ? pwd : "•".repeat(Math.min(pwd.length, 24))}
+                </span>
                 <CopyButton value={pwd} label="" variant="ghost" />
               </div>
             ))}
