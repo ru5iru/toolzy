@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Eraser, FileSearch, ImagePlus, Loader2, RotateCcw, Search, X } from "lucide-react";
+import { Download, Eraser, FileSearch, ImagePlus, Loader2, Map, RotateCcw, Search, X } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { toast } from "sonner";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CATEGORIES, csvExport, gpsCoordinates, jsonExport, type Category } from "@/components/image-metadata/metadataUtils";
 import { InspectionSession, localObjectUrl, type InspectionState } from "@/components/image-metadata/inspectionSession";
 import { CleanCopyPanel } from "@/components/image-metadata/CleanCopyPanel";
+import { BulkCleanPanel } from "@/components/image-metadata/BulkCleanPanel";
 import { searchMetadata } from "@/components/image-metadata/searchUtils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import ImageMetadataWorker from "@/workers/imageMetadataWorker?worker";
@@ -23,6 +24,8 @@ const ImageMetadataViewer = () => {
   const debouncedQuery = useDebouncedValue(query, 200);
   const [dragging, setDragging] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [showBulk, setShowBulk] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
   const session = useRef<InspectionSession>();
   useEffect(() => {
@@ -92,14 +95,33 @@ const ImageMetadataViewer = () => {
       />
       <input ref={picker} type="file" className="sr-only" tabIndex={-1} aria-label="Select image file" accept=".jpg,.jpeg,.png,.tif,.tiff,image/jpeg,image/png,image/tiff" onChange={e => { const selected = e.target.files?.[0]; if (selected) select(selected); e.target.value = ""; }} />
       <div className={`border border-dashed rounded-lg p-6 mb-4 text-center ${dragging ? "border-primary bg-secondary" : "border-border"}`}
-        onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); const files = e.dataTransfer.files; if (files.length !== 1) { toast.error("Select one image at a time."); return; } const selected = files[0]; if (selected) select(selected); }}>
+        onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)}
+        onDrop={e => {
+          e.preventDefault(); setDragging(false);
+          const dropped = Array.from(e.dataTransfer.files).filter(f => /\.(jpe?g|png|tiff?)$/i.test(f.name) || f.type.startsWith("image/"));
+          if (dropped.length === 0) { toast.error("Drop JPEG, PNG, or TIFF files."); return; }
+          if (dropped.length > 1) {
+            setBulkFiles(dropped); setShowBulk(true); return;
+          }
+          select(dropped[0]);
+        }}>
         <ImagePlus className="h-7 w-7 text-primary mx-auto mb-3" aria-hidden="true" />
         <div className="flex flex-wrap justify-center gap-2">
           <Button size="sm" onClick={() => picker.current?.click()}><ImagePlus />{file ? "Change image" : "Select image"}</Button>
           {file && <Button size="sm" variant="outline" onClick={reset}><X />Clear</Button>}
+          <Button size="sm" variant="outline" onClick={() => setShowBulk(true)}>
+            <Eraser />Bulk strip…
+          </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-3">Drop one JPEG, PNG, or TIFF here · Maximum 25 MiB</p>
+        <p className="text-xs text-muted-foreground mt-3">Drop one image to inspect · Drop multiple images to bulk-strip · Maximum 25 MiB each</p>
       </div>
+      {showBulk && (
+        <BulkCleanPanel
+          key={bulkFiles.map(f => f.name + f.size).join(",")}
+          files={bulkFiles}
+          onClose={() => { setShowBulk(false); setBulkFiles([]); }}
+        />
+      )}
       {state.status === "loading" && <div className="flex flex-wrap items-center gap-3 py-4"><p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />{state.phase === "starting" ? "Starting local image processor…" : "Inspecting image locally…"}</p><Button size="sm" variant="outline" onClick={() => session.current?.clear()}><X />Cancel inspection</Button></div>}
       {state.status === "idle" && file && <div className="flex flex-wrap items-center gap-3 py-3"><p role="status" className="text-sm text-muted-foreground">Inspection cancelled.</p><Button size="sm" variant="outline" onClick={() => session.current?.select(file)}><RotateCcw />Inspect again</Button></div>}
       {state.status === "error" && <div className="py-3 space-y-2"><p role="alert" className="text-sm text-destructive break-words">{state.error}</p>{file && <Button size="sm" variant="outline" onClick={() => session.current?.select(file)}><RotateCcw />Retry inspection</Button>}</div>}
@@ -121,7 +143,14 @@ const ImageMetadataViewer = () => {
             </ul>
             <p className="text-xs text-muted-foreground mt-3">{result.thumbnailStatus}</p>
             <div className="flex flex-wrap gap-2 mt-3">{file && !cleaning && <Button size="sm" onClick={() => setCleaning(true)} disabled={!!result.removal?.error} title={result.removal?.error}><Eraser />Create clean copy</Button>}
-            {coords && <span><CopyButton value={coords} label="Copy coordinates" variant="outline" className="max-w-full" message="GPS coordinates copied" /></span>}</div>
+            {coords && <span><CopyButton value={coords} label="Copy coordinates" variant="outline" className="max-w-full" message="GPS coordinates copied" /></span>}
+            {coords && (
+              <Button size="sm" variant="outline" asChild>
+                <a href={`https://www.openstreetmap.org/?mlat=${coords.split(",")[0].trim()}&mlon=${coords.split(",")[1].trim()}&zoom=14`} target="_blank" rel="noopener noreferrer">
+                  <Map className="h-3.5 w-3.5" />Open in map
+                </a>
+              </Button>
+            )}</div>
             {result.removal?.error && <p className="text-xs text-muted-foreground mt-2">{result.removal.error}</p>}
           </section>
         </div>
