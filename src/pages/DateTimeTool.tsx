@@ -159,6 +159,7 @@ const DEFAULT_WORLD_CLOCKS = ["UTC","America/New_York","Europe/London","Asia/Kol
 
 const DateTimeTool = () => {
   const [timestamp, setTimestamp] = useState(String(Math.floor(Date.now() / 1000)));
+  const [tsUnit, setTsUnit] = useState<"s" | "ms">("s");
   const [dateStr, setDateStr] = useState("");
   const [tz1, setTz1] = useState("UTC");
   const [tz2, setTz2] = useState("America/New_York");
@@ -208,9 +209,10 @@ const DateTimeTool = () => {
   useEffect(() => {
     const ts = Number(timestamp);
     if (!isNaN(ts) && ts > 0) {
-      setDateStr(new Date(ts * 1000).toISOString());
+      const ms = tsUnit === "ms" ? ts : ts * 1000;
+      setDateStr(new Date(ms).toISOString());
     }
-  }, [timestamp]);
+  }, [timestamp, tsUnit]);
 
   // Live clock
   useEffect(() => {
@@ -219,7 +221,7 @@ const DateTimeTool = () => {
   }, []);
 
   const nowTs = () => {
-    setTimestamp(String(Math.floor(Date.now() / 1000)));
+    setTimestamp(tsUnit === "ms" ? String(Date.now()) : String(Math.floor(Date.now() / 1000)));
     toast.success("Set to now");
   };
 
@@ -227,7 +229,7 @@ const DateTimeTool = () => {
     try {
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) throw new Error();
-      setTimestamp(String(Math.floor(d.getTime() / 1000)));
+      setTimestamp(tsUnit === "ms" ? String(d.getTime()) : String(Math.floor(d.getTime() / 1000)));
       toast.success("Converted");
     } catch {
       toast.error("Invalid date");
@@ -235,7 +237,8 @@ const DateTimeTool = () => {
   };
 
   const ts = Number(timestamp);
-  const tsDate = !isNaN(ts) && ts > 0 ? new Date(ts * 1000) : null;
+  const tsMs = !isNaN(ts) && ts > 0 ? (tsUnit === "ms" ? ts : ts * 1000) : null;
+  const tsDate = tsMs !== null ? new Date(tsMs) : null;
   const relativeTime = tsDate
     ? (() => {
         const diff = tsDate.getTime() - Date.now();
@@ -302,7 +305,27 @@ const DateTimeTool = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-end gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground font-medium">Unix Timestamp (seconds)</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-muted-foreground font-medium">Unix Timestamp</label>
+              <div className="flex gap-0.5">
+                {(["s", "ms"] as const).map((u) => (
+                  <button
+                    key={u}
+                    onClick={() => {
+                      if (u === tsUnit) return;
+                      const n = Number(timestamp);
+                      if (!isNaN(n) && n > 0) {
+                        setTimestamp(u === "ms" ? String(n * 1000) : String(Math.floor(n / 1000)));
+                      }
+                      setTsUnit(u);
+                    }}
+                    className={`px-2 py-0.5 text-[10px] font-mono rounded border transition-colors ${tsUnit === u ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}
+                  >
+                    {u}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="flex gap-1.5">
               <Input value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="bg-background border-border font-mono text-sm" />
               <Button variant="secondary" size="sm" className="h-9 px-3 shrink-0" onClick={nowTs}>Now</Button>
@@ -334,7 +357,7 @@ const DateTimeTool = () => {
               {relativeTime}
             </span>
             <span className="border border-border rounded px-2 py-1 bg-background text-muted-foreground">
-              ms: {ts * 1000}
+              {tsUnit === "ms" ? `s: ${Math.floor(ts / 1000)}` : `ms: ${ts * 1000}`}
             </span>
           </div>
         )}
