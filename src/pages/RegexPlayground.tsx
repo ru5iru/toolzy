@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { Download, Regex, Share2 } from "lucide-react";
+import { Download, Regex, Share2, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { parseRegex } from "@/lib/regex/parseRegex";
 import { buildRailroad } from "@/lib/regex/buildRailroad";
@@ -24,6 +24,21 @@ const decodeShare = (): { p: string; f: string; t: string } | null => {
     return null;
   }
 };
+
+const MAX_TEXT_LEN = 100_000; // guard against catastrophic backtracking on huge inputs
+
+// Heuristic: detect patterns likely to cause catastrophic backtracking
+function reDoSRisk(pattern: string): string | null {
+  // Nested quantifiers on a group: (a+)+ (a+)* (a+){n,} (.*)+ etc
+  if (/\([^()]*[+*][^()]*\)[+*]/.test(pattern) || /\([^()]*[+*][^()]*\)\{[0-9]+,/.test(pattern)) {
+    return "Pattern has nested quantifiers — may cause catastrophic backtracking on long strings";
+  }
+  // Alternation inside a quantified group: (a|aa)+
+  if (/\([^()]*\|[^()]*\)[+*{]/.test(pattern)) {
+    return "Pattern has alternation inside a quantified group — may cause catastrophic backtracking";
+  }
+  return null;
+}
 
 const snippets = [
   { label: "Email", pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", flags: "g" },
@@ -63,40 +78,57 @@ const RegexPlayground = () => {
   const debouncedPattern = useDebouncedValue(pattern, 300);
   const debouncedText = useDebouncedValue(text, 300);
 
+  // Jump-to-match navigation
+  const [selectedMatch, setSelectedMatch] = useState(-1);
+  const matchRefs = useRef<(HTMLElement | null)[]>([]);
+
+  // Reset selected match when pattern/text changes
+  useEffect(() => { setSelectedMatch(-1); }, [debouncedPattern, debouncedText, flags]);
+
+  const jumpTo = (idx: number) => {
+    setSelectedMatch(idx);
+    setTimeout(() => matchRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+  };
+
   type MatchEntry = { match: string; index: number; groups?: Record<string, string> };
-  const { matches, error, segments } = useMemo<{
+  const { matches, error, segments, redosWarning } = useMemo<{
     matches: MatchEntry[];
     error: string;
-    segments: Array<{ text: string; highlight: boolean }>;
+    segments: Array<{ text: string; highlight: boolean; matchIndex: number }>;
+    redosWarning: string | null;
   }>(() => {
-    if (!debouncedPattern) return { matches: [], error: "", segments: [{ text: debouncedText, highlight: false }] };
+    const warn = debouncedPattern ? reDoSRisk(debouncedPattern) : null;
+    if (!debouncedPattern) return { matches: [], error: "", segments: [{ text: debouncedText, highlight: false, matchIndex: -1 }], redosWarning: null };
+    // Clamp input to avoid true catastrophic execution on huge strings
+    const safeText = debouncedText.length > MAX_TEXT_LEN ? debouncedText.slice(0, MAX_TEXT_LEN) : debouncedText;
     try {
       const re = new RegExp(debouncedPattern, flags);
       const m: MatchEntry[] = [];
       let match;
       if (flags.includes("g")) {
-        while ((match = re.exec(debouncedText)) !== null) {
+        while ((match = re.exec(safeText)) !== null) {
           m.push({ match: match[0], index: match.index, groups: match.groups as Record<string, string> | undefined });
           if (match[0].length === 0) re.lastIndex++;
         }
       } else {
-        match = re.exec(debouncedText);
+        match = re.exec(safeText);
         if (match) m.push({ match: match[0], index: match.index, groups: match.groups as Record<string, string> | undefined });
       }
 
-      // Build segments for highlight rendering
-      const segs: Array<{ text: string; highlight: boolean }> = [];
+      // Build segments with match index for per-match highlight
+      let matchIdx = 0;
+      const segs: Array<{ text: string; highlight: boolean; matchIndex: number }> = [];
       let last = 0;
       for (const mt of m) {
-        if (mt.index > last) segs.push({ text: debouncedText.slice(last, mt.index), highlight: false });
-        segs.push({ text: mt.match, highlight: true });
+        if (mt.index > last) segs.push({ text: safeText.slice(last, mt.index), highlight: false, matchIndex: -1 });
+        segs.push({ text: mt.match, highlight: true, matchIndex: matchIdx++ });
         last = mt.index + mt.match.length;
       }
-      if (last < debouncedText.length) segs.push({ text: debouncedText.slice(last), highlight: false });
+      if (last < safeText.length) segs.push({ text: safeText.slice(last), highlight: false, matchIndex: -1 });
 
-      return { matches: m, error: "", segments: segs };
+      return { matches: m, error: "", segments: segs, redosWarning: warn };
     } catch (e: any) {
-      return { matches: [], error: e.message, segments: [{ text: debouncedText, highlight: false }] };
+      return { matches: [], error: e.message, segments: [{ text: safeText, highlight: false, matchIndex: -1 }], redosWarning: warn };
     }
   }, [debouncedPattern, flags, debouncedText]);
 
@@ -157,6 +189,12 @@ const RegexPlayground = () => {
         <Input id="regex-replace" value={replacement} onChange={(e) => setReplacement(e.target.value)} placeholder="$1, $<name>, $&" className="bg-card border-border font-mono" />
       </div>
 
+      {redosWarning && !error && (
+        <div className="flex items-start gap-2 text-amber-400 text-xs bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2">
+          <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+          <span>{redosWarning}</span>
+        </div>
+      )}
       {error && (
         <p className="text-destructive font-mono text-sm bg-destructive/10 border border-destructive/20 rounded px-3 py-2">{error}</p>
       )}
@@ -178,7 +216,7 @@ const RegexPlayground = () => {
             {text && (
               <>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <label className="text-xs text-muted-foreground uppercase tracking-wider">Highlighted Matches</label>
                     {matches.length > 0 && (
                       <span className="inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-xs font-mono text-primary">
@@ -188,11 +226,38 @@ const RegexPlayground = () => {
                     {!error && matches.length === 0 && (
                       <span className="text-xs text-muted-foreground">— no matches</span>
                     )}
+                    {matches.length > 1 && (
+                      <div className="flex items-center gap-1 ml-auto">
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {selectedMatch >= 0 ? `${selectedMatch + 1} / ${matches.length}` : `0 / ${matches.length}`}
+                        </span>
+                        <Button variant="outline" size="icon" className="h-6 w-6"
+                          onClick={() => jumpTo(selectedMatch <= 0 ? matches.length - 1 : selectedMatch - 1)}
+                          title="Previous match">
+                          <ChevronLeft className="w-3 h-3" />
+                        </Button>
+                        <Button variant="outline" size="icon" className="h-6 w-6"
+                          onClick={() => jumpTo(selectedMatch < 0 ? 0 : (selectedMatch + 1) % matches.length)}
+                          title="Next match">
+                          <ChevronRight className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <pre className="bg-card border border-border rounded-lg p-4 font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[300px] leading-relaxed">
                     {segments.map((seg, i) =>
                       seg.highlight ? (
-                        <mark key={i} className="bg-primary/25 text-primary font-semibold rounded-sm px-0.5 not-italic">{seg.text}</mark>
+                        <mark
+                          key={i}
+                          id={`match-${seg.matchIndex}`}
+                          ref={el => { matchRefs.current[seg.matchIndex] = el; }}
+                          onClick={() => jumpTo(seg.matchIndex)}
+                          className={`rounded-sm px-0.5 not-italic cursor-pointer transition-colors ${
+                            seg.matchIndex === selectedMatch
+                              ? "bg-primary text-primary-foreground font-bold ring-1 ring-primary"
+                              : "bg-primary/25 text-primary font-semibold hover:bg-primary/40"
+                          }`}
+                        >{seg.text}</mark>
                       ) : (
                         <span key={i} className="text-foreground">{seg.text}</span>
                       )
@@ -246,7 +311,15 @@ const RegexPlayground = () => {
                     </div>
                     <div className="space-y-1">
                       {matches.slice(0, 50).map((m, i) => (
-                        <div key={i} className="border border-border rounded p-2 bg-card font-mono text-sm flex flex-wrap gap-x-4 gap-y-1 items-baseline">
+                        <div
+                          key={i}
+                          onClick={() => jumpTo(i)}
+                          className={`border rounded p-2 font-mono text-sm flex flex-wrap gap-x-4 gap-y-1 items-baseline cursor-pointer transition-colors ${
+                            i === selectedMatch
+                              ? "border-primary/60 bg-primary/10"
+                              : "border-border bg-card hover:bg-secondary/40"
+                          }`}
+                        >
                           <span className="text-muted-foreground text-xs">#{i + 1}</span>
                           <span className="text-primary font-medium">{m.match || <em className="not-italic text-muted-foreground">empty</em>}</span>
                           <span className="text-muted-foreground text-xs">@{m.index}</span>
