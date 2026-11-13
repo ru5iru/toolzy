@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -8,15 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Copy, Minimize2, Maximize2, Upload, Search, X, Share2, Link, Braces } from "lucide-react";
+import { Download, Minimize2, Maximize2, Upload, Search, X, Share2, Trash2 } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
 import { JsonStats } from "@/components/json-formatter/JsonStats";
 import { JsonHighlighted } from "@/components/json-formatter/JsonHighlighted";
 import { sortKeysDeep, jsonToXml, jsonToCsv, jsonToYaml, filterJson, downloadFile } from "@/components/json-formatter/jsonUtils";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 type IndentOption = "2" | "4" | "tab";
 
@@ -51,6 +51,7 @@ const JsonFormatter = () => {
   const [treeExpanded, setTreeExpanded] = useState(true);
   const [treeKey, setTreeKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [formatOnPaste, setFormatOnPaste] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load from URL on mount
@@ -106,7 +107,30 @@ const JsonFormatter = () => {
     }
   };
 
-  const copy = () => { navigator.clipboard.writeText(output); toast.success("Copied to clipboard"); };
+  const handleClear = () => {
+    setInput("");
+    setOutput("");
+    setSearchTerm("");
+    // Clear URL param if present
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("d")) { url.searchParams.delete("d"); window.history.replaceState(null, "", url.toString()); }
+  };
+
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    if (!formatOnPaste) return;
+    const pasted = e.clipboardData.getData("text");
+    if (!pasted.trim()) return;
+    // Schedule after state update
+    setTimeout(() => {
+      try {
+        const indent = indentOption === "tab" ? "\t" : Number(indentOption);
+        const parsed = JSON.parse(pasted);
+        const data = sortKeys ? sortKeysDeep(parsed) : parsed;
+        setOutput(JSON.stringify(data, null, indent));
+      } catch { /* not valid JSON, ignore */ }
+    }, 0);
+  }, [formatOnPaste, indentOption, sortKeys]);
+
   const expandAll = () => { setTreeExpanded(true); setTreeKey((k) => k + 1); };
   const collapseAll = () => { setTreeExpanded(false); setTreeKey((k) => k + 1); };
 
@@ -158,17 +182,19 @@ const JsonFormatter = () => {
   };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="JSON Formatter" description="Format, validate, minify and convert JSON · Ctrl+Enter to format">
       <ToolSEO title="JSON Formatter & Validator" description="Free online JSON formatter, validator, and minifier. Paste your JSON to format, beautify, or compress it instantly in your browser." canonicalPath="/json" keywords={["JSON formatter", "JSON validator", "JSON beautifier", "JSON minifier", "format JSON online"]} faq={[{question:"How do I format JSON online?",answer:"Paste your JSON into the input field and click Format. The tool will parse, validate, and pretty-print your JSON with proper indentation."},{question:"Does this JSON formatter send my data to a server?",answer:"No. All JSON formatting and validation happens entirely in your browser — your data never leaves your machine."},{question:"Can I convert JSON to CSV, XML, or YAML?",answer:"Yes. Use the download buttons in the toolbar to export your JSON as CSV, XML, or YAML, or download the formatted JSON file itself."},{question:"What is the JSON tree view?",answer:"Tree view renders your JSON as an interactive, collapsible structure with syntax highlighting, search, and click-to-copy JSONPath for every node."},{question:"Can I share my JSON with someone?",answer:"Yes. Click Share to copy a link with your JSON encoded in the URL — anyone opening the link sees the same data loaded instantly."}]} howToSteps={["Paste your JSON into the input textarea","Click Format to beautify or Minify to compress","Click Copy to copy the result to your clipboard"]} />
 
-      <ToolHeader title="JSON Formatter, Validator & Minifier" icon={Braces} />
 
       {/* Compact toolbar */}
       <h2 className="sr-only">Actions</h2>
       <div role="toolbar" aria-label="JSON formatter actions" className="flex flex-wrap items-center gap-1.5 mb-2 p-2 rounded-lg bg-card border border-border text-xs">
         <Button size="sm" className="h-7 px-3 text-xs" onClick={format}>Format</Button>
         <Button variant="secondary" size="sm" className="h-7 px-2 text-xs" onClick={minify}><Minimize2 className="w-3 h-3 mr-1" />Minify</Button>
-        <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={copy} disabled={!output} aria-label="Copy output to clipboard"><Copy className="w-3 h-3 mr-1" aria-hidden="true" />Copy</Button>
+        <CopyButton value={output} message="Copied to clipboard" label="Copy" variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={!output} />
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive" onClick={handleClear} disabled={!input && !output} aria-label="Clear input and output">
+          <Trash2 className="w-3 h-3 mr-1" />Clear
+        </Button>
 
         <div className="border-l border-border h-5 mx-0.5" />
 
@@ -197,6 +223,11 @@ const JsonFormatter = () => {
         <div className="flex items-center gap-1">
           <Switch id="sort-keys" checked={sortKeys} onCheckedChange={setSortKeys} className="scale-75" />
           <Label htmlFor="sort-keys" className="text-xs text-muted-foreground cursor-pointer">Sort</Label>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Switch id="format-paste" checked={formatOnPaste} onCheckedChange={setFormatOnPaste} className="scale-75" />
+          <Label htmlFor="format-paste" className="text-xs text-muted-foreground cursor-pointer">Auto-format</Label>
         </div>
 
         <div className="relative flex-1 min-w-[120px] max-w-[200px]">
@@ -232,12 +263,18 @@ const JsonFormatter = () => {
       <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border border-border">
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
-            <div className="h-9 shrink-0 flex items-center px-2 border-b border-border">
+            <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
+              {input && (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {input.length.toLocaleString()} chars · {input.split("\n").length} lines · {new TextEncoder().encode(input).length.toLocaleString()} B
+                </span>
+              )}
             </div>
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onPaste={handlePaste}
               placeholder='{"key": "value"}'
               className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
@@ -279,7 +316,7 @@ const JsonFormatter = () => {
       <div className="mt-3">
         <SchemaPanel parsedData={parsedData} />
       </div>
-    </div>
+    </ToolPageLayout>
   );
 };
 

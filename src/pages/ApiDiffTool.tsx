@@ -12,9 +12,9 @@ import {
   exportAsMarkdown, exportAsJson, loadDiffHistory, saveDiffHistory,
   type DiffEntry, type DiffSummary
 } from "@/components/api-diff/diffUtils";
-import { ArrowDown, ArrowUp, Copy, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ArrowDown, ArrowUp, Download, History, Plus, RotateCcw, Trash2, Upload, X, GitCompare } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { AboutTool } from "@/components/AboutTool";
 
 const colorMap: Record<string, string> = {
@@ -149,7 +149,12 @@ const ApiDiffTool = () => {
   };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="API Response Diff" description="Compare JSON responses structurally · Ctrl+Enter to compare" toolbar={<>
+        <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
+          <History className="h-4 w-4 mr-1" /> History
+        </Button>
+        <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
+      </>}>
       <ToolSEO
         title="API Response Diff Tool"
         description="Compare two JSON API responses side-by-side with structural diff, ignore rules, type change detection, and export. Free, browser-only developer tool."
@@ -170,12 +175,6 @@ const ApiDiffTool = () => {
         ]}
       />
 
-      <ToolHeader title="API Response Diff" icon={GitCompare} description="Compare JSON responses structurally · Ctrl+Enter to compare" actions={<>
-          <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
-            <History className="h-4 w-4 mr-1" /> History
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
-      </>} />
 
       {/* History panel */}
       {showHistory && history.length > 0 && (
@@ -288,9 +287,7 @@ const ApiDiffTool = () => {
             <Button variant="outline" size="sm" onClick={() => exportDiff("markdown")}>
               <Download className="h-3 w-3 mr-1" /> Markdown
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(exportAsJson(diffs)); toast.success("Copied"); }}>
-              <Copy className="h-3 w-3 mr-1" /> Copy
-            </Button>
+            <CopyButton value={() => exportAsJson(diffs)} label="Copy" message="Copied" variant="outline" size="sm" />
           </>
         )}
       </div>
@@ -449,7 +446,7 @@ const ApiDiffTool = () => {
           </div>
         </div>
       </AboutTool>
-    </div>
+    </ToolPageLayout>
   );
 };
 

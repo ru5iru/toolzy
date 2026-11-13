@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "@fontsource-variable/inter/wght.css";
-@import "@fontsource/noto-sans-sinhala/400.css";
-@import "@fontsource/noto-sans-sinhala/500.css";
-@import "@fontsource/noto-sans-tamil/400.css";
-@import "@fontsource/noto-sans-tamil/500.css";
-@import "@fontsource/noto-sans-devanagari/400.css";
-@import "@fontsource/noto-sans-devanagari/500.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
@@ -54,8 +47,7 @@
     --sidebar-border: 220 14% 16%;
     --sidebar-ring: 185 80% 55%;
 
-    --font-sans: "Inter Variable", "Noto Sans Sinhala", "Noto Sans Tamil", "Noto Sans Devanagari", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", "PingFang SC", "Hiragino Sans", "Yu Gothic", "Malgun Gothic", "Noto Sans Arabic", "Noto Sans Hebrew", Roboto, sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Sinhala", "Noto Sans Tamil", "Noto Sans Devanagari", monospace;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
     --success: 145 65% 45%;
     --warning: 40 90% 55%;
@@ -70,12 +62,63 @@
 
     /* Semantic status tokens */
     --info: 210 80% 60%;
-
-    /* Interaction surfaces (see DESIGN.md) */
-    --secondary-hover: 220 16% 23%;
-    --border-hover: 220 12% 32%;
     --success-foreground: 145 65% 60%;
     --warning-foreground: 40 90% 60%;
+  }
+
+  /* ── Light theme ── */
+  :root.light {
+    --background: 220 20% 97%;
+    --foreground: 220 20% 12%;
+
+    --card: 220 20% 100%;
+    --card-foreground: 220 20% 12%;
+
+    --popover: 220 20% 100%;
+    --popover-foreground: 220 20% 12%;
+
+    --primary: 185 70% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 16% 92%;
+    --secondary-foreground: 220 16% 25%;
+
+    --muted: 220 14% 94%;
+    --muted-foreground: 215 12% 45%;
+
+    --accent: 185 70% 38%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 85%;
+    --input: 220 14% 85%;
+    --ring: 185 70% 38%;
+
+    --sidebar-background: 220 20% 94%;
+    --sidebar-foreground: 220 15% 30%;
+    --sidebar-primary: 185 70% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 88%;
+    --sidebar-accent-foreground: 220 20% 12%;
+    --sidebar-border: 220 14% 85%;
+    --sidebar-ring: 185 70% 38%;
+
+    --success: 145 60% 35%;
+    --warning: 40 85% 42%;
+
+    /* Syntax highlighting tokens — lighter bg variants */
+    --syntax-string: 145 55% 32%;
+    --syntax-number: 190 70% 35%;
+    --syntax-boolean: 30 80% 40%;
+    --syntax-null: 25 75% 40%;
+    --syntax-key: 220 18% 30%;
+    --syntax-highlight: 50 85% 42%;
+
+    --info: 210 75% 45%;
+    --success-foreground: 145 60% 30%;
+    --warning-foreground: 40 85% 35%;
   }
 }
 
@@ -86,31 +129,12 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-}
-
-@layer base {
-  html { color-scheme: dark; }
-  ::selection { background: hsl(var(--primary) / 0.3); }
-  /* Quiet, consistent scrollbars for panels and editors */
-  * { scrollbar-width: thin; scrollbar-color: hsl(var(--border-hover)) transparent; }
-  /* Never hide keyboard focus; mouse clicks on buttons do not show it */
-  :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer utilities {
   .font-mono {
     font-family: var(--font-mono);
-    font-variant-ligatures: none;
   }
-  .font-sans { font-family: var(--font-sans); }
-  /* Code-like content: always monospace, tabular, no ligatures that hide characters */
-  .code-surface { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.55; font-variant-ligatures: none; tab-size: 2; }
 }

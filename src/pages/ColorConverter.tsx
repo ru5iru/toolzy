@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,10 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
-import { Copy, Heart, Trash2, Upload, RotateCcw, Star, Check, Pipette, Palette } from "lucide-react";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
-import { AboutTool } from "@/components/AboutTool";
+import { CopyButton } from "@/components/CopyButton";
+import { Heart, Trash2, Upload, RotateCcw, Star, Pipette } from "lucide-react";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 import {
   parseColor, rgbToHex, rgbToHsl, rgbToHsv, rgbToCmyk, hslToRgb,
   formatRgb, formatHsl, formatHsv, formatCmyk,
@@ -40,7 +39,6 @@ const ColorConverter = () => {
   const [gradType, setGradType] = useState<"linear" | "radial">("linear");
   const [batchInput, setBatchInput] = useState("");
   const [bgToggle, setBgToggle] = useState<"dark" | "light">("dark");
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const [extractedColors, setExtractedColors] = useState<RGB[]>([]);
@@ -72,13 +70,6 @@ const ColorConverter = () => {
       });
     }
   }, [hex, rgb]);
-
-  const copy = useCallback((text: string, key?: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key || text);
-    toast.success("Copied!");
-    setTimeout(() => setCopiedKey(null), 1500);
-  }, []);
 
   const toggleFavorite = (color: string) => {
     setFavorites(prev => {
@@ -140,26 +131,20 @@ const ColorConverter = () => {
     ? `linear-gradient(${gradAngle}deg, ${gradStops.join(", ")})`
     : `radial-gradient(circle, ${gradStops.join(", ")})`;
 
-  const CopyBtn = ({ text, k }: { text: string; k: string }) => (
-    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => copy(text, k)}>
-      {copiedKey === k ? <Check className="h-3.5 w-3.5 text-[hsl(var(--success-foreground))]" /> : <Copy className="h-3.5 w-3.5" />}
-    </Button>
-  );
-
   const ColorSwatch = ({ color, small, onClick }: { color: RGB; small?: boolean; onClick?: () => void }) => {
     const h = rgbToHex(color);
     return (
       <div
         className={`${small ? "w-8 h-8" : "w-12 h-12"} rounded-md border border-border cursor-pointer hover:scale-105 transition-transform`}
         style={{ backgroundColor: h }}
-        onClick={() => { onClick?.(); copy(h, h); }}
+        onClick={() => onClick?.()}
         title={h}
       />
     );
   };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="Color Converter" description="Convert between HEX, RGB, HSL, HSV, CMYK · pick, palette, contrast and gradient tools.">
       <ToolSEO
         title="Color Converter & Toolkit"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
@@ -178,8 +163,6 @@ const ColorConverter = () => {
           "Generate color palettes, check contrast, or create gradients",
         ]}
       />
-
-      <ToolHeader title="Color Converter & Toolkit" icon={Palette} description="Convert between HEX, RGB and HSL, and explore palettes." />
 
       {/* === Top: Input + Preview + Formats === */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4">
@@ -203,14 +186,14 @@ const ColorConverter = () => {
                   type="color"
                   value={rgb ? hex.substring(0, 7) : "#000000"}
                   onChange={(e) => setInput(e.target.value)}
-                  className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent"
+                  className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent"
                   aria-label="Color picker"
                 />
                 {"EyeDropper" in window && (
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-9 w-10 shrink-0"
+                    className="h-10 w-10 shrink-0"
                     aria-label="Pick color from screen"
                     title="Pick color from screen"
                     onClick={async () => {
@@ -231,7 +214,7 @@ const ColorConverter = () => {
                   <span>{colorName}</span>
                   <span className="text-muted-foreground/50">·</span>
                   <span className="font-mono">bg-{twClass}</span>
-                  <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto" onClick={() => toggleFavorite(hex)}>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto" aria-label={favorites.includes(hex) ? "Remove from favourites" : "Save to favourites"} onClick={() => toggleFavorite(hex)}>
                     <Heart className={`h-3 w-3 ${favorites.includes(hex) ? "fill-red-400 text-destructive" : ""}`} />
                   </Button>
                 </div>
@@ -243,11 +226,11 @@ const ColorConverter = () => {
           {rgb && (
             <div className="rounded-lg border border-border overflow-hidden">
               <div className="flex items-center justify-between px-3 py-1.5 bg-muted/50">
-                <span className="text-xs uppercase tracking-wider text-muted-foreground">Preview</span>
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Preview</span>
                 <div className="flex gap-1">
                   {(["dark", "light"] as const).map(t => (
                     <button key={t} onClick={() => setBgToggle(t)}
-                      className={`text-xs px-2 py-0.5 rounded ${bgToggle === t ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
+                      className={`text-[10px] px-2 py-0.5 rounded ${bgToggle === t ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
                       {t}
                     </button>
                   ))}
@@ -262,7 +245,7 @@ const ColorConverter = () => {
           {/* Sliders */}
           {hsl && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-card">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">Adjust</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Adjust</span>
               {[
                 { label: "H", value: hsl.h, max: 360, field: "h" as const },
                 { label: "S", value: hsl.s, max: 100, field: "s" as const },
@@ -288,7 +271,7 @@ const ColorConverter = () => {
         {/* Right: Format outputs */}
         {rgb && hsl && hsv && cmyk && (
           <div className="space-y-2">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">Formats</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Formats</span>
             {[
               { label: "HEX", value: hex.toUpperCase() },
               { label: "RGB", value: formatRgb(rgb) },
@@ -299,9 +282,9 @@ const ColorConverter = () => {
               { label: "SCSS", value: `$color: ${hex};` },
             ].map(row => (
               <div key={row.label} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 group hover:border-primary/40 transition-colors">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider w-14">{row.label}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-14">{row.label}</span>
                 <code className="font-mono text-xs text-foreground flex-1 text-right mr-2 truncate">{row.value}</code>
-                <CopyBtn text={row.value} k={row.label} />
+                <CopyButton value={row.value} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
               </div>
             ))}
           </div>
@@ -310,8 +293,8 @@ const ColorConverter = () => {
 
       {/* === Tabs for advanced features === */}
       <Tabs defaultValue="palette" className="w-full">
-        <TabsList className="h-auto w-fit max-w-full flex-wrap justify-start gap-1 bg-muted/50 p-1">
-          {["palette", "contrast", "gradient", "extract", "batch", "history"].map(t => (
+        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
+          {["palette", "contrast", "gradient", "extract", "batch", "history", "export"].map(t => (
             <TabsTrigger key={t} value={t} className="text-xs capitalize">{t}</TabsTrigger>
           ))}
         </TabsList>
@@ -331,7 +314,7 @@ const ColorConverter = () => {
               {generatePalette(rgb, paletteType).map((c, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <ColorSwatch color={c} onClick={() => setInput(rgbToHex(c))} />
-                  <span className="text-xs font-mono text-muted-foreground">{rgbToHex(c)}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground">{rgbToHex(c)}</span>
                 </div>
               ))}
             </div>
@@ -345,14 +328,14 @@ const ColorConverter = () => {
               <label className="text-xs text-muted-foreground">Foreground</label>
               <div className="flex gap-2">
                 <Input value={fgInput} onChange={e => setFgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
-                <input type="color" value={fgRgb ? rgbToHex(fgRgb).substring(0, 7) : "#ffffff"} onChange={e => setFgInput(e.target.value)} className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent" />
+                <input type="color" value={fgRgb ? rgbToHex(fgRgb).substring(0, 7) : "#ffffff"} onChange={e => setFgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">Background</label>
               <div className="flex gap-2">
                 <Input value={bgInput} onChange={e => setBgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
-                <input type="color" value={bgRgb ? rgbToHex(bgRgb).substring(0, 7) : "#000000"} onChange={e => setBgInput(e.target.value)} className="w-10 h-9 rounded border-0 cursor-pointer bg-transparent" />
+                <input type="color" value={bgRgb ? rgbToHex(bgRgb).substring(0, 7) : "#000000"} onChange={e => setBgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
               </div>
             </div>
           </div>
@@ -366,15 +349,15 @@ const ColorConverter = () => {
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-md border border-border bg-card p-3 text-center">
                   <div className="text-2xl font-bold text-foreground">{ratio.toFixed(2)}:1</div>
-                  <div className="text-xs text-muted-foreground">Contrast Ratio</div>
+                  <div className="text-[10px] text-muted-foreground">Contrast Ratio</div>
                 </div>
                 <div className={`rounded-md border p-3 text-center ${ratio >= 4.5 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
                   <div className={`text-lg font-bold ${ratio >= 4.5 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 4.5 ? "PASS" : "FAIL"}</div>
-                  <div className="text-xs text-muted-foreground">WCAG AA (4.5:1)</div>
+                  <div className="text-[10px] text-muted-foreground">WCAG AA (4.5:1)</div>
                 </div>
                 <div className={`rounded-md border p-3 text-center ${ratio >= 7 ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" : "border-destructive/30 bg-destructive/5"}`}>
                   <div className={`text-lg font-bold ${ratio >= 7 ? "text-[hsl(var(--success-foreground))]" : "text-destructive"}`}>{ratio >= 7 ? "PASS" : "FAIL"}</div>
-                  <div className="text-xs text-muted-foreground">WCAG AAA (7:1)</div>
+                  <div className="text-[10px] text-muted-foreground">WCAG AAA (7:1)</div>
                 </div>
               </div>
             </div>
@@ -407,7 +390,7 @@ const ColorConverter = () => {
                   const next = [...gradStops]; next[i] = e.target.value; setGradStops(next);
                 }} className="w-8 h-8 rounded border-0 cursor-pointer bg-transparent" />
                 {gradStops.length > 2 && (
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setGradStops(gradStops.filter((_, j) => j !== i))}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" aria-label={`Remove stop ${i + 1}`} onClick={() => setGradStops(gradStops.filter((_, j) => j !== i))}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 )}
@@ -422,7 +405,7 @@ const ColorConverter = () => {
             <code className="flex-1 text-xs font-mono text-muted-foreground bg-muted/50 p-2 rounded border border-border truncate">
               background: {gradientCss};
             </code>
-            <CopyBtn text={`background: ${gradientCss};`} k="gradient" />
+            <CopyButton value={`background: ${gradientCss};`} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
           </div>
         </TabsContent>
 
@@ -452,7 +435,7 @@ const ColorConverter = () => {
               {extractedColors.map((c, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <ColorSwatch color={c} onClick={() => setInput(rgbToHex(c))} />
-                  <span className="text-xs font-mono text-muted-foreground">{rgbToHex(c)}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground">{rgbToHex(c)}</span>
                 </div>
               ))}
             </div>
@@ -491,7 +474,7 @@ const ColorConverter = () => {
                         <td className="px-3 py-2">{r.hex}</td>
                         <td className="px-3 py-2">{r.rgb}</td>
                         <td className="px-3 py-2">{r.hsl}</td>
-                        <td className="px-3 py-2">{r.hex !== "Invalid" && <CopyBtn text={r.hex} k={`batch-${i}`} />}</td>
+                        <td className="px-3 py-2">{r.hex !== "Invalid" && <CopyButton value={r.hex} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -518,7 +501,7 @@ const ColorConverter = () => {
               <div className="flex flex-wrap gap-2">
                 {favorites.map(c => (
                   <div key={c} className="flex flex-col items-center gap-1 group">
-                    <div className="w-10 h-9 rounded-md border border-border cursor-pointer hover:scale-105 transition-transform"
+                    <div className="w-10 h-10 rounded-md border border-border cursor-pointer hover:scale-105 transition-transform"
                       style={{ backgroundColor: c }} onClick={() => setInput(c)} />
                     <span className="text-[9px] font-mono text-muted-foreground">{c}</span>
                   </div>
@@ -543,9 +526,19 @@ const ColorConverter = () => {
             </div>
           </div>
         </TabsContent>
+
+        {/* Export */}
+        <TabsContent value="export" className="space-y-4 mt-4">
+          {!rgb ? (
+            <p className="text-xs text-muted-foreground">Enter a valid color above to generate exports.</p>
+          ) : (
+            <ExportPanel rgb={rgb} hsl={hsl!} hex={hex} closestTailwindFn={closestTailwind} generatePaletteFn={generatePalette} rgbToHexFn={rgbToHex} rgbToHslFn={rgbToHsl} />
+          )}
+        </TabsContent>
       </Tabs>
 
-      <AboutTool title="About color formats">
+      {/* === SEO Content === */}
+      <div className="space-y-6 pt-6 border-t border-border">
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-2">What is HEX Color?</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -570,9 +563,100 @@ const ColorConverter = () => {
             The Web Content Accessibility Guidelines (WCAG) require a minimum contrast ratio of 4.5:1 for normal text (AA) and 7:1 for enhanced readability (AAA). Large text (18px+ bold or 24px+) requires 3:1 for AA. Use the contrast checker above to verify your color combinations meet accessibility standards.
           </p>
         </section>
-      </AboutTool>
-    </div>
+      </div>
+    </ToolPageLayout>
   );
 };
+
+// ---------- Export Panel ----------
+interface ExportPanelProps {
+  rgb: { r: number; g: number; b: number; a: number };
+  hsl: { h: number; s: number; l: number; a: number };
+  hex: string;
+  closestTailwindFn: (c: any) => string;
+  generatePaletteFn: (c: any, type: string) => any[];
+  rgbToHexFn: (c: any) => string;
+  rgbToHslFn: (c: any) => any;
+}
+
+function ExportPanel({ rgb, hsl, hex, closestTailwindFn, generatePaletteFn, rgbToHexFn, rgbToHslFn }: ExportPanelProps) {
+  const h6 = hex.substring(0, 7);
+  const twClass = closestTailwindFn(rgb);
+  const shadeSwatch = generatePaletteFn(rgb, "shades");
+
+  // CSS custom properties
+  const cssVars = `/* Color: ${h6} */
+:root {
+  --color-primary: ${h6};
+  --color-primary-rgb: ${rgb.r}, ${rgb.g}, ${rgb.b};
+  --color-primary-hsl: ${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%;
+}`;
+
+  // CSS vars with shades
+  const cssVarsShades = shadeSwatch.length > 0 ? `/* ${h6} shade scale */\n:root {\n` + shadeSwatch.map((c: any, i: number) => {
+    const h = rgbToHexFn(c).substring(0, 7);
+    const step = Math.round((i / (shadeSwatch.length - 1)) * 900 + 100);
+    return `  --color-primary-${step}: ${h};`;
+  }).join("\n") + "\n}" : "";
+
+  // Tailwind config
+  const twConfig = `// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '${h6}',
+${shadeSwatch.map((c: any, i: number) => {
+  const h = rgbToHexFn(c).substring(0, 7);
+  const step = Math.round((i / (shadeSwatch.length - 1)) * 900 + 100);
+  return `          ${step}: '${h}',`;
+}).join("\n")}
+        },
+      },
+    },
+  },
+};`;
+
+  // shadcn/ui HSL vars
+  const shadcnVars = `/* Add to your globals.css */
+:root {
+  --primary: ${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%;
+}
+
+.dark {
+  --primary: ${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%;
+}`;
+
+  const sections = [
+    { label: "CSS Variables", code: cssVars },
+    ...(cssVarsShades ? [{ label: "CSS Variables with Shades", code: cssVarsShades }] : []),
+    { label: "Tailwind Config", code: twConfig },
+    { label: "shadcn/ui (HSL)", code: shadcnVars },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Quick ref */}
+      <div className="flex flex-wrap gap-2 text-xs font-mono">
+        <div className="flex items-center gap-1.5 rounded border border-border bg-muted/30 px-2 py-1">
+          <span className="text-muted-foreground">Tailwind closest:</span>
+          <code className="font-semibold text-foreground">{twClass}</code>
+          <CopyButton value={`bg-${twClass}`} size="sm" />
+        </div>
+      </div>
+
+      {sections.map(({ label, code }) => (
+        <div key={label} className="rounded-lg border border-border bg-card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border px-3 py-2">
+            <span className="text-xs font-medium text-muted-foreground">{label}</span>
+            <CopyButton value={code} size="sm" />
+          </div>
+          <pre className="p-3 font-mono text-xs text-foreground whitespace-pre overflow-x-auto">{code}</pre>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default ColorConverter;

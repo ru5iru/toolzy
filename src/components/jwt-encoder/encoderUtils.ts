@@ -1,7 +1,6 @@
 // JWT Encoder utilities — all client-side, no data sent anywhere
-import { importKeyInput } from "@/lib/crypto/keyInput";
 
-export type AlgorithmFamily = "HMAC" | "RSA" | "RSA-PSS" | "ECDSA";
+export type AlgorithmFamily = "HMAC" | "RSA" | "ECDSA";
 
 export interface AlgorithmOption {
   value: string;
@@ -17,9 +16,6 @@ export const ALGORITHMS: AlgorithmOption[] = [
   { value: "RS256", label: "RS256", family: "RSA", webCryptoAlg: "SHA-256" },
   { value: "RS384", label: "RS384", family: "RSA", webCryptoAlg: "SHA-384" },
   { value: "RS512", label: "RS512", family: "RSA", webCryptoAlg: "SHA-512" },
-  { value: "PS256", label: "PS256", family: "RSA-PSS", webCryptoAlg: "SHA-256" },
-  { value: "PS384", label: "PS384", family: "RSA-PSS", webCryptoAlg: "SHA-384" },
-  { value: "PS512", label: "PS512", family: "RSA-PSS", webCryptoAlg: "SHA-512" },
   { value: "ES256", label: "ES256", family: "ECDSA", webCryptoAlg: "SHA-256" },
   { value: "ES384", label: "ES384", family: "ECDSA", webCryptoAlg: "SHA-384" },
 ];
@@ -27,7 +23,6 @@ export const ALGORITHMS: AlgorithmOption[] = [
 export function getAlgorithmFamily(alg: string): AlgorithmFamily {
   if (alg.startsWith("HS")) return "HMAC";
   if (alg.startsWith("RS")) return "RSA";
-  if (alg.startsWith("PS")) return "RSA-PSS";
   if (alg.startsWith("ES")) return "ECDSA";
   return "HMAC";
 }
@@ -39,6 +34,14 @@ function base64UrlEncode(data: Uint8Array): string {
 
 function base64UrlEncodeString(str: string): string {
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function pemToArrayBuffer(pem: string): ArrayBuffer {
+  const lines = pem.replace(/-----[^-]+-----/g, "").replace(/\s/g, "");
+  const binary = atob(lines);
+  const buf = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) buf[i] = binary.charCodeAt(i);
+  return buf.buffer;
 }
 
 export async function signHMAC(
@@ -67,12 +70,16 @@ export async function signRSA(
   const h = base64UrlEncodeString(header);
   const p = base64UrlEncodeString(payload);
   const data = new TextEncoder().encode(`${h}.${p}`);
-  const key = await importKeyInput(privateKeyPem, { name: "RSASSA-PKCS1-v1_5", hash: hashAlg }, "sign");
+  const keyBuf = pemToArrayBuffer(privateKeyPem);
+  const key = await crypto.subtle.importKey(
+    "pkcs8", keyBuf,
+    { name: "RSASSA-PKCS1-v1_5", hash: hashAlg },
+    false, ["sign"]
+  );
   const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, data);
   return `${h}.${p}.${base64UrlEncode(new Uint8Array(sig))}`;
 }
 
-/** PS256/384/512: RSASSA-PSS with MGF1 and a salt as long as the hash (RFC 7518 §3.5). */
 export async function signRSAPSS(
   header: string,
   payload: string,
@@ -82,8 +89,13 @@ export async function signRSAPSS(
   const h = base64UrlEncodeString(header);
   const p = base64UrlEncodeString(payload);
   const data = new TextEncoder().encode(`${h}.${p}`);
-  const key = await importKeyInput(privateKeyPem, { name: "RSA-PSS", hash: hashAlg }, "sign");
-  const sig = await crypto.subtle.sign({ name: "RSA-PSS", saltLength: Number(hashAlg.slice(4)) / 8 }, key, data);
+  const keyBuf = pemToArrayBuffer(privateKeyPem);
+  const key = await crypto.subtle.importKey(
+    "pkcs8", keyBuf,
+    { name: "RSA-PSS", hash: hashAlg },
+    false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign({ name: "RSA-PSS", saltLength: 32 }, key, data);
   return `${h}.${p}.${base64UrlEncode(new Uint8Array(sig))}`;
 }
 
@@ -98,7 +110,12 @@ export async function signECDSA(
   const p = base64UrlEncodeString(payload);
   const data = new TextEncoder().encode(`${h}.${p}`);
   const namedCurve = alg === "ES384" ? "P-384" : "P-256";
-  const key = await importKeyInput(privateKeyPem, { name: "ECDSA", namedCurve }, "sign");
+  const keyBuf = pemToArrayBuffer(privateKeyPem);
+  const key = await crypto.subtle.importKey(
+    "pkcs8", keyBuf,
+    { name: "ECDSA", namedCurve },
+    false, ["sign"]
+  );
   const sig = await crypto.subtle.sign({ name: "ECDSA", hash: hashAlg }, key, data);
   return `${h}.${p}.${base64UrlEncode(new Uint8Array(sig))}`;
 }

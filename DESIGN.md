@@ -25,8 +25,9 @@ Toolzy is a workbench, not a website. People arrive with a task (format this, de
 └─────────┴──────────────────────────────────────────────────────────────
 ```
 
-- **Always use `ToolPageLayout`** (`src/components/ToolPageLayout.tsx`). It renders `ToolHeader`, applies the content width and the vertical rhythm. Pages must not render their own `<h1>`.
-- **Widths** (`width` prop, defined in `src/lib/toolLayout.ts` as `toolPageClass(width)`): `fluid` (default) fills the available width and is left-aligned, never centred; use it for every tool with an editor, table or two-panel workspace. `wide` caps at 1440 px for form-heavy tools on very large screens. `narrow` (`max-w-3xl`) is only for single-column reading or small forms. Do not pick a width to make a page look balanced: unused space on the right is better than a cramped workspace. Pages that manage their own layout (Markdown, Encoding Hub) use `w-full max-w-none`.
+- **Always use `ToolPageLayout`** (`src/components/ToolPageLayout.tsx`). It renders the page header (title, description, privacy chip) and applies `space-y-4` vertical rhythm. Pages must not render their own `<h1>`.
+- **Props:** `title` (required), `description` (optional, `ReactNode`, renders as `text-xs text-muted-foreground`), `toolbar` (optional `ReactNode`, renders between header and content), `maxWidth` (optional, default `"fluid"`).
+- **Widths** (`maxWidth` prop): `fluid` (default) is `w-full` — fills the available width, never centred; use it for every tool with an editor, table or two-panel workspace. `wide` caps at 1440 px for form-heavy tools on very large screens. `narrow` (`max-w-3xl`) is only for single-column reading or small forms. `4xl`–`7xl` are available for intermediate caps. Do not pick a width to make a page look balanced: unused space on the right is better than a cramped workspace.
 - **Page padding** is owned by `AppLayout`: `p-3` on phones, `sm:p-4`, `lg:p-5`. Pages do not add outer padding, and never wrap content in `mx-auto` or extra `container` padding.
 - **Workspace height:** input/output panels fill the viewport instead of using a fixed pixel height: `h-[clamp(min,calc(100dvh-offset),max)]`. With `ResizablePanelGroup`, put the clamp on a wrapper `div` and give the group `h-full` (the group sets an inline height and ignores a clamp class).
 - **Long explanatory text** (format guides, SEO copy) goes into `AboutTool`, a collapsed `<details>` under the workspace. It stays in the DOM for search engines and never pushes the tool down.
@@ -39,7 +40,7 @@ Scale (Tailwind units): 1 (4 px), 2 (8 px), 3 (12 px), 4 (16 px), 6 (24 px). Do 
 
 | Where | Value |
 | --- | --- |
-| Between page sections | `space-y-4` (16 px), applied by `toolPageClass` / `ToolPageLayout` |
+| Between page sections | `space-y-4` (16 px), applied by `ToolPageLayout` |
 | Between controls in a group | `gap-2` (8 px); `gap-3` for form fields |
 | Label to control | `space-y-1.5` (6 px) |
 | Inside cards and panels | `p-4` (16 px); `p-3` for dense toolbars |
@@ -115,7 +116,7 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 | --- | --- |
 | Tokens, global focus, motion, scrollbars | `src/index.css`, `tailwind.config.ts` |
 | Shell: sidebar, sticky top bar, padding | `src/components/AppLayout.tsx`, `AppSidebar.tsx` |
-| Page header and rhythm | `src/components/ToolHeader.tsx`, `ToolPageLayout.tsx`, `src/lib/toolLayout.ts` |
+| Page header and rhythm | `src/components/ToolPageLayout.tsx` |
 | Copy control | `src/components/CopyButton.tsx` (use it for every copy action) |
 | Command palette (Ctrl/Cmd+K) | `src/components/CommandPalette.tsx`; add search aliases there for new tools |
 | Collapsed long text | `src/components/AboutTool.tsx` |
@@ -137,7 +138,7 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 
 1. **Foundation:** tokens, motion, focus; `Button`, `Tabs`, `Input`, `Textarea` states; `selected` variant.
 2. **Shell:** sticky top bar with tool name, responsive padding, sidebar hover and active states.
-3. **Header:** `ToolHeader` and `ToolPageLayout` v2; migrate every page off hand-written `<h1>` blocks.
+3. **Header (done):** `ToolPageLayout` with `title`, `description`, `toolbar` and `maxWidth`; all pages migrated off hand-written `<h1>` blocks.
 4. **Selection controls:** switch filled-primary "selected" buttons to the `selected` variant.
 5. **Launcher:** compact home page with focus-on-load search and `/` shortcut.
 6. **Verify:** screenshots before and after at 1280 and 390 px, hover and focus captures, unit tests, build, end-to-end run.

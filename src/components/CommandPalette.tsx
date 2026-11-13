@@ -17,6 +17,16 @@ const aliases: Record<string, string> = {
   "/document-signer": "sign verify signature pdf",
   "/image-metadata": "exif gps strip",
   "/text": "case slug sort dedupe lines count",
+  "/sql": "sql formatter mysql postgresql sqlite tsql plsql bigquery snowflake beautifier",
+  "/number-base": "binary decimal hex octal bitwise base converter",
+  "/cron": "cron expression schedule crontab aws github actions timer",
+  "/text-diff": "diff compare text code side by side unified patch",
+  "/yaml": "yaml json toml convert config format converter",
+  "/chmod": "chmod permissions octal unix linux file permission calculator",
+  "/password": "password generator passphrase secure random crypto entropy strength",
+  "/csv": "csv tsv parser viewer filter sort export json delimited table data",
+  "/curl": "curl converter python javascript go php ruby fetch requests http code",
+  "/json-transform": "json transformer jq filter map select sort group flatten query transform",
 };
 
 export function CommandPalette() {

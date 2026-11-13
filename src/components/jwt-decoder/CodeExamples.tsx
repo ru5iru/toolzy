@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { CopyButton } from "@/components/CopyButton";
 import { generateCodeExamples } from "./jwtUtils";
 
 const LANGS = [
@@ -22,7 +20,7 @@ export const CodeExamples = ({ token }: { token: string }) => {
           <button
             key={l.key}
             onClick={() => setLang(l.key)}
-            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${lang === l.key ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+            className={`px-2 py-1 rounded text-xs font-mono transition-colors ${lang === l.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
           >
             {l.label}
           </button>
@@ -32,17 +30,14 @@ export const CodeExamples = ({ token }: { token: string }) => {
         <pre className="bg-muted/50 border border-border rounded-lg p-3 font-mono text-xs overflow-auto max-h-[200px]">
           {examples[lang as keyof typeof examples]}
         </pre>
-        <Button
+        <CopyButton
+          value={() => examples[lang as keyof typeof examples]}
+          message="Code copied"
+          ariaLabel="Copy code"
           variant="ghost"
           size="icon"
           className="absolute top-1.5 right-1.5 h-6 w-6"
-          onClick={() => {
-            navigator.clipboard.writeText(examples[lang as keyof typeof examples]);
-            toast.success("Code copied");
-          }}
-        >
-          <Copy className="w-3 h-3" />
-        </Button>
+        />
       </div>
     </div>
   );

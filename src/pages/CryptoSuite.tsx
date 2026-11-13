@@ -18,12 +18,13 @@ import {
   loadUUIDHistory, saveUUIDHistory,
   type UUIDValidation
 } from "@/components/uuid/uuidUtils";
-import { Check, ChevronDown, Copy, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText } from "lucide-react";
+import { Check, ChevronDown, Download, Eye, EyeOff, History, RotateCcw, Upload, X, KeyRound, FileText, Lock, ShieldCheck, ShieldX, Loader2 } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { SecretsTab } from "@/components/secrets/SecretsTab";
+import bcrypt from "bcryptjs";
 import HashWorker from "@/workers/hashWorker?worker";
 import UuidWorker from "@/workers/uuidWorker?worker";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 // ---------- Hash helpers ----------
 type HashAlgo = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
@@ -123,7 +124,7 @@ type ExportFormat = "txt" | "csv" | "json" | "sql";
 const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
-type CryptoTab = "hash" | "uuid" | "secrets";
+type CryptoTab = "hash" | "uuid" | "secrets" | "bcrypt";
 
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
@@ -138,7 +139,7 @@ const CryptoSuite = () => {
   }, [tab]);
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="Crypto Suite" description="Hash, HMAC, UUID generation and secret tools · all computed locally">
       <ToolSEO
         title="Crypto Suite — Hash, UUID & Secret Generator"
         description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, create UUID v1/v3/v4/v5 tokens in bulk, and generate random secrets and keys (JWT secrets, AES keys, API tokens) — all via the native Web Crypto API, nothing leaves your browser."
@@ -166,13 +167,13 @@ const CryptoSuite = () => {
         ]}
       />
 
-      <ToolHeader title="Crypto Suite" icon={KeyRound} description="Hashing, UUID and secret generation." />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as CryptoTab)} className="space-y-6">
         <TabsList>
           <TabsTrigger value="hash">Hashing</TabsTrigger>
           <TabsTrigger value="uuid">UUID Generator</TabsTrigger>
           <TabsTrigger value="secrets">Secrets</TabsTrigger>
+          <TabsTrigger value="bcrypt">bcrypt</TabsTrigger>
         </TabsList>
         <TabsContent value="hash" forceMount className={tab === "hash" ? "space-y-6" : "hidden"}>
           <HashTab />
@@ -183,8 +184,11 @@ const CryptoSuite = () => {
         <TabsContent value="secrets" className="space-y-6">
           <SecretsTab />
         </TabsContent>
+        <TabsContent value="bcrypt" className="space-y-6">
+          <BcryptTab />
+        </TabsContent>
       </Tabs>
-    </div>
+    </ToolPageLayout>
   );
 };
 
@@ -370,7 +374,6 @@ function HashTab() {
     if (f) void hashFile(f);
   };
 
-  const copyVal = (v: string) => { void navigator.clipboard.writeText(v); toast.success("Copied"); };
 
   const toggleAlgo = (a: HashAlgo) => {
     setVisible((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]));
@@ -533,9 +536,7 @@ function HashTab() {
                   <Badge variant="outline" className="text-xs">{label}</Badge>
                   {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken — not for security</span>}
                 </div>
-                <Button variant="ghost" size="sm" aria-label={`Copy ${label}`} disabled={!val} onClick={() => copyVal(val)}>
-                  <Copy className="h-3 w-3 mr-1" /> Copy
-                </Button>
+                <CopyButton value={val} message="Copied" label="Copy" ariaLabel={`Copy ${label}`} variant="ghost" size="sm" disabled={!val} />
               </div>
               <p className="font-mono text-sm text-foreground break-all min-h-[1.25rem]">{val || <span className="text-muted-foreground">—</span>}</p>
             </div>
@@ -702,11 +703,6 @@ function UuidTab() {
   const startIdx = virtualise ? Math.max(0, Math.floor(scrollTop / ROW_H) - 5) : 0;
   const endIdx = virtualise ? Math.min(displayed.length, startIdx + Math.ceil(VIEW_H / ROW_H) + 10) : displayed.length;
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(displayed.map(formatted).join("\n"));
-    toast.success(`Copied ${displayed.length} UUIDs`);
-  };
-  const copyOne = (u: string) => { navigator.clipboard.writeText(formatted(u)); toast.success("Copied"); };
 
   const exportUuids = (format: ExportFormat) => {
     setExportFmt(format);
@@ -789,12 +785,8 @@ function UuidTab() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" className="h-7 text-xs" title="All-zero UUID (RFC 9562 Nil)" onClick={() => { navigator.clipboard.writeText(NIL_UUID); toast.success("Nil UUID copied"); }}>
-              Copy Nil UUID
-            </Button>
-            <Button size="sm" variant="outline" className="h-7 text-xs" title="All-ones UUID (RFC 9562 Max)" onClick={() => { navigator.clipboard.writeText(MAX_UUID); toast.success("Max UUID copied"); }}>
-              Copy Max UUID
-            </Button>
+            <CopyButton value={NIL_UUID} message="Nil UUID copied" label="Copy Nil UUID" size="sm" variant="outline" className="h-7 text-xs" ariaLabel="Copy Nil UUID (RFC 9562)" />
+            <CopyButton value={MAX_UUID} message="Max UUID copied" label="Copy Max UUID" size="sm" variant="outline" className="h-7 text-xs" ariaLabel="Copy Max UUID (RFC 9562)" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Count: {count.toLocaleString()}</label>
@@ -863,7 +855,7 @@ function UuidTab() {
 
       <div className="flex gap-2 flex-wrap items-center">
         <Button onClick={generate}><RotateCcw className="h-4 w-4 mr-1" /> Generate</Button>
-        <Button variant="outline" onClick={copyAll} disabled={!displayed.length}><Copy className="h-4 w-4 mr-1" /> Copy all</Button>
+        <CopyButton value={() => displayed.map(formatted).join("\n")} message={`Copied ${displayed.length} UUIDs`} label="Copy all" variant="outline" disabled={!displayed.length} />
         {progress && (
           <span className="text-xs text-muted-foreground">Generating… {progress.done.toLocaleString()} / {progress.total.toLocaleString()}</span>
         )}
@@ -884,7 +876,7 @@ function UuidTab() {
                 <div key={i} style={{ position: "absolute", top: i * ROW_H, left: 0, right: 0, height: ROW_H }} className="flex items-center gap-3 px-4 border-b border-border">
                   <span className="text-xs text-muted-foreground w-12 font-mono shrink-0">{i + 1}</span>
                   <code className="font-mono text-xs text-foreground flex-1 truncate">{formatted(u)}</code>
-                  <Button variant="ghost" size="sm" className="h-6 px-2" onClick={() => copyOne(u)} aria-label="Copy UUID"><Copy className="h-3 w-3" /></Button>
+                  <CopyButton value={() => formatted(u)} message="Copied" ariaLabel="Copy UUID" variant="ghost" size="sm" className="h-6 px-2" />
                 </div>
               );
             })}
@@ -896,7 +888,7 @@ function UuidTab() {
             <div key={i} className="flex items-center gap-3 rounded-md border border-border bg-card px-4 py-2.5">
               <span className="text-xs text-muted-foreground w-6 shrink-0 font-mono">{i + 1}</span>
               <code className="font-mono text-sm text-foreground flex-1 select-all break-all">{formatted(u)}</code>
-              <Button variant="ghost" size="sm" className="h-7 px-2 shrink-0" onClick={() => copyOne(u)} aria-label="Copy UUID"><Copy className="h-3 w-3" /></Button>
+              <CopyButton value={() => formatted(u)} message="Copied" ariaLabel="Copy UUID" variant="ghost" size="sm" className="h-7 px-2 shrink-0" />
             </div>
           ))}
         </div>
@@ -975,9 +967,159 @@ function UuidTab() {
           ))}
         </div>
         <pre className="bg-background rounded-lg p-4 text-sm font-mono text-foreground overflow-auto"><code>{CODE_SNIPPETS[snippetLang].code}</code></pre>
-        <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(CODE_SNIPPETS[snippetLang].code); toast.success("Copied"); }}>
-          <Copy className="h-3 w-3 mr-1" /> Copy
+        <CopyButton value={() => CODE_SNIPPETS[snippetLang].code} message="Copied" label="Copy" size="sm" variant="outline" />
+      </div>
+    </div>
+  );
+}
+
+// ===================================================================
+// BCRYPT TAB
+// ===================================================================
+function BcryptTab() {
+  // Hash section
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [rounds, setRounds] = useState(12);
+  const [hashing, setHashing] = useState(false);
+  const [hash, setHash] = useState("");
+
+  // Verify section
+  const [verifyPw, setVerifyPw] = useState("");
+  const [verifyHash, setVerifyHash] = useState("");
+  const [showVerifyPw, setShowVerifyPw] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<"valid" | "invalid" | null>(null);
+
+  const doHash = async () => {
+    if (!password) { toast.error("Enter a password"); return; }
+    setHashing(true); setHash("");
+    try {
+      const salt = await bcrypt.genSalt(rounds);
+      const h = await bcrypt.hash(password, salt);
+      setHash(h);
+      toast.success("Hash generated");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setHashing(false); }
+  };
+
+  const doVerify = async () => {
+    if (!verifyPw || !verifyHash) { toast.error("Enter both password and hash"); return; }
+    setVerifying(true); setVerifyResult(null);
+    try {
+      const ok = await bcrypt.compare(verifyPw, verifyHash.trim());
+      setVerifyResult(ok ? "valid" : "invalid");
+    } catch { setVerifyResult("invalid"); }
+    finally { setVerifying(false); }
+  };
+
+  const costMs: Record<number, string> = { 10: "~100ms", 11: "~200ms", 12: "~400ms", 13: "~800ms", 14: "~1.6s" };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Hash column */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Lock className="w-4 h-4 text-primary" />Hash a password</h3>
+
+        <div className="space-y-1.5">
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password</label>
+          <div className="relative">
+            <Input
+              type={showPw ? "text" : "password"}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Enter password to hash…"
+              className="font-mono text-xs pr-9 h-9"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-0.5 top-0.5 h-8 w-8" onClick={() => setShowPw(v => !v)} aria-label="Toggle visibility">
+              {showPw ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+          {password && <PasswordStrength text={password} />}
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Cost rounds: {rounds}</label>
+            <span className="text-xs text-muted-foreground font-mono">{costMs[rounds] ?? "slow"}</span>
+          </div>
+          <Slider min={10} max={14} step={1} value={[rounds]} onValueChange={([v]) => setRounds(v)} className="w-full" />
+          <p className="text-xs text-muted-foreground">Higher rounds = more secure but slower. 12 is the production baseline.</p>
+        </div>
+
+        <Button onClick={doHash} disabled={hashing} className="w-full">
+          {hashing ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Hashing…</> : "Generate Hash"}
         </Button>
+
+        {hash && (
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+              <span className="text-xs font-medium text-muted-foreground">bcrypt hash</span>
+              <CopyButton value={hash} message="Hash copied" size="sm" />
+            </div>
+            <pre className="p-3 font-mono text-xs text-foreground break-all whitespace-pre-wrap">{hash}</pre>
+            <div className="px-3 py-1.5 border-t border-border flex flex-wrap gap-3 text-xs text-muted-foreground">
+              <span>Algorithm: <code className="font-mono text-foreground">{hash.slice(0, 4)}</code></span>
+              <span>Rounds: <code className="font-mono text-foreground">{rounds}</code></span>
+              <span>Length: <code className="font-mono text-foreground">{hash.length} chars</code></span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Verify column */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-primary" />Verify a hash</h3>
+
+        <div className="space-y-1.5">
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password to verify</label>
+          <div className="relative">
+            <Input
+              type={showVerifyPw ? "text" : "password"}
+              value={verifyPw}
+              onChange={e => { setVerifyPw(e.target.value); setVerifyResult(null); }}
+              placeholder="Enter plaintext password…"
+              className="font-mono text-xs pr-9 h-9"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-0.5 top-0.5 h-8 w-8" onClick={() => setShowVerifyPw(v => !v)} aria-label="Toggle visibility">
+              {showVerifyPw ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">bcrypt hash</label>
+            {hash && <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setVerifyHash(hash); setVerifyResult(null); }}>Use generated hash</Button>}
+          </div>
+          <Input
+            value={verifyHash}
+            onChange={e => { setVerifyHash(e.target.value); setVerifyResult(null); }}
+            placeholder="$2b$12$…"
+            className="font-mono text-xs h-9"
+          />
+        </div>
+
+        <Button onClick={doVerify} disabled={verifying} className="w-full">
+          {verifying ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Verifying…</> : "Verify"}
+        </Button>
+
+        {verifyResult && (
+          <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm font-medium ${verifyResult === "valid" ? "bg-green-500/10 border-green-500/40 text-green-400" : "bg-destructive/10 border-destructive/40 text-destructive"}`}>
+            {verifyResult === "valid" ? <ShieldCheck className="w-4 h-4" /> : <ShieldX className="w-4 h-4" />}
+            {verifyResult === "valid" ? "Password matches the hash" : "Password does not match"}
+          </div>
+        )}
+
+        <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-muted-foreground">About bcrypt</p>
+          <ul className="text-xs text-muted-foreground space-y-0.5">
+            <li>• Adaptive — cost factor slows brute-force as hardware improves</li>
+            <li>• Built-in salt — every hash is unique even for identical passwords</li>
+            <li>• Max input: 72 bytes (passwords longer than that are truncated)</li>
+            <li>• Never store plaintext passwords — always hash before saving</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

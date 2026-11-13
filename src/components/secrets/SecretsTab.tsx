@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Copy, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { CopyButton } from "@/components/CopyButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,28 @@ import {
   FORMATS, MAX_BYTES, MAX_COUNT, MIN_BYTES, PRESETS, entropyBits, generateSecrets,
   type SecretFormat, type SecretPreset,
 } from "./secretsUtils";
+
+function EntropyMeter({ bits }: { bits: number }) {
+  // 128-bit = "Good", 256-bit = "Excellent" for cryptographic use
+  const tiers = [
+    { min: 0,   label: "Very weak",  color: "bg-destructive" },
+    { min: 64,  label: "Weak",       color: "bg-destructive" },
+    { min: 112, label: "Fair",       color: "bg-[hsl(var(--warning))]" },
+    { min: 128, label: "Good",       color: "bg-[hsl(var(--info))]" },
+    { min: 192, label: "Strong",     color: "bg-[hsl(var(--success))]" },
+    { min: 256, label: "Excellent",  color: "bg-[hsl(var(--success))]" },
+  ];
+  const tier = [...tiers].reverse().find(t => bits >= t.min) ?? tiers[0];
+  const pct = Math.min(100, Math.round((bits / 256) * 100));
+  return (
+    <div className="flex items-center gap-3" role="status" aria-label={`Entropy strength: ${tier.label}`}>
+      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${tier.color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-muted-foreground w-20 text-right shrink-0">{tier.label} ({bits} bits)</span>
+    </div>
+  );
+}
 
 export const SecretsTab = () => {
   const [bytes, setBytes] = useState("32");
@@ -37,10 +60,6 @@ export const SecretsTab = () => {
     run(next);
   };
 
-  const copy = async (value: string, label: string) => {
-    try { await navigator.clipboard.writeText(value); toast.success(label); }
-    catch { toast.error("Clipboard access failed. Select and copy the value manually."); }
-  };
 
   const bytesNumber = Number(bytes);
   return (
@@ -84,13 +103,14 @@ export const SecretsTab = () => {
             <h2 id="secrets-output" className="font-mono text-sm font-semibold">
               Generated ({values.length}) <span className="text-muted-foreground font-normal">· {bytesNumber} bytes · {entropyBits(bytesNumber)} bits of randomness each</span>
             </h2>
-            {values.length > 1 && <Button size="sm" variant="outline" onClick={() => copy(values.join("\n"), "All values copied")}><Copy />Copy all</Button>}
+            {values.length > 1 && <CopyButton value={() => values.join("\n")} message="All values copied" label="Copy all" size="sm" variant="outline" />}
           </div>
+          <EntropyMeter bits={entropyBits(bytesNumber)} />
           <ul className="border border-border rounded-lg divide-y divide-border" aria-label="Generated secrets">
             {values.map((value, index) => (
               <li key={`${index}-${value}`} className="flex items-start gap-2 px-3 py-2">
                 <code className="flex-1 min-w-0 text-xs font-mono break-all select-all">{value}</code>
-                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" title="Copy" aria-label={`Copy value ${index + 1}`} onClick={() => copy(value, "Copied to clipboard")}><Copy /></Button>
+                <CopyButton value={value} message="Copied to clipboard" ariaLabel={`Copy value ${index + 1}`} variant="ghost" size="icon" className="h-7 w-7 shrink-0" />
               </li>
             ))}
           </ul>

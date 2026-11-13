@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Copy, ChevronDown, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { CLAIM_TOOLTIPS } from "./jwtUtils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -15,10 +14,6 @@ interface JwtSectionProps {
 export const JwtSection = ({ title, data, colorClass, borderClass }: JwtSectionProps) => {
   const [expanded, setExpanded] = useState(true);
 
-  const copy = () => {
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-    toast.success(`${title} copied`);
-  };
 
   return (
     <div className={`rounded-lg border ${borderClass} bg-card overflow-hidden`}>
@@ -30,9 +25,9 @@ export const JwtSection = ({ title, data, colorClass, borderClass }: JwtSectionP
           {expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
           <span className={`text-xs font-bold uppercase tracking-wider ${colorClass}`}>{title}</span>
         </div>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); copy(); }}>
-          <Copy className="w-3 h-3" />
-        </Button>
+        <span onClick={(e) => e.stopPropagation()}>
+          <CopyButton value={() => JSON.stringify(data, null, 2)} message={`${title} copied`} ariaLabel={`Copy ${title}`} variant="ghost" size="icon" className="h-6 w-6" />
+        </span>
       </button>
       {expanded && (
         <div className="px-3 pb-3 font-mono text-sm space-y-0.5">

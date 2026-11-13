@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shuffle, Download, Copy, Users } from "lucide-react";
+import { Shuffle, Download, Users } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
 import { createFaker, localeIds } from "@/lib/fakeTemplate/locales";
 import { validateTemplate, type Json, type Issue } from "@/lib/fakeTemplate/engine";
 import { presets } from "@/lib/fakeTemplate/presets";
@@ -19,8 +20,7 @@ import { defaults } from "@/lib/fakeTemplate/engine";
 import { exportData, formats, type Format } from "@/lib/fakeTemplate/exports";
 import { SavedTemplates } from "@/components/fake-data/SavedTemplates";
 import { encodeShare, decodeShare, MAX_TEMPLATE } from "@/lib/fakeTemplate/storage";
-import { ToolHeader } from "@/components/ToolHeader";
-import { toolPageClass } from "@/lib/toolLayout";
+import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 const labelStyle = "block text-xs text-muted-foreground uppercase tracking-wider";
 const editorStyle = "font-mono text-sm bg-card border-border resize-none";
@@ -111,15 +111,10 @@ const FakeDataGenerator = () => {
     finally { if(id === revision.current) setBusy(false); }
   };
 
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(output); toast.success("Copied to clipboard"); }
-    catch { toast.error("Clipboard unavailable"); }
-  };
 
   return (
-    <div className={toolPageClass("fluid")}>
+    <ToolPageLayout title="Fake Data Generator" description="Generate realistic test data from JSON/CSV/SQL templates · stays in your browser">
       <ToolSEO title="Fake Data Generator" description="Generate 1–1000 records locally with Faker v10 JSON templates, a visual builder, locales, reproducible seeds, and JSON, NDJSON, CSV, SQL or YAML exports." canonicalPath="/fake-data" keywords={["fake data generator", "faker templates", "seeded mock data", "faker locales", "CSV SQL YAML test data", "JSON template builder"]} faq={[{question:"How do templates work?",answer:"Use JSON objects or arrays with Faker tokens, nested repeat, pick, weighted and maybe directives, unique values and ordered sibling references. Single tokens preserve their return types."},{question:"How many records can I generate?",answer:"Generate 1–1000 records per batch, with a 10 MiB output limit. Batches above 100 records run in a browser worker."},{question:"How do I reproduce generated data?",answer:"Use the same template, locale, seed, count and reference date. An omitted reference date defaults to January 1, 2026."},{question:"Which export formats are available?",answer:"Download JSON, NDJSON, CSV with flattened dot paths and formula-safe quoting, standard SQL INSERT statements, or YAML."},{question:"Is data transmitted or stored?",answer:"Generation runs locally. Templates persist only when explicitly saved in browser storage. Share links encode the template and options in a URL fragment; anyone given the link can read them. Static locale assets may be downloaded, but templates and generated records are not sent for processing."}]} howToSteps={["Choose a preset or define a JSON template using the Template or Builder tab","Set count from 1–1000, locale, optional seed and reference date","Click Generate and select JSON, NDJSON, CSV, SQL INSERT or YAML","Copy or download the output, or save and share the template"]} />
-      <ToolHeader title="Fake Data Generator" icon={Users} hidePrivacy description="Templates and generated data stay in your browser. No data is sent for processing." />
       <div className="flex flex-wrap items-end gap-4">
         <div className="space-y-2">
           <label htmlFor="fake-count" className={labelStyle}>Count (max 1000)</label>
@@ -142,13 +137,13 @@ const FakeDataGenerator = () => {
         {format==='sql'&&<div className="space-y-2"><label htmlFor="fake-table" className={labelStyle}>Table name</label><Input id="fake-table" value={table} onChange={e=>setTable(e.target.value)} className="w-40 bg-card border-border"/></div>}
         <Button onClick={generate} disabled={busy}>{busy ? "Generating…" : "Generate"}</Button>
         {busy&&<Button variant="outline" onClick={()=>{revision.current++;abortRef.current?.abort();setBusy(false);}}>Cancel</Button>}
-        <Button variant="outline" onClick={copy} disabled={!output}><Copy className="w-4 h-4 mr-2" />Copy</Button>
+        <CopyButton value={output} message="Copied to clipboard" label="Copy" variant="outline" disabled={!output} />
         <Button variant="outline" disabled={!output} onClick={()=>downloadFile(output,`fake-data.${formats[format].extension}`,formats[format].mime)}><Download className="w-4 h-4 mr-2" />Download</Button>
       </div>
       {output && (
         <div className="space-y-2"><Textarea aria-label="Generated output" value={output} readOnly className={`min-h-[400px] ${editorStyle}`} /><p className="text-xs text-muted-foreground">{stats.count} records · {new TextEncoder().encode(output).length.toLocaleString()} bytes · {stats.ms.toFixed(1)} ms</p></div>
       )}
-    </div>
+    </ToolPageLayout>
   );
 };
 

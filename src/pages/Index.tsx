@@ -1,27 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2 } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 
 const tools = [
+  { title: "HTML Editor", description: "WYSIWYG editor with live HTML source, tables, links, local image embed, and instant download", url: "/html-editor", icon: FileCode2 },
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
-  { title: "HTML WYSIWYG Editor", description: "Edit rich text visually and get the HTML source instantly, with tables, links, local images, and downloads", url: "/html-editor", icon: FileCode2 },
-  { title: "JSON Formatter", description: "Format, validate & minify JSON", url: "/json", icon: Braces },
-  { title: "Base64", description: "Encode & decode Base64 strings", url: "/base64", icon: Binary },
-  { title: "URL Encode", description: "Encode & decode URL components", url: "/url-encode", icon: Link },
-  { title: "UUID Generator", description: "Generate v4 UUIDs instantly", url: "/uuid", icon: Fingerprint },
-  { title: "Color Converter", description: "Convert between HEX, RGB & HSL", url: "/color", icon: Palette },
-  { title: "JWT Decoder", description: "Decode JWTs with expiry visualization", url: "/jwt", icon: KeyRound },
-  { title: "API Diff", description: "Compare JSON responses & spot differences", url: "/diff", icon: GitCompare },
-  { title: "Fake Data", description: "Generate realistic test data in JSON", url: "/fake-data", icon: Users },
-  { title: "Env Generator", description: "Build .env files from templates", url: "/env", icon: FileText },
-  { title: "Hash Generator", description: "SHA-1, SHA-256, SHA-384, SHA-512", url: "/hash", icon: Hash },
-  { title: "Date & Time", description: "Timestamps, timezones & cron builder", url: "/datetime", icon: Clock },
-  { title: "Regex Playground", description: "Live regex tester with match highlighting", url: "/regex", icon: Regex },
-  { title: "Image Metadata Viewer", description: "Inspect EXIF, GPS, camera details, timestamps, and other image metadata privately in your browser.", url: "/image-metadata", icon: FileSearch },
-  { title: "Document Signer", description: "Sign files and verify detached signatures with RSA-PSS or ECDSA keys, privately in your browser.", url: "/document-signer", icon: FileSignature },
-  { title: "Text Utilities", description: "Change case, sort and dedupe lines, slugify and count text", url: "/text", icon: Type },
-  { title: "Certificate Inspector", description: "Decode X.509 certificates and CSRs: subject, issuer, validity, SANs, key usage and fingerprints. Nothing is uploaded.", url: "/certificate", icon: ScrollText },
+  { title: "JSON Formatter", description: "Format, validate & minify JSON — tree view, sort keys, schema inference, CSV/XML/YAML export", url: "/json", icon: Braces },
+  { title: "Base64 & Encoding", description: "Encode & decode Base64, URL-safe Base64, URL components, Data URLs, and Unicode", url: "/base64", icon: Binary },
+  { title: "JWT Hub", description: "Decode, verify & encode JWTs — security scoring, algorithm details, expiry visualization", url: "/jwt", icon: KeyRound },
+  { title: "Crypto Suite", description: "SHA hashes, UUID v1–v5, password generator with strength meter, and secure secrets", url: "/uuid", icon: Fingerprint },
+  { title: "Color Converter", description: "Convert HEX/RGB/HSL/HSV/CMYK, build palettes, check contrast, extract from images", url: "/color", icon: Palette },
+  { title: "API Diff", description: "Deep-compare JSON/YAML responses — structured diff, ignore rules, Markdown export", url: "/diff", icon: GitCompare },
+  { title: "Fake Data Generator", description: "Generate realistic test data in JSON, CSV, SQL, YAML or NDJSON with Faker.js templates", url: "/fake-data", icon: Users },
+  { title: "Env Generator", description: "Build .env files from templates — parse, convert to JSON, strip to .example", url: "/env", icon: FileText },
+  { title: "Hash Generator", description: "SHA-1, SHA-256, SHA-384, SHA-512 hashes via Web Crypto — file and text input", url: "/hash", icon: Hash },
+  { title: "Date & Time", description: "Unix timestamp ↔ date, timezone converter, cron expression builder", url: "/datetime", icon: Clock },
+  { title: "Regex Playground", description: "Live regex tester — real-time match highlighting, capture groups, replace preview, snippet library", url: "/regex", icon: Regex },
+  { title: "Image Metadata Viewer", description: "Inspect EXIF, GPS, camera details and timestamps — strip metadata, all locally in your browser", url: "/image-metadata", icon: FileSearch },
+  { title: "Document Signer", description: "Sign files and verify detached signatures with RSA-PSS or ECDSA keys, privately in your browser", url: "/document-signer", icon: FileSignature },
+  { title: "Text Utilities", description: "Change case, sort and dedupe lines, slugify, number lines, and count words & characters", url: "/text", icon: Type },
+  { title: "Certificate Inspector", description: "Decode X.509 certificates and CSRs: subject, issuer, validity, SANs, key usage, fingerprints", url: "/certificate", icon: ScrollText },
+  { title: "URL Encode", description: "Encode & decode URL components and full URLs", url: "/url-encode", icon: Link },
+  { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects — MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
+  { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Binary },
+  { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
+  { title: "Text & Code Diff", description: "Compare two texts or code snippets — side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
+  { title: "YAML / JSON / TOML", description: "Convert between YAML, JSON, and TOML — instant live conversion, swap inputs, download result", url: "/yaml", icon: FileJson2 },
+  { title: "chmod Calculator", description: "Build Unix file permissions interactively — toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
+  { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases — configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
+  { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
+  { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
+  { title: "JSON Transformer", description: "Filter and transform JSON with jq-compatible expressions — map, select, sort_by, group_by, to_entries, flatten and more, live in your browser", url: "/json-transform", icon: Braces },
 ];
 
 const Index = () => {
@@ -47,12 +57,12 @@ const Index = () => {
     <div className="max-w-[1600px]">
       <ToolSEO
         title="Toolzy — Free Online Developer Tools"
-        description="Toolzy offers 15+ free browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, text utilities, and more. No sign-up. Nothing uploaded."
+        description="Toolzy offers 16+ free browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, HTML editor, text utilities, and more. No sign-up. Nothing uploaded."
         canonicalPath="/"
         isApp={false}
         keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator", "JWT decoder", "regex tester", "hash generator"]}
         faq={[
-          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 15+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, image metadata viewer, document signer, and certificate inspector." },
+          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 16+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, and certificate inspector." },
           { question: "Are these developer tools free?", answer: "Yes. All tools are 100% free, run entirely in your browser, and require no sign-up or installation." },
           { question: "Is my data safe when using Toolzy?", answer: "Yes. All processing happens client-side in your browser using the Web Crypto API and local JavaScript. No data, files, or keys are ever sent to any server." },
           { question: "Do the tools work offline?", answer: "Yes. After the page loads, all tools work without a network connection. The only exceptions are static locale files that the Fake Data Generator downloads on demand." },

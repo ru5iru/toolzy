@@ -59,7 +59,7 @@ export const SignatureVerifier = ({ token, algorithm }: Props) => {
           {result ? "Signature is valid ✓" : "Signature is invalid ✗"}
         </div>
       )}
-      <p className="text-xs text-muted-foreground">
+      <p className="text-[10px] text-muted-foreground">
         Algorithm: <span className="font-mono">{algorithm}</span> •
         {isHmac ? " Symmetric (HMAC)" : isRsa ? " Asymmetric (RSA)" : isEc ? " Asymmetric (ECDSA)" : " Unknown"}
       </p>
