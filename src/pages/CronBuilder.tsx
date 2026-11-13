@@ -19,19 +19,55 @@ const FIELD_DEFS = [
 
 type FieldName = "minute" | "hour" | "dayOfMonth" | "month" | "dayOfWeek";
 
-const PRESETS: { label: string; expr: string; note?: string }[] = [
-  { label: "Every minute",         expr: "* * * * *" },
-  { label: "Every 5 minutes",      expr: "*/5 * * * *" },
-  { label: "Every hour",           expr: "0 * * * *" },
-  { label: "Every day at midnight",expr: "0 0 * * *" },
-  { label: "Every day at noon",    expr: "0 12 * * *" },
-  { label: "Weekdays at 9 AM",     expr: "0 9 * * 1-5" },
-  { label: "Mondays at 9 AM",      expr: "0 9 * * 1" },
-  { label: "Every Sunday midnight",expr: "0 0 * * 0" },
-  { label: "1st of every month",   expr: "0 0 1 * *" },
-  { label: "Every 15 minutes",     expr: "*/15 * * * *" },
-  { label: "Twice a day",          expr: "0 0,12 * * *" },
-  { label: "Every 30 minutes, 9-5",expr: "*/30 9-17 * * 1-5" },
+type PresetGroup = { group: string; items: { label: string; expr: string }[] };
+
+const PRESET_GROUPS: PresetGroup[] = [
+  {
+    group: "Common",
+    items: [
+      { label: "Every minute",         expr: "* * * * *" },
+      { label: "Every 5 minutes",      expr: "*/5 * * * *" },
+      { label: "Every 15 minutes",     expr: "*/15 * * * *" },
+      { label: "Every 30 minutes",     expr: "*/30 * * * *" },
+      { label: "Every hour",           expr: "0 * * * *" },
+      { label: "Every 6 hours",        expr: "0 */6 * * *" },
+      { label: "Every 12 hours",       expr: "0 */12 * * *" },
+      { label: "Twice a day",          expr: "0 0,12 * * *" },
+      { label: "Every day at midnight",expr: "0 0 * * *" },
+      { label: "Every day at noon",    expr: "0 12 * * *" },
+    ],
+  },
+  {
+    group: "Weekly",
+    items: [
+      { label: "Weekdays at 9 AM",     expr: "0 9 * * 1-5" },
+      { label: "Weekdays at noon",     expr: "0 12 * * 1-5" },
+      { label: "Weekdays 9-5 (hourly)",expr: "0 9-17 * * 1-5" },
+      { label: "Weekdays at 30 min, 9-5",expr: "*/30 9-17 * * 1-5" },
+      { label: "Mondays at 9 AM",      expr: "0 9 * * 1" },
+      { label: "Every Sunday midnight",expr: "0 0 * * 0" },
+      { label: "Every Friday at 5 PM", expr: "0 17 * * 5" },
+    ],
+  },
+  {
+    group: "Monthly",
+    items: [
+      { label: "1st of every month",   expr: "0 0 1 * *" },
+      { label: "Last day of month",    expr: "0 0 28-31 * *" },
+      { label: "1st & 15th",           expr: "0 0 1,15 * *" },
+      { label: "Quarterly (1st Jan/Apr/Jul/Oct)", expr: "0 0 1 1,4,7,10 *" },
+    ],
+  },
+  {
+    group: "CI/CD",
+    items: [
+      { label: "Nightly build",        expr: "0 2 * * *" },
+      { label: "Nightly (weekdays)",   expr: "0 2 * * 1-5" },
+      { label: "Weekly deploy (Mon 3 AM)", expr: "0 3 * * 1" },
+      { label: "Hourly health check",  expr: "0 * * * *" },
+      { label: "Cache warm-up (*/10)", expr: "*/10 * * * *" },
+    ],
+  },
 ];
 
 function parseExpr(expr: string): Record<FieldName, string> | null {
@@ -289,23 +325,35 @@ const CronBuilder = () => {
           {/* Presets */}
           <div className="rounded-lg border border-border bg-card p-4">
             <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Presets</h2>
-            <div className="flex flex-col gap-1">
-              {PRESETS.map(({ label, expr: e }) => (
-                <button
-                  key={e}
-                  onClick={() => handlePreset(e)}
-                  className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-secondary group"
-                >
-                  <span className="text-xs text-foreground">{label}</span>
-                  <code className="text-[11px] font-mono text-muted-foreground group-hover:text-foreground transition-colors">{e}</code>
-                </button>
+            <div className="space-y-3">
+              {PRESET_GROUPS.map(({ group, items }) => (
+                <div key={group}>
+                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">{group}</p>
+                  <div className="flex flex-col gap-0.5">
+                    {items.map(({ label, expr: e }) => (
+                      <button
+                        key={e}
+                        onClick={() => handlePreset(e)}
+                        className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-secondary group"
+                      >
+                        <span className="text-xs text-foreground">{label}</span>
+                        <code className="text-[11px] font-mono text-muted-foreground group-hover:text-foreground transition-colors shrink-0">{e}</code>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
 
           {/* Next runs */}
           <div className="rounded-lg border border-border bg-card p-4">
-            <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Next 10 runs</h2>
+            <div className="mb-3 flex items-baseline justify-between gap-2">
+              <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Next 10 runs</h2>
+              <span className="text-[10px] text-muted-foreground/60 font-mono truncate" title="Times shown in your local timezone">
+                {Intl.DateTimeFormat().resolvedOptions().timeZone}
+              </span>
+            </div>
             {nextRuns.length > 0 ? (
               <ol className="space-y-1">
                 {nextRuns.map((r, i) => (

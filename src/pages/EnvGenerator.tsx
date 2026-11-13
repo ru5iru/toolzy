@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { CopyButton } from "@/components/CopyButton";
@@ -92,10 +93,30 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend`,
 };
 
+/** Keys whose values should be masked when secret-masking is on. */
+const SECRET_PATTERN = /SECRET|KEY|TOKEN|PASSWORD|PASS|PRIVATE|CREDENTIAL|AUTH|API_/i;
+
+/** Mask secret values in .env content for display. */
+function maskSecrets(text: string): string {
+  return text.split("\n").map((line) => {
+    const t = line.trim();
+    if (!t || t.startsWith("#")) return line;
+    const eq = t.indexOf("=");
+    if (eq < 0) return line;
+    const key = t.slice(0, eq).trim();
+    const val = t.slice(eq + 1).trim();
+    if (SECRET_PATTERN.test(key) && val) {
+      return `${key}=${"*".repeat(Math.min(val.length, 12))}`;
+    }
+    return line;
+  }).join("\n");
+}
+
 const EnvGenerator = () => {
   const [content, setContent] = useState("");
   const [newKey, setNewKey] = useState("");
   const [newVal, setNewVal] = useState("");
+  const [maskMode, setMaskMode] = useState(false);
 
   // Diff state
   const [diffA, setDiffA] = useState("");
@@ -121,6 +142,8 @@ const EnvGenerator = () => {
     setNewVal("");
     toast.success("Variable added");
   };
+
+  const displayContent = maskMode ? maskSecrets(content) : content;
 
   const issues = parseEnv(content).issues;
   const convert = (fn: () => string, done: string) => {
@@ -165,16 +188,37 @@ const EnvGenerator = () => {
             </div>
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Value</label>
-              <Input value={newVal} onChange={(e) => setNewVal(e.target.value)} placeholder="value" className="w-56 bg-card border-border font-mono" />
+              <Input
+                value={newVal}
+                onChange={(e) => setNewVal(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addVar(); } }}
+                placeholder="value (Enter to add)"
+                className="w-56 bg-card border-border font-mono"
+              />
             </div>
             <Button variant="outline" size="sm" onClick={addVar}>Add</Button>
           </div>
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="KEY=value"
-            className="code-surface h-[clamp(240px,calc(100dvh-420px),800px)] resize-y bg-card"
-          />
+          <div className="relative">
+            <Textarea
+              value={displayContent}
+              onChange={(e) => { if (!maskMode) setContent(e.target.value); }}
+              readOnly={maskMode}
+              placeholder="KEY=value"
+              className="code-surface h-[clamp(240px,calc(100dvh-420px),800px)] resize-y bg-card"
+            />
+            {content && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-7 w-7 opacity-70 hover:opacity-100"
+                aria-label={maskMode ? "Show secret values" : "Mask secret values"}
+                onClick={() => setMaskMode((v) => !v)}
+                title={maskMode ? "Show secret values" : "Mask values matching SECRET/KEY/TOKEN/PASSWORD"}
+              >
+                {maskMode ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </Button>
+            )}
+          </div>
           <div className="flex gap-2 flex-wrap">
             <CopyButton value={content} label="Copy" variant="default" disabled={!content} />
             <Button variant="secondary" size="sm" onClick={download} disabled={!content}>Download .env</Button>

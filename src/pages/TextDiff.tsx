@@ -52,6 +52,48 @@ function buildUnified(lines: DiffLine[]): string {
   }).join("\n");
 }
 
+/** Compute word-level inline diff for a removed↔added line pair. */
+interface InlinePart { text: string; hl: boolean }
+function inlineDiff(a: string, b: string): { left: InlinePart[]; right: InlinePart[] } {
+  const changes = Diff.diffWordsWithSpace(a, b);
+  const left: InlinePart[] = [];
+  const right: InlinePart[] = [];
+  for (const ch of changes) {
+    if (ch.removed) {
+      left.push({ text: ch.value, hl: true });
+    } else if (ch.added) {
+      right.push({ text: ch.value, hl: true });
+    } else {
+      left.push({ text: ch.value, hl: false });
+      right.push({ text: ch.value, hl: false });
+    }
+  }
+  return { left, right };
+}
+
+function InlineText({ parts, side }: { parts: InlinePart[]; side: "left" | "right" }) {
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.hl ? (
+          <mark
+            key={i}
+            className={
+              side === "left"
+                ? "bg-destructive/40 text-destructive rounded-sm"
+                : "bg-green-500/40 text-green-400 rounded-sm"
+            }
+          >
+            {p.text}
+          </mark>
+        ) : (
+          <span key={i}>{p.text}</span>
+        )
+      )}
+    </>
+  );
+}
+
 const SAMPLE_A = `function greet(name) {
   console.log("Hello, " + name);
   return name;
@@ -73,6 +115,7 @@ const TextDiff = () => {
   const [right, setRight] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
+  const [showInline, setShowInline] = useState(true);
 
   const diffLines = useMemo(() => {
     if (!left && !right) return [];
@@ -136,6 +179,15 @@ const TextDiff = () => {
         Ignore whitespace
       </Button>
 
+      <Button
+        variant={showInline ? "selected" : "outline"}
+        size="sm" className="h-8 text-xs"
+        onClick={() => setShowInline((v) => !v)}
+        title="Highlight changed words within modified lines"
+      >
+        Inline highlights
+      </Button>
+
       <div className="ml-auto flex items-center gap-1.5">
         {hasChanges && (
           <span className="text-xs">
@@ -170,9 +222,9 @@ const TextDiff = () => {
     >
       <ToolSEO
         title="Text & Code Diff — Free Online Diff Tool"
-        description="Compare two texts or code snippets side-by-side or in unified view. Highlight additions and deletions. Free, browser-only, nothing uploaded."
+        description="Compare two texts or code snippets side-by-side or in unified view. Inline word-level highlights on changed lines. Free, browser-only, nothing uploaded."
         canonicalPath="/text-diff"
-        keywords={["text diff", "code diff", "online diff tool", "compare text", "file diff", "diff viewer", "side by side diff"]}
+        keywords={["text diff", "code diff", "online diff tool", "compare text", "file diff", "diff viewer", "side by side diff", "inline diff"]}
       />
 
       <div className="h-[clamp(400px,calc(100dvh-200px),900px)] flex flex-col gap-3">
@@ -221,10 +273,10 @@ const TextDiff = () => {
           </div>
           <div className="flex-1 overflow-auto">
             {diffLines.length > 0 && viewMode === "unified" && (
-              <UnifiedView lines={diffLines} />
+              <UnifiedView lines={diffLines} showInline={showInline} />
             )}
             {diffLines.length > 0 && viewMode === "split" && (
-              <SplitView lines={diffLines} />
+              <SplitView lines={diffLines} showInline={showInline} />
             )}
           </div>
         </div>
@@ -232,7 +284,7 @@ const TextDiff = () => {
 
       <AboutTool>
         <p>Compares two pieces of text line by line using the Myers diff algorithm. Added lines are highlighted in green, removed lines in red, and unchanged lines are shown normally.</p>
-        <p className="mt-2">Side-by-side view places original and modified text in adjacent columns for easy comparison. Unified view shows all changes in a single column with <code>+</code> and <code>−</code> prefixes (like <code>git diff</code>). The "Ignore whitespace" option trims leading and trailing spaces before comparison. Everything runs in your browser — text is never uploaded.</p>
+        <p className="mt-2">Side-by-side view places original and modified text in adjacent columns. When "Inline highlights" is on, changed lines also show word-level highlights — the specific words that differ are marked within each line, making it easy to spot small edits. Unified view shows changes in a single column with <code>+</code> / <code>−</code> prefixes (like <code>git diff</code>). The "Ignore whitespace" option trims leading and trailing spaces before comparison. Everything runs in your browser — text is never uploaded.</p>
       </AboutTool>
     </ToolPageLayout>
   );
@@ -250,30 +302,56 @@ function linePrefix(type: DiffLine["type"]): string {
   return " ";
 }
 
-function UnifiedView({ lines }: { lines: DiffLine[] }) {
+function UnifiedView({ lines, showInline }: { lines: DiffLine[]; showInline: boolean }) {
+  // Collect pairs for inline diff: a removed line immediately followed by its added counterpart
+  const inlineMap = useMemo(() => {
+    if (!showInline) return new Map<number, { left: InlinePart[]; right: InlinePart[] }>();
+    const map = new Map<number, { left: InlinePart[]; right: InlinePart[] }>();
+    for (let i = 0; i < lines.length - 1; i++) {
+      if (lines[i].type === "removed" && lines[i + 1].type === "added") {
+        const { left, right } = inlineDiff(lines[i].content, lines[i + 1].content);
+        map.set(i, { left, right });
+        map.set(i + 1, { left: right, right: left }); // store right inline parts at added index
+      }
+    }
+    return map;
+  }, [lines, showInline]);
+
   return (
     <table className="w-full text-xs font-mono border-collapse">
       <tbody>
-        {lines.map((line, i) => (
-          <tr key={i} className={`${lineClass(line.type)}`}>
-            <td className="select-none w-8 text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums">
-              {line.leftNum ?? ""}
-            </td>
-            <td className="select-none w-8 text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums">
-              {line.rightNum ?? ""}
-            </td>
-            <td className="select-none w-5 text-center pr-1 font-semibold">
-              {linePrefix(line.type)}
-            </td>
-            <td className="py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all">{line.content}</td>
-          </tr>
-        ))}
+        {lines.map((line, i) => {
+          const inlineParts = inlineMap.get(i);
+          return (
+            <tr key={i} className={`${lineClass(line.type)}`}>
+              <td className="select-none w-8 text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums">
+                {line.leftNum ?? ""}
+              </td>
+              <td className="select-none w-8 text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums">
+                {line.rightNum ?? ""}
+              </td>
+              <td className="select-none w-5 text-center pr-1 font-semibold">
+                {linePrefix(line.type)}
+              </td>
+              <td className="py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all">
+                {showInline && inlineParts ? (
+                  <InlineText
+                    parts={line.type === "removed" ? inlineParts.left : inlineParts.right}
+                    side={line.type === "removed" ? "left" : "right"}
+                  />
+                ) : (
+                  line.content
+                )}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
 }
 
-function SplitView({ lines }: { lines: DiffLine[] }) {
+function SplitView({ lines, showInline }: { lines: DiffLine[]; showInline: boolean }) {
   // Build paired rows: match removed with added where possible
   const rows: Array<{ left: DiffLine | null; right: DiffLine | null }> = [];
   let i = 0;
@@ -283,7 +361,6 @@ function SplitView({ lines }: { lines: DiffLine[] }) {
       rows.push({ left: cur, right: cur });
       i++;
     } else if (cur.type === "removed") {
-      // peek for following added lines
       let j = i + 1;
       while (j < lines.length && lines[j].type === "removed") j++;
       const addedStart = j;
@@ -311,22 +388,42 @@ function SplitView({ lines }: { lines: DiffLine[] }) {
         <col style={{ width: "50%" }} />
       </colgroup>
       <tbody>
-        {rows.map((row, i) => (
-          <tr key={i}>
-            <td className={`select-none text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums ${row.left?.type === "removed" ? "bg-destructive/10" : ""}`}>
-              {row.left?.leftNum ?? ""}
-            </td>
-            <td className={`py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all border-r border-border/30 ${row.left ? lineClass(row.left.type) : "bg-card"}`}>
-              {row.left ? row.left.content : ""}
-            </td>
-            <td className={`select-none text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums ${row.right?.type === "added" ? "bg-green-500/10" : ""}`}>
-              {row.right?.rightNum ?? ""}
-            </td>
-            <td className={`py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all ${row.right ? lineClass(row.right.type) : "bg-card"}`}>
-              {row.right ? row.right.content : ""}
-            </td>
-          </tr>
-        ))}
+        {rows.map((row, i) => {
+          // Compute inline diff when both sides exist and differ
+          const canInline = showInline && row.left?.type === "removed" && row.right?.type === "added";
+          const { left: leftParts, right: rightParts } = canInline
+            ? inlineDiff(row.left!.content, row.right!.content)
+            : { left: null, right: null };
+
+          return (
+            <tr key={i}>
+              <td className={`select-none text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums ${row.left?.type === "removed" ? "bg-destructive/10" : ""}`}>
+                {row.left?.leftNum ?? ""}
+              </td>
+              <td className={`py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all border-r border-border/30 ${row.left ? lineClass(row.left.type) : "bg-card"}`}>
+                {row.left ? (
+                  canInline && leftParts ? (
+                    <InlineText parts={leftParts} side="left" />
+                  ) : (
+                    row.left.content
+                  )
+                ) : ""}
+              </td>
+              <td className={`select-none text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums ${row.right?.type === "added" ? "bg-green-500/10" : ""}`}>
+                {row.right?.rightNum ?? ""}
+              </td>
+              <td className={`py-0.5 pr-3 pl-1 whitespace-pre-wrap break-all ${row.right ? lineClass(row.right.type) : "bg-card"}`}>
+                {row.right ? (
+                  canInline && rightParts ? (
+                    <InlineText parts={rightParts} side="right" />
+                  ) : (
+                    row.right.content
+                  )
+                ) : ""}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

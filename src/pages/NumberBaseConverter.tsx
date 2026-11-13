@@ -1,11 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { AboutTool } from "@/components/AboutTool";
-import { ArrowRightLeft, Hash } from "lucide-react";
 
 type Base = 2 | 8 | 10 | 16;
 
@@ -14,15 +12,13 @@ interface BaseField {
   label: string;
   prefix: string;
   placeholder: string;
-  pattern: RegExp;
-  inputClass: string;
 }
 
 const BASE_FIELDS: BaseField[] = [
-  { base: 10, label: "Decimal", prefix: "", placeholder: "255", pattern: /^-?[0-9]*$/, inputClass: "" },
-  { base: 2,  label: "Binary",  prefix: "0b", placeholder: "11111111", pattern: /^[01]*$/, inputClass: "" },
-  { base: 8,  label: "Octal",   prefix: "0o", placeholder: "377", pattern: /^[0-7]*$/, inputClass: "" },
-  { base: 16, label: "Hex",     prefix: "0x", placeholder: "FF", pattern: /^[0-9a-fA-F]*$/, inputClass: "" },
+  { base: 10, label: "Decimal", prefix: "", placeholder: "255" },
+  { base: 2,  label: "Binary",  prefix: "0b", placeholder: "11111111" },
+  { base: 8,  label: "Octal",   prefix: "0o", placeholder: "377" },
+  { base: 16, label: "Hex",     prefix: "0x", placeholder: "FF" },
 ];
 
 const BITWISE_OPS = [
@@ -54,23 +50,59 @@ function toBigInt(val: string, base: Base): bigint | null {
 function fromBigInt(n: bigint, base: Base): string {
   if (n < 0n) {
     if (base === 10) return n.toString();
-    // show two's complement style unsigned
     return "−" + (-n).toString(base).toUpperCase();
   }
-  const s = n.toString(base).toUpperCase();
-  return s;
+  return n.toString(base).toUpperCase();
 }
 
 function groupBinary(s: string): string {
-  // group every 4 bits
   return s.replace(/(.{1,4})(?=(.{4})+$)/g, "$1 ");
+}
+
+/** Convert a hex string to ASCII — returns null if any byte is non-printable. */
+function hexToAscii(hex: string): string | null {
+  const h = hex.replace(/\s/g, "");
+  if (!h || h.length % 2 !== 0) return null;
+  let out = "";
+  for (let i = 0; i < h.length; i += 2) {
+    const code = parseInt(h.slice(i, i + 2), 16);
+    if (code < 0x20 || code > 0x7e) return null;
+    out += String.fromCharCode(code);
+  }
+  return out || null;
+}
+
+/** Convert ASCII string to hex. */
+function asciiToHex(s: string): string {
+  return Array.from(s)
+    .map((c) => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))
+    .join("");
+}
+
+/** Render a binary string with alternating nibble colors. */
+function NibblePattern({ bin }: { bin: string }) {
+  if (!bin) return null;
+  // pad to multiple of 4
+  const padded = bin.padStart(Math.ceil(bin.length / 4) * 4, "0");
+  const nibbles: string[] = [];
+  for (let i = 0; i < padded.length; i += 4) nibbles.push(padded.slice(i, i + 4));
+  return (
+    <span className="font-mono text-sm tracking-widest break-all leading-relaxed">
+      {nibbles.map((n, i) => (
+        <span key={i} className={i % 2 === 0 ? "text-foreground" : "text-primary"}>
+          {n}
+          {i < nibbles.length - 1 ? " " : ""}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 const NumberBaseConverter = () => {
   const [values, setValues] = useState<Record<Base, string>>({ 2: "", 8: "", 10: "", 16: "" });
   const [bitwiseA, setBitwiseA] = useState("");
   const [bitwiseB, setBitwiseB] = useState("");
-  const [bitwiseResults, setBitwiseResults] = useState<{ label: string; dec: string; hex: string; bin: string }[]>([]);
+  const [asciiInput, setAsciiInput] = useState("");
 
   const handleChange = useCallback((base: Base, raw: string) => {
     const v = raw.trim();
@@ -79,7 +111,7 @@ const NumberBaseConverter = () => {
       return;
     }
     const n = toBigInt(v, base);
-    if (n === null) return; // invalid char, ignore
+    if (n === null) return;
     const next: Record<Base, string> = { 2: "", 8: "", 10: "", 16: "" };
     next[base] = v.toUpperCase();
     ([2, 8, 10, 16] as Base[]).forEach((b) => {
@@ -92,23 +124,23 @@ const NumberBaseConverter = () => {
     setValues({ 2: "", 8: "", 10: "", 16: "" });
     setBitwiseA("");
     setBitwiseB("");
-    setBitwiseResults([]);
+    setAsciiInput("");
   };
 
   const handleLoadSample = () => {
     handleChange(10, "255");
   };
 
-  const computeBitwise = () => {
+  // Live bitwise — recomputes on every A/B change, no button needed
+  const bitwiseResults = useMemo(() => {
     const a = toBigInt(bitwiseA.trim(), 10);
+    if (a === null) return [];
     const b = toBigInt(bitwiseB.trim(), 10);
-    if (a === null) { toast.error("Value A must be a decimal integer"); return; }
-    const results = BITWISE_OPS.map(({ label, op }) => {
+    return BITWISE_OPS.map(({ label, op }) => {
       try {
         let res: bigint;
         if (label === "NOT A") {
           res = op(a, 0n);
-          // show unsigned interpretation (treat as 64-bit)
           const mask = (1n << 64n) - 1n;
           res = res & mask;
         } else {
@@ -129,13 +161,25 @@ const NumberBaseConverter = () => {
         return null;
       }
     }).filter(Boolean) as { label: string; dec: string; hex: string; bin: string }[];
-    setBitwiseResults(results);
-  };
+  }, [bitwiseA, bitwiseB]);
 
-  const decValue = values[10];
   const binValue = values[2];
+  const hexValue = values[16];
   const showBitPattern = binValue.length > 0 && binValue.length <= 64;
-  const grouped = showBitPattern ? groupBinary(binValue) : "";
+
+  // ASCII decode of current hex value
+  const hexAscii = hexValue ? hexToAscii(hexValue) : null;
+
+  // Handle ASCII field → update hex + all bases
+  const handleAsciiChange = (s: string) => {
+    setAsciiInput(s);
+    if (!s) {
+      setValues({ 2: "", 8: "", 10: "", 16: "" });
+      return;
+    }
+    const hex = asciiToHex(s);
+    handleChange(16, hex);
+  };
 
   return (
     <ToolPageLayout
@@ -145,9 +189,9 @@ const NumberBaseConverter = () => {
     >
       <ToolSEO
         title="Number Base Converter — Binary Decimal Hex Octal"
-        description="Convert numbers between binary, octal, decimal and hexadecimal instantly. Includes bitwise AND, OR, XOR, NOT, shifts. Free, browser-only."
+        description="Convert numbers between binary, octal, decimal and hexadecimal instantly. Includes live bitwise AND, OR, XOR, NOT, shifts, and hex↔ASCII conversion. Free, browser-only."
         canonicalPath="/number-base"
-        keywords={["number base converter", "binary to decimal", "hex to binary", "decimal to hex", "octal converter", "bitwise calculator"]}
+        keywords={["number base converter", "binary to decimal", "hex to binary", "decimal to hex", "octal converter", "bitwise calculator", "hex to ascii"]}
       />
 
       <div className="space-y-3">
@@ -188,18 +232,65 @@ const NumberBaseConverter = () => {
           </div>
         </div>
 
-        {/* Bit pattern visualization */}
+        {/* Bit pattern visualization with nibble coloring */}
         {showBitPattern && (
           <div className="rounded-lg border border-border bg-card p-4">
             <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Bit Pattern</h2>
-            <p className="font-mono text-sm tracking-widest text-foreground break-all">{grouped}</p>
-            <p className="mt-1.5 text-xs text-muted-foreground">{binValue.length} bit{binValue.length !== 1 ? "s" : ""}</p>
+            <NibblePattern bin={binValue} />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {binValue.length} bit{binValue.length !== 1 ? "s" : ""}
+              {binValue.length <= 8 && " · 8-bit"}
+              {binValue.length > 8 && binValue.length <= 16 && " · 16-bit"}
+              {binValue.length > 16 && binValue.length <= 32 && " · 32-bit"}
+              {binValue.length > 32 && " · 64-bit"}
+              {" · alternating nibbles colored"}
+            </p>
           </div>
         )}
 
-        {/* Bitwise operations */}
+        {/* Hex ↔ ASCII */}
         <div className="rounded-lg border border-border bg-card p-4">
-          <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Bitwise Operations</h2>
+          <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Hex ↔ ASCII</h2>
+          <div className="grid gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-20 shrink-0">
+                <span className="text-xs font-semibold text-foreground">Hex</span>
+              </div>
+              <div className="flex-1 font-mono text-sm text-foreground min-h-[36px] flex items-center px-3 rounded-md border border-border/50 bg-muted/30">
+                {hexValue || <span className="text-muted-foreground/50">—</span>}
+              </div>
+              {hexAscii && <CopyButton value={hexValue} size="sm" />}
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-20 shrink-0">
+                <span className="text-xs font-semibold text-foreground">ASCII</span>
+              </div>
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={asciiInput || hexAscii || ""}
+                  onChange={(e) => handleAsciiChange(e.target.value)}
+                  placeholder="Type ASCII to encode, or convert from hex above"
+                  spellCheck={false}
+                  className="h-9 w-full rounded-md border border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/40 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              {(asciiInput || hexAscii) && <CopyButton value={asciiInput || hexAscii || ""} size="sm" />}
+            </div>
+            {hexValue && !hexAscii && !asciiInput && (
+              <p className="text-xs text-muted-foreground pl-[92px]">Hex value contains non-printable bytes — no ASCII representation</p>
+            )}
+          </div>
+        </div>
+
+        {/* Live bitwise operations */}
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bitwise Operations</h2>
+            {bitwiseResults.length > 0 && (
+              <span className="text-[10px] text-muted-foreground">updates live</span>
+            )}
+          </div>
           <div className="flex flex-wrap items-end gap-2">
             <div className="flex-1 min-w-[120px]">
               <label className="mb-1 block text-xs text-muted-foreground">A (decimal)</label>
@@ -223,10 +314,6 @@ const NumberBaseConverter = () => {
                 className="h-9 w-full rounded-md border border-border bg-card px-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
-            <Button size="sm" className="h-9 shrink-0" onClick={computeBitwise} disabled={!bitwiseA.trim()}>
-              <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
-              Compute
-            </Button>
           </div>
 
           {bitwiseResults.length > 0 && (
@@ -253,12 +340,16 @@ const NumberBaseConverter = () => {
               </table>
             </div>
           )}
+
+          {!bitwiseA.trim() && (
+            <p className="mt-2 text-xs text-muted-foreground">Enter a decimal value for A to see results instantly.</p>
+          )}
         </div>
       </div>
 
       <AboutTool>
         <p>Converts integers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). Uses JavaScript's native <code>BigInt</code> for arbitrary-precision integers — handles values well beyond 32-bit or 64-bit limits.</p>
-        <p className="mt-2">The bitwise section computes AND, OR, XOR, NOT, left-shift (LSH) and right-shift (RSH) for two decimal inputs. Negative results are shown as unsigned 64-bit two's complement values. Everything runs in your browser — no data leaves the page.</p>
+        <p className="mt-2">The bit pattern view color-codes alternating 4-bit nibbles for quick visual parsing. The hex↔ASCII panel converts printable ASCII strings to and from hex encoding. The bitwise section computes AND, OR, XOR, NOT, left-shift (LSH) and right-shift (RSH) live as you type — no button needed. Everything runs in your browser.</p>
       </AboutTool>
     </ToolPageLayout>
   );

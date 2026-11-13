@@ -214,7 +214,7 @@ const ColorConverter = () => {
                   <span>{colorName}</span>
                   <span className="text-muted-foreground/50">·</span>
                   <span className="font-mono">bg-{twClass}</span>
-                  <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto" onClick={() => toggleFavorite(hex)}>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto" aria-label={favorites.includes(hex) ? "Remove from favourites" : "Save to favourites"} onClick={() => toggleFavorite(hex)}>
                     <Heart className={`h-3 w-3 ${favorites.includes(hex) ? "fill-red-400 text-destructive" : ""}`} />
                   </Button>
                 </div>
@@ -390,7 +390,7 @@ const ColorConverter = () => {
                   const next = [...gradStops]; next[i] = e.target.value; setGradStops(next);
                 }} className="w-8 h-8 rounded border-0 cursor-pointer bg-transparent" />
                 {gradStops.length > 2 && (
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setGradStops(gradStops.filter((_, j) => j !== i))}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" aria-label={`Remove stop ${i + 1}`} onClick={() => setGradStops(gradStops.filter((_, j) => j !== i))}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 )}

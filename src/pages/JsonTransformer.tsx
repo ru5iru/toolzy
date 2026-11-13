@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,9 +49,11 @@ const SAMPLE_JSON = JSON.stringify([
 ], null, 2);
 
 const JsonTransformer = () => {
-  const [json,   setJson]   = useState(SAMPLE_JSON);
-  const [filter, setFilter] = useState(".");
-  const [indent, setIndent] = useState(2);
+  const [json,          setJson]          = useState(SAMPLE_JSON);
+  const [filter,        setFilter]        = useState(".");
+  const [indent,        setIndent]        = useState(2);
+  const [filterHistory, setFilterHistory] = useState<string[]>([]);
+  const lastSavedFilter = useRef<string>("");
 
   const debouncedJson   = useDebouncedValue(json, 300);
   const debouncedFilter = useDebouncedValue(filter, 300);
@@ -65,6 +67,18 @@ const JsonTransformer = () => {
   const jsonValid = useMemo(() => {
     try { JSON.parse(debouncedJson); return true; } catch { return false; }
   }, [debouncedJson]);
+
+  // Track successful filters in history (deduplicated, most recent first, max 10)
+  useEffect(() => {
+    const f = debouncedFilter.trim();
+    if (!result.error && result.output && f && f !== "." && f !== lastSavedFilter.current) {
+      lastSavedFilter.current = f;
+      setFilterHistory((prev) => {
+        const without = prev.filter((h) => h !== f);
+        return [f, ...without].slice(0, 10);
+      });
+    }
+  }, [result, debouncedFilter]);
 
   const lineCount = (s: string) => s ? s.split("\n").length : 0;
 
@@ -120,6 +134,23 @@ const JsonTransformer = () => {
           </button>
         ))}
       </div>
+
+      {/* Filter history */}
+      {filterHistory.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0">History</span>
+          {filterHistory.map((h) => (
+            <button
+              key={h}
+              className="px-2 py-0.5 rounded border border-border bg-card text-xs font-mono text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-foreground transition-colors max-w-[220px] truncate"
+              title={h}
+              onClick={() => setFilter(h)}
+            >
+              {h}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Editor panes */}
       <ResizablePanelGroup direction="horizontal" className="min-h-[400px] rounded-lg border border-border">
