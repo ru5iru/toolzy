@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { AboutTool } from "@/components/AboutTool";
-import { Download, AlignLeft, Columns2 } from "lucide-react";
+import { Download, AlignLeft, Columns2, ChevronUp, ChevronDown } from "lucide-react";
 import * as Diff from "diff";
 
 type ViewMode = "split" | "unified";
@@ -44,12 +44,9 @@ function computeLineDiff(original: string, modified: string, ignoreWhitespace: b
   return lines;
 }
 
-function buildUnified(lines: DiffLine[]): string {
-  return lines.map((l) => {
-    if (l.type === "added") return `+ ${l.content}`;
-    if (l.type === "removed") return `- ${l.content}`;
-    return `  ${l.content}`;
-  }).join("\n");
+/** Build a proper unified diff with @@ hunk headers (3-line context). */
+function buildPatch(original: string, modified: string): string {
+  return Diff.createPatch("original", original, modified, "original", "modified", { context: 3 });
 }
 
 /** Compute word-level inline diff for a removed↔added line pair. */
@@ -116,6 +113,8 @@ const TextDiff = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
   const [showInline, setShowInline] = useState(true);
+  const [selectedGroup, setSelectedGroup] = useState(-1);
+  const diffScrollRef = useRef<HTMLDivElement>(null);
 
   const diffLines = useMemo(() => {
     if (!left && !right) return [];
@@ -127,6 +126,28 @@ const TextDiff = () => {
     const removed = diffLines.filter((l) => l.type === "removed").length;
     return { added, removed };
   }, [diffLines]);
+
+  /** Index of the first line in each group of consecutive changed lines */
+  const changeGroups = useMemo(() => {
+    const groups: number[] = [];
+    let inChange = false;
+    for (let i = 0; i < diffLines.length; i++) {
+      if (diffLines[i].type !== "equal") {
+        if (!inChange) { groups.push(i); inChange = true; }
+      } else {
+        inChange = false;
+      }
+    }
+    return groups;
+  }, [diffLines]);
+
+  const jumpToGroup = useCallback((idx: number) => {
+    setSelectedGroup(idx);
+    setTimeout(() => {
+      const el = diffScrollRef.current?.querySelector<HTMLElement>(`[data-change-group="${idx}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 50);
+  }, []);
 
   const hasChanges = stats.added > 0 || stats.removed > 0;
 
@@ -141,8 +162,8 @@ const TextDiff = () => {
   };
 
   const handleDownload = () => {
-    const unified = buildUnified(diffLines);
-    const blob = new Blob([unified], { type: "text/plain" });
+    const patch = buildPatch(left, right);
+    const blob = new Blob([patch], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -204,7 +225,7 @@ const TextDiff = () => {
         </Button>
         {diffLines.length > 0 && (
           <>
-            <CopyButton value={buildUnified(diffLines)} size="sm" />
+            <CopyButton value={buildPatch(left, right)} size="sm" />
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleDownload} aria-label="Download patch">
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -260,7 +281,7 @@ const TextDiff = () => {
 
         {/* Diff output */}
         <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card flex flex-col min-h-0">
-          <div className="flex items-center justify-between border-b border-border px-3 py-2 shrink-0">
+          <div className="flex items-center gap-2 border-b border-border px-3 py-2 shrink-0">
             <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {viewMode === "split" ? "Side-by-side diff" : "Unified diff"}
             </span>
@@ -270,13 +291,30 @@ const TextDiff = () => {
             {left && right && !hasChanges && (
               <span className="text-xs text-green-500 font-medium">No differences</span>
             )}
+            {changeGroups.length > 1 && (
+              <div className="flex items-center gap-1 ml-auto">
+                <span className="text-xs text-muted-foreground font-mono">
+                  {selectedGroup >= 0 ? `${selectedGroup + 1} / ${changeGroups.length}` : `${changeGroups.length} change${changeGroups.length !== 1 ? "s" : ""}`}
+                </span>
+                <Button variant="outline" size="icon" className="h-6 w-6"
+                  onClick={() => jumpToGroup(selectedGroup <= 0 ? changeGroups.length - 1 : selectedGroup - 1)}
+                  title="Previous change">
+                  <ChevronUp className="w-3 h-3" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-6 w-6"
+                  onClick={() => jumpToGroup(selectedGroup < 0 ? 0 : (selectedGroup + 1) % changeGroups.length)}
+                  title="Next change">
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
           </div>
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto" ref={diffScrollRef}>
             {diffLines.length > 0 && viewMode === "unified" && (
-              <UnifiedView lines={diffLines} showInline={showInline} />
+              <UnifiedView lines={diffLines} showInline={showInline} changeGroups={changeGroups} selectedGroup={selectedGroup} />
             )}
             {diffLines.length > 0 && viewMode === "split" && (
-              <SplitView lines={diffLines} showInline={showInline} />
+              <SplitView lines={diffLines} showInline={showInline} changeGroups={changeGroups} selectedGroup={selectedGroup} />
             )}
           </div>
         </div>
@@ -302,7 +340,18 @@ function linePrefix(type: DiffLine["type"]): string {
   return " ";
 }
 
-function UnifiedView({ lines, showInline }: { lines: DiffLine[]; showInline: boolean }) {
+function UnifiedView({ lines, showInline, changeGroups, selectedGroup }: {
+  lines: DiffLine[];
+  showInline: boolean;
+  changeGroups: number[];
+  selectedGroup: number;
+}) {
+  // Map from line index → change group index for fast lookup
+  const changeGroupMap = useMemo(
+    () => new Map(changeGroups.map((lineIdx, groupIdx) => [lineIdx, groupIdx])),
+    [changeGroups]
+  );
+
   // Collect pairs for inline diff: a removed line immediately followed by its added counterpart
   const inlineMap = useMemo(() => {
     if (!showInline) return new Map<number, { left: InlinePart[]; right: InlinePart[] }>();
@@ -322,8 +371,15 @@ function UnifiedView({ lines, showInline }: { lines: DiffLine[]; showInline: boo
       <tbody>
         {lines.map((line, i) => {
           const inlineParts = inlineMap.get(i);
+          const groupIdx = changeGroupMap.get(i);
+          const isGroupStart = groupIdx !== undefined;
+          const isSelected = isGroupStart && groupIdx === selectedGroup;
           return (
-            <tr key={i} className={`${lineClass(line.type)}`}>
+            <tr
+              key={i}
+              className={`${lineClass(line.type)}${isSelected ? " outline outline-1 outline-primary/60" : ""}`}
+              {...(isGroupStart ? { "data-change-group": groupIdx } : {})}
+            >
               <td className="select-none w-8 text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums">
                 {line.leftNum ?? ""}
               </td>
@@ -351,9 +407,20 @@ function UnifiedView({ lines, showInline }: { lines: DiffLine[]; showInline: boo
   );
 }
 
-function SplitView({ lines, showInline }: { lines: DiffLine[]; showInline: boolean }) {
+function SplitView({ lines, showInline, changeGroups, selectedGroup }: {
+  lines: DiffLine[];
+  showInline: boolean;
+  changeGroups: number[];
+  selectedGroup: number;
+}) {
+  // Map from line index → change group index for fast lookup
+  const changeGroupMap = useMemo(
+    () => new Map(changeGroups.map((lineIdx, groupIdx) => [lineIdx, groupIdx])),
+    [changeGroups]
+  );
+
   // Build paired rows: match removed with added where possible
-  const rows: Array<{ left: DiffLine | null; right: DiffLine | null }> = [];
+  const rows: Array<{ left: DiffLine | null; right: DiffLine | null; changeGroupIdx?: number }> = [];
   let i = 0;
   while (i < lines.length) {
     const cur = lines[i];
@@ -361,6 +428,7 @@ function SplitView({ lines, showInline }: { lines: DiffLine[]; showInline: boole
       rows.push({ left: cur, right: cur });
       i++;
     } else if (cur.type === "removed") {
+      const groupIdx = changeGroupMap.get(i);
       let j = i + 1;
       while (j < lines.length && lines[j].type === "removed") j++;
       const addedStart = j;
@@ -370,11 +438,17 @@ function SplitView({ lines, showInline }: { lines: DiffLine[]; showInline: boole
       const addedBlock = lines.slice(addedStart, k);
       const len = Math.max(removedBlock.length, addedBlock.length);
       for (let m = 0; m < len; m++) {
-        rows.push({ left: removedBlock[m] ?? null, right: addedBlock[m] ?? null });
+        rows.push({
+          left: removedBlock[m] ?? null,
+          right: addedBlock[m] ?? null,
+          changeGroupIdx: m === 0 ? groupIdx : undefined,
+        });
       }
       i = k;
     } else {
-      rows.push({ left: null, right: cur });
+      // standalone added line
+      const groupIdx = changeGroupMap.get(i);
+      rows.push({ left: null, right: cur, changeGroupIdx: groupIdx });
       i++;
     }
   }
@@ -394,9 +468,14 @@ function SplitView({ lines, showInline }: { lines: DiffLine[]; showInline: boole
           const { left: leftParts, right: rightParts } = canInline
             ? inlineDiff(row.left!.content, row.right!.content)
             : { left: null, right: null };
+          const isSelected = row.changeGroupIdx !== undefined && row.changeGroupIdx === selectedGroup;
 
           return (
-            <tr key={i}>
+            <tr
+              key={i}
+              className={isSelected ? "outline outline-1 outline-primary/60" : undefined}
+              {...(row.changeGroupIdx !== undefined ? { "data-change-group": row.changeGroupIdx } : {})}
+            >
               <td className={`select-none text-right pr-2 pl-2 text-muted-foreground/60 border-r border-border/20 tabular-nums ${row.left?.type === "removed" ? "bg-destructive/10" : ""}`}>
                 {row.left?.leftNum ?? ""}
               </td>
