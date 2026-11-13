@@ -357,6 +357,13 @@ function DecodeTab({
   const [history, setHistory] = useState<HistoryItem[]>(getHistory());
   const [showHistory, setShowHistory] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Tick every second so the exp/nbf countdown stays current
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!shared.decodedPayload?.exp) return;
+    const id = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [!!shared.decodedPayload?.exp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (shared.activeToken !== input) setInput(shared.activeToken);
@@ -526,6 +533,12 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
     } catch { }
   }, [alg]);
 
+  // Propagate HMAC secret length to shared state so the security scorer can use it
+  useEffect(() => {
+    if (family === "HMAC") setShared({ hmacSecretLen: secret.length });
+    else setShared({ hmacSecretLen: 0 });
+  }, [secret, family]);
+
   useEffect(() => {
     try {
       const h = JSON.parse(headerStr);
@@ -664,6 +677,12 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
   const alg: string = (parsed?.header.alg || "").toUpperCase();
   const family = alg.startsWith("HS") ? "HMAC" : alg.startsWith("RS") ? "RSA" : alg.startsWith("PS") ? "RSA-PSS" : alg.startsWith("ES") ? "ECDSA" : "";
+
+  // Propagate HMAC secret length to shared state so the security scorer can use it
+  useEffect(() => {
+    if (family === "HMAC") setShared({ hmacSecretLen: secret.length });
+    else setShared({ hmacSecretLen: 0 });
+  }, [secret, family]);
 
   const verify = async () => {
     if (!parsed) { toast.error("Paste a valid JWT first"); return; }
@@ -922,6 +941,7 @@ interface SharedState {
   decodedHeader: Record<string, any> | null;
   decodedPayload: Record<string, any> | null;
   signatureStatus: SigStatus;
+  hmacSecretLen: number; // length of the entered HMAC secret (0 = unknown / not HMAC)
 }
 
 // ---------- Main page ----------
@@ -931,13 +951,14 @@ const JwtHub = () => {
     decodedHeader: null,
     decodedPayload: null,
     signatureStatus: "unverified",
+    hmacSecretLen: 0,
   });
   const setShared = (patch: Partial<SharedState>) =>
     setSharedState(prev => ({ ...prev, ...patch }));
 
   const security = useMemo(
-    () => computeSecurity(shared.decodedHeader, shared.decodedPayload, 32),
-    [shared.decodedHeader, shared.decodedPayload]
+    () => computeSecurity(shared.decodedHeader, shared.decodedPayload, shared.hmacSecretLen),
+    [shared.decodedHeader, shared.decodedPayload, shared.hmacSecretLen]
   );
 
   return (

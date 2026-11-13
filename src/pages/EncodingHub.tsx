@@ -101,8 +101,8 @@ function detectMode(input: string): Exclude<HubMode, "auto"> {
   if (!t) return "base64";
   if (t.startsWith("data:") && t.includes(",")) return "dataurl";
   if (/%[0-9A-Fa-f]{2}/.test(t)) return "url";
-  // Base64 standard: A-Z a-z 0-9 + / =
-  if (/^[A-Za-z0-9+/\\s]+=*$/.test(t) && t.replace(/\\s/g, "").length % 4 === 0 && t.length >= 4) {
+  // Base64 standard: A-Z a-z 0-9 + / = (with optional whitespace)
+  if (/^[A-Za-z0-9+/\s]+=*$/.test(t) && t.replace(/\s/g, "").length % 4 === 0 && t.length >= 4) {
     return "base64";
   }
   // Base64 URL-safe
@@ -110,7 +110,7 @@ function detectMode(input: string): Exclude<HubMode, "auto"> {
     return "base64url";
   }
   // Non-ASCII or spaces → likely raw text needing URL encode
-  if (/[^\\x20-\\x7E]/.test(t) || /\\s/.test(t)) return "url";
+  if (/[^\x20-\x7E]/.test(t) || /\s/.test(t)) return "url";
   return "base64";
 }
 

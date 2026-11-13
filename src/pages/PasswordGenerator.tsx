@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
@@ -76,25 +76,56 @@ const PasswordGenerator = () => {
     return p;
   }, [useUpper, useLower, useNums, useSyms, exSim]);
 
+  // Sub-pools for the guarantee check (filtered for similar chars if needed)
+  const subPools = useMemo(() => {
+    const filter = (s: string) => exSim ? s.split("").filter(c => !SIMILAR.has(c)).join("") : s;
+    return {
+      upper: useUpper ? filter(UPPER) : "",
+      lower: useLower ? filter(LOWER) : "",
+      nums:  useNums  ? filter(NUMS)  : "",
+      syms:  useSyms  ? filter(SYMS)  : "",
+    };
+  }, [useUpper, useLower, useNums, useSyms, exSim]);
+
   const generate = useCallback(() => {
     if (mode === "password") {
       if (!pool) { toast.error("Select at least one character set"); return; }
+      const randChar = (s: string) => {
+        const arr = new Uint8Array(1);
+        crypto.getRandomValues(arr);
+        return s[arr[0] % s.length];
+      };
       const arr: string[] = [];
       for (let i = 0; i < count; i++) {
-        let pwd = "";
+        // Build random password
+        const chars: string[] = [];
         const bytes = new Uint8Array(length * 2);
         crypto.getRandomValues(bytes);
         let bi = 0;
-        while (pwd.length < length) {
+        while (chars.length < length) {
           if (bi >= bytes.length) {
             const more = new Uint8Array(length * 2);
             crypto.getRandomValues(more);
             bytes.set(more); bi = 0;
           }
-          const idx = bytes[bi++] % pool.length;
-          pwd += pool[idx];
+          chars.push(pool[bytes[bi++] % pool.length]);
         }
-        arr.push(pwd);
+        // Guarantee at least one char from each enabled charset
+        const required: string[] = [
+          ...(subPools.upper ? [subPools.upper] : []),
+          ...(subPools.lower ? [subPools.lower] : []),
+          ...(subPools.nums  ? [subPools.nums]  : []),
+          ...(subPools.syms  ? [subPools.syms]  : []),
+        ];
+        required.forEach((sp, ri) => {
+          // Check if chars already has at least one from this sub-pool
+          if (!chars.some(c => sp.includes(c))) {
+            // Replace a random position (beyond the first `ri` slots to avoid overwriting earlier guarantees)
+            const pos = ri + Math.floor(Math.random() * (length - ri));
+            chars[pos] = randChar(sp);
+          }
+        });
+        arr.push(chars.join(""));
       }
       setPasswords(arr);
     } else {
@@ -111,12 +142,10 @@ const PasswordGenerator = () => {
       setPasswords(arr);
     }
     setSeed(s => s + 1);
-  }, [mode, pool, length, count, wordCount, separator, capitalise, includeNum]);
+  }, [mode, pool, subPools, length, count, wordCount, separator, capitalise, includeNum]);
 
-  // auto-generate on mount and when settings change
-  useMemo(() => { generate(); }, [seed]); // eslint-disable-line react-hooks/exhaustive-deps
-  // initial generation
-  useMemo(() => { generate(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Generate on mount and whenever settings change (seed bump triggers this too)
+  useEffect(() => { generate(); }, [generate, seed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const primary = passwords[0] ?? "";
   const str = strength(primary);
