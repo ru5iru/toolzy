@@ -139,7 +139,13 @@ const CsvTool = () => {
     const vals = rows.map(r => r[ci] ?? "").filter(Boolean);
     const nums = vals.map(Number).filter(v => !isNaN(v));
     const unique = new Set(vals).size;
-    return { count: vals.length, unique, numericPct: vals.length ? Math.round(nums.length / vals.length * 100) : 0 };
+    const numericPct = vals.length ? Math.round(nums.length / vals.length * 100) : 0;
+    const min = nums.length ? Math.min(...nums) : null;
+    const max = nums.length ? Math.max(...nums) : null;
+    const sum = nums.length ? nums.reduce((a, b) => a + b, 0) : null;
+    const avg = nums.length ? sum! / nums.length : null;
+    const fmt = (n: number) => Number.isInteger(n) ? n.toLocaleString() : n.toLocaleString(undefined, { maximumFractionDigits: 4 });
+    return { count: vals.length, unique, numericPct, min, max, sum, avg, fmt };
   }), [headers, rows]);
 
   const csvOut = useMemo(() => headers.length ? toCsv(headers, sorted, delimiter) : "", [headers, sorted, delimiter]);
@@ -291,11 +297,16 @@ const CsvTool = () => {
                     <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Empty</th>
                     <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Unique</th>
                     <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Numeric %</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Min</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Max</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Sum</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground border-b border-border">Avg</th>
                   </tr>
                 </thead>
                 <tbody>
                   {headers.map((h, ci) => {
                     const s = colStats[ci];
+                    const isNum = s.numericPct > 0;
                     return (
                       <tr key={ci} className="border-b border-border/40 hover:bg-secondary/40">
                         <td className="px-3 py-1.5 font-semibold">{h || <span className="text-muted-foreground italic">col {ci + 1}</span>}</td>
@@ -304,12 +315,16 @@ const CsvTool = () => {
                         <td className="px-3 py-1.5 text-right font-mono">{s.unique}</td>
                         <td className="px-3 py-1.5 text-right font-mono">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div className="w-12 h-1.5 rounded-full bg-muted overflow-hidden">
                               <div className="h-full bg-primary rounded-full" style={{ width: `${s.numericPct}%` }} />
                             </div>
                             {s.numericPct}%
                           </div>
                         </td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.min !== null ? s.fmt(s.min) : <span className="opacity-30">—</span>}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.max !== null ? s.fmt(s.max) : <span className="opacity-30">—</span>}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.sum !== null ? s.fmt(s.sum) : <span className="opacity-30">—</span>}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.avg !== null ? s.fmt(s.avg) : <span className="opacity-30">—</span>}</td>
                       </tr>
                     );
                   })}
