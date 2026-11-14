@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { AboutTool } from "@/components/AboutTool";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { Terminal, ArrowRight } from "lucide-react";
+import { Terminal, ArrowRight, Download, X } from "lucide-react";
 import { parseCurl } from "@/lib/curlParser";
 import { generateCode, toCurl, type Lang } from "@/lib/curlCodegen";
 
@@ -99,7 +99,15 @@ const CurlConverter = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* ── Input ── */}
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">curl command</label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground uppercase tracking-wider">curl command</label>
+            {curlInput && (
+              <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground px-2"
+                onClick={() => setCurlInput("")} title="Clear">
+                <X className="w-3 h-3 mr-1" />Clear
+              </Button>
+            )}
+          </div>
           <Textarea
             value={curlInput}
             onChange={e => setCurlInput(e.target.value)}
@@ -165,7 +173,20 @@ const CurlConverter = () => {
               <label className="text-xs text-muted-foreground uppercase tracking-wider">
                 {LANGS.find(l => l.key === lang)?.label} · {LANGS.find(l => l.key === lang)?.ext}
               </label>
-              <CopyButton value={output} label="Copy" variant="outline" />
+              <div className="flex items-center gap-1.5">
+                <CopyButton value={output} label="Copy" variant="outline" />
+                <Button variant="outline" size="sm" onClick={() => {
+                  const ext = LANGS.find(l => l.key === lang)?.ext ?? "txt";
+                  const blob = new Blob([output], { type: "text/plain" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url; a.download = `request.${ext}`; a.click();
+                  URL.revokeObjectURL(url);
+                  toast.success(`Downloaded request.${ext}`);
+                }} aria-label="Download code">
+                  <Download className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
             <pre className="rounded-lg border border-border bg-card p-4 font-mono text-xs overflow-auto max-h-[500px] whitespace-pre">
               {output}
