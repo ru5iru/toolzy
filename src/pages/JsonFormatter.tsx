@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Download, Minimize2, Maximize2, Upload, Search, X, Share2, Trash2 } from "lucide-react";
+import { Minimize2, Maximize2, Upload, Search, X, Share2, Trash2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { JsonTreeNode } from "@/components/json-formatter/JsonTreeNode";
 import { SchemaPanel } from "@/components/json-formatter/SchemaPanel";
@@ -204,7 +204,7 @@ const JsonFormatter = () => {
 
         <div className="border-l border-border h-5 mx-0.5" />
 
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("json")} disabled={!input} aria-label="Download as JSON"><Download className="w-3 h-3" aria-hidden="true" /><span className="sr-only">Download JSON</span></Button>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("json")} disabled={!input}>JSON</Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("xml")} disabled={!input}>XML</Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("csv")} disabled={!input}>CSV</Button>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => handleDownload("yaml")} disabled={!input}>YAML</Button>
@@ -275,7 +275,8 @@ const JsonFormatter = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onPaste={handlePaste}
-              placeholder='{"key": "value"}'
+              onKeyDown={(e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); format(); } }}
+              placeholder={'{"key": "value"} · Ctrl+Enter to format'}
               className="flex-1 min-h-0 font-mono text-sm bg-transparent border-0 resize-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
           </div>
