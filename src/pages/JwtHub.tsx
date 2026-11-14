@@ -184,7 +184,7 @@ async function verifyEcdsaToken(token: string, pubKeyPem: string, hashAlg: strin
   const parts = token.split(".");
   if (parts.length !== 3) return false;
   const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
-  const namedCurve = alg === "ES384" ? "P-384" : "P-256";
+  const namedCurve = alg === "ES384" ? "P-384" : alg === "ES512" ? "P-521" : "P-256";
   const key = await importKeyInput(pubKeyPem, { name: "ECDSA", namedCurve }, "verify");
   return crypto.subtle.verify({ name: "ECDSA", hash: hashAlg }, key, b64uToBuf(parts[2]), data);
 }
@@ -630,7 +630,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="space-y-1">
         <Label className="text-xs text-[hsl(var(--success-foreground))] uppercase tracking-wider">Payload</Label>
-        <Textarea value={payloadStr} onChange={e => setPayloadStr(e.target.value)} className="min-h-[110px] font-mono text-xs bg-card border-[hsl(var(--success))]/30 resize-none" />
+        <Textarea value={payloadStr} onChange={e => setPayloadStr(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); sign(); } }} placeholder='{"sub": "1234567890"} · Ctrl+Enter to sign' className="min-h-[110px] font-mono text-xs bg-card border-[hsl(var(--success))]/30 resize-none" />
       </div>
 
       <div className="flex flex-wrap gap-1">
@@ -665,6 +665,7 @@ const VERIFY_CODE = {
 function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: Partial<SharedState>) => void; }) {
   const [token, setToken] = useState(shared.activeToken);
   const [secret, setSecret] = useState("");
+  const [showSecret, setShowSecret] = useState(false);
   const [result, setResult] = useState<null | "valid" | "invalid" | "warn-none">(null);
   const [verifying, setVerifying] = useState(false);
   const [parsed, setParsed] = useState<DecodedJwt | null>(null);
@@ -714,7 +715,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
     <div className="space-y-3">
       <div className="space-y-1">
         <Label className="text-xs uppercase tracking-wider text-muted-foreground">JWT</Label>
-        <Textarea value={token} onChange={e => setToken(e.target.value)} placeholder="Paste JWT to verify..." className="min-h-[90px] font-mono text-xs bg-card resize-none" />
+        <Textarea value={token} onChange={e => setToken(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); verify(); } }} placeholder="Paste JWT to verify… (Ctrl+Enter to verify)" className="min-h-[90px] font-mono text-xs bg-card resize-none" />
       </div>
 
       <div className="flex items-center gap-2 text-xs">
@@ -728,7 +729,12 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
           {family === "HMAC" ? "Secret" : "Public Key (PEM or JWK)"}
         </Label>
         {family === "HMAC" || !family ? (
-          <Input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs h-8" />
+          <div className="relative">
+            <Input type={showSecret ? "text" : "password"} value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs pr-9 h-8" />
+            <Button variant="ghost" size="icon" className="absolute right-0.5 top-0.5 h-7 w-7" onClick={() => setShowSecret(v => !v)} aria-label="Toggle secret visibility">
+              {showSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
         ) : (
           <Textarea value={secret} onChange={e => setSecret(e.target.value)} placeholder={`-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----`} className="min-h-[90px] font-mono text-xs bg-card resize-none" />
         )}
