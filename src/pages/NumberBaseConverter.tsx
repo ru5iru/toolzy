@@ -108,6 +108,7 @@ const NumberBaseConverter = () => {
     const v = raw.trim();
     if (!v) {
       setValues({ 2: "", 8: "", 10: "", 16: "" });
+      setAsciiInput("");
       return;
     }
     const n = toBigInt(v, base);
@@ -117,6 +118,7 @@ const NumberBaseConverter = () => {
     ([2, 8, 10, 16] as Base[]).forEach((b) => {
       if (b !== base) next[b] = fromBigInt(n, b);
     });
+    setAsciiInput(""); // clear stale ASCII input so hexAscii takes over display
     setValues(next);
   }, []);
 

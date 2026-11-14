@@ -75,26 +75,28 @@ const YamlConverter = () => {
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const convert = useCallback((text: string, from: Format, to: Format) => {
-    if (!text.trim()) { setOutput(""); setError(null); return; }
+  const convert = useCallback((text: string, from: Format, to: Format): boolean => {
+    if (!text.trim()) { setOutput(""); setError(null); return true; }
     try {
       const data = parseInput(text, from);
       if (data === undefined || data === null) {
         setOutput(to === "json" ? "null" : "");
         setError(null);
-        return;
+        return true;
       }
       setOutput(stringify(data, to));
       setError(null);
+      return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Parse error");
       setOutput("");
+      return false;
     }
   }, []);
 
   const handleConvert = () => {
-    convert(input, inputFmt, outputFmt);
-    if (!error) toast.success(`Converted ${FORMAT_LABELS[inputFmt]} → ${FORMAT_LABELS[outputFmt]}`);
+    const ok = convert(input, inputFmt, outputFmt);
+    if (ok) toast.success(`Converted ${FORMAT_LABELS[inputFmt]} → ${FORMAT_LABELS[outputFmt]}`);
   };
 
   const handleInputFmtChange = (fmt: Format) => {
