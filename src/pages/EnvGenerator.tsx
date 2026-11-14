@@ -145,7 +145,7 @@ const EnvGenerator = () => {
 
   const displayContent = maskMode ? maskSecrets(content) : content;
 
-  const issues = parseEnv(content).issues;
+  const issues = useMemo(() => parseEnv(content).issues, [content]);
   const convert = (fn: () => string, done: string) => {
     try { setContent(fn()); toast.success(done); } catch (e) { toast.error(e instanceof Error ? e.message : "Conversion failed"); }
   };
@@ -163,7 +163,7 @@ const EnvGenerator = () => {
 
   return (
     <ToolPageLayout title="Environment Generator" description="Build and validate .env files from templates · Compare .env files side-by-side">
-      <ToolSEO title="Environment File Generator" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Compare two .env files with key-level diff." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator", ".env diff"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."},{question:"Is my configuration data uploaded anywhere?",answer:"No. The .env file is built entirely in your browser — secrets and values never leave your machine."},{question:"How does the .env diff work?",answer:"Paste two .env files and the diff compares them key-by-key, showing added, removed, changed, and unchanged variables."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file","Use the Diff tab to compare two .env files"]} />
+      <ToolSEO title="Environment File Generator — .env Builder & Differ" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Compare two .env files with key-level diff." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator", ".env diff"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."},{question:"Is my configuration data uploaded anywhere?",answer:"No. The .env file is built entirely in your browser — secrets and values never leave your machine."},{question:"How does the .env diff work?",answer:"Paste two .env files and the diff compares them key-by-key, showing added, removed, changed, and unchanged variables."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file","Use the Diff tab to compare two .env files"]} />
 
       <Tabs defaultValue="build" className="w-full">
         <TabsList>

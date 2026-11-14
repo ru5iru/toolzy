@@ -92,7 +92,9 @@ const ColorConverter = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -104,7 +106,8 @@ const ColorConverter = () => {
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       setExtractedColors(extractColors(data, 8));
     };
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => URL.revokeObjectURL(objectUrl);
+    img.src = objectUrl;
   };
 
   // Batch convert
@@ -146,7 +149,7 @@ const ColorConverter = () => {
   return (
     <ToolPageLayout title="Color Converter" description="Convert between HEX, RGB, HSL, HSV, CMYK · pick, palette, contrast and gradient tools.">
       <ToolSEO
-        title="Color Converter & Toolkit"
+        title="Color Converter — HEX, RGB, HSL, HSV, CMYK Online Tool"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
         canonicalPath="/color"
         keywords={["color converter", "HEX to RGB", "color palette generator", "WCAG contrast checker", "gradient generator", "color picker"]}

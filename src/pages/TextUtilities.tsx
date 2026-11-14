@@ -86,7 +86,8 @@ function advancedSlug(text: string, sep: string, stripStop: boolean): string {
     .filter(Boolean);
   if (stripStop) words = words.filter((w) => !STOP_WORDS.has(w));
   if (!words.length) return "";
-  return words.join(sep).replace(new RegExp(`${sep.replace(/[-]/g,"\\-")}+`, "g"), sep);
+  const escapedSep = sep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return words.join(sep).replace(new RegExp(`${escapedSep}+`, "g"), sep);
 }
 
 // ─── Markdown table ───────────────────────────────────────────────────────────

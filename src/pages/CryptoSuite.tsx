@@ -141,8 +141,8 @@ const CryptoSuite = () => {
   return (
     <ToolPageLayout title="Crypto Suite" description="Hash, HMAC, UUID generation and secret tools · all computed locally">
       <ToolSEO
-        title="Crypto Suite — Hash, UUID & Secret Generator"
-        description="Free browser-based cryptography tools. Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes with HMAC support, create UUID v1/v3/v4/v5 tokens in bulk, and generate random secrets and keys (JWT secrets, AES keys, API tokens) — all via the native Web Crypto API, nothing leaves your browser."
+        title="Crypto Suite — Hash, UUID & Random Secret Generator"
+        description="Generate SHA-256/512 hashes with HMAC, create UUID v4/v5 tokens in bulk, and generate JWT secrets and AES keys — all via the native Web Crypto API, in your browser."
         canonicalPath="/crypto"
         keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator", "random secret generator", "jwt secret generator", "random key generator", "api token generator"]}
         faq={[

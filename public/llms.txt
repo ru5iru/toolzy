@@ -612,3 +612,96 @@ Example queries:
 - "What is chmod 755 in symbolic notation?"
 - "Build a chmod command for owner read/write, group read-only"
 - "What octal is rwxr-xr-x?"
+
+## Password Generator
+
+URL: https://devtools.rusiru.cc/password
+Category: Security & Privacy
+
+Generate strong random passwords and passphrases in your browser.
+
+Capabilities:
+- Configurable length (1–128 characters)
+- Toggle character sets: uppercase, lowercase, digits, symbols
+- Exclude ambiguous characters (0, O, l, I, etc.)
+- Passphrase mode: BIP39-style word lists with separator control
+- Bulk generation: produce multiple passwords at once
+- Copy to clipboard with one click
+- Password strength indicator
+- Nothing is sent to any server; all generation uses the Web Crypto API
+
+Example queries:
+- "Generate a 24-character random password with symbols"
+- "Create a passphrase with 6 words"
+- "Generate 10 strong passwords"
+- "Make a password without ambiguous characters"
+
+## CSV Tool
+
+URL: https://devtools.rusiru.cc/csv
+Category: Data Formatting
+
+Parse, preview, filter, sort, and export CSV and TSV data in the browser.
+
+Capabilities:
+- Auto-detect delimiter (comma, tab, semicolon, pipe)
+- Preview data in an interactive sortable table
+- Filter rows by text search across all columns
+- Column statistics: count, min, max, mean, nulls
+- Export filtered data as CSV or JSON
+- Handles quoted fields and embedded newlines
+- Nothing is uploaded; parsing is client-side
+
+Example queries:
+- "Parse this CSV and show it as a table"
+- "Filter these CSV rows where the status column is 'active'"
+- "Convert this CSV to JSON"
+- "Show statistics for each column"
+
+## curl to Code Converter
+
+URL: https://devtools.rusiru.cc/curl
+Category: Developer Utilities
+
+Convert curl commands to code in multiple languages.
+
+Capabilities:
+- Parses curl flags: -X, -H, -d / --data-raw / --data-binary, -F (form), -u (basic auth), -k (insecure), --compressed, -L (follow redirects), --json
+- Generates equivalent code in: Python (requests), JavaScript/TypeScript (fetch), Go (net/http), PHP (curl), Ruby (net/http)
+- Multi-line commands with backslash continuation supported
+- Shows normalised curl tab: cleaned-up version of the parsed command
+- Download generated code as a file (.py, .js, .ts, .go, .php, .rb)
+- Runs entirely in the browser; no request is made to any server
+
+Example queries:
+- "Convert this curl command to Python"
+- "Translate this curl POST to JavaScript fetch"
+- "Generate Go code for this curl request"
+- "What is the TypeScript equivalent of this curl?"
+
+## JSON Transformer
+
+URL: https://devtools.rusiru.cc/json-transform
+Category: Data Processing
+
+Filter and transform JSON using jq-compatible expressions in the browser.
+
+Capabilities:
+- Path access: .foo.bar, .[0], .[], slices
+- Pipes: |
+- Operators: map, select, sort_by, group_by, unique_by
+- Entries: to_entries, from_entries, with_entries
+- Aggregates: add, flatten, reverse, unique, min, max, length
+- String functions: split, join, test, ltrimstr, rtrimstr, ascii_downcase, tostring, tonumber
+- has, contains, inside, any, all, not, if-then-else, try-catch (partial), reduce (partial)
+- Filter history: last 10 successful filters
+- Cheat sheet snippets for common operations
+- Adjustable indent (0, 2, 4)
+- Runs entirely in the browser using a jq-compatible JS implementation
+
+Example queries:
+- "Filter this JSON array to only active users"
+- "Get all keys from this JSON object"
+- "Sort this array by the 'name' field"
+- "Group these records by their 'type' field"
+- "Extract just the email field from each user"

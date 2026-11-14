@@ -54,17 +54,19 @@ const ApiDiffTool = () => {
   useEffect(() => { setLeftFormat(detectFormat(left)); }, [left]);
   useEffect(() => { setRightFormat(detectFormat(right)); }, [right]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); compare(); }
-      if (e.ctrlKey && e.shiftKey && e.key === "F") { e.preventDefault(); handleFormat(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [left, right, ignoreOrder, ignoreRules]);
-
   const compare = useCallback(() => {
+    if (!left.trim() || !right.trim()) {
+      toast.error("Paste JSON into both panels first");
+      return;
+    }
+    if (leftFormat !== "json") {
+      toast.error(`Left panel contains ${leftFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      return;
+    }
+    if (rightFormat !== "json") {
+      toast.error(`Right panel contains ${rightFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      return;
+    }
     try {
       const a = JSON.parse(left);
       const b = JSON.parse(right);
@@ -87,13 +89,23 @@ const ApiDiffTool = () => {
     } catch (e: any) {
       toast.error("Invalid JSON: " + e.message);
     }
-  }, [left, right, ignoreOrder, ignoreRules]);
+  }, [left, right, leftFormat, rightFormat, ignoreOrder, ignoreRules]);
 
-  const handleFormat = () => {
+  const handleFormat = useCallback(() => {
     setLeft(prettify(left, leftFormat));
     setRight(prettify(right, rightFormat));
     toast.success("Formatted");
-  };
+  }, [left, right, leftFormat, rightFormat]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); compare(); }
+      if (e.ctrlKey && e.shiftKey && e.key === "F") { e.preventDefault(); handleFormat(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [compare, handleFormat]);
 
   const handleDrop = (side: "left" | "right") => (e: React.DragEvent) => {
     e.preventDefault();
@@ -156,8 +168,8 @@ const ApiDiffTool = () => {
         <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
       </>}>
       <ToolSEO
-        title="API Response Diff Tool"
-        description="Compare two JSON API responses side-by-side with structural diff, ignore rules, type change detection, and export. Free, browser-only developer tool."
+        title="API Response Diff Tool — Free Online JSON Comparison"
+        description="Compare two JSON API responses side-by-side with structural diff, ignore rules, and type change detection. Browser-only, nothing uploaded."
         canonicalPath="/diff"
         keywords={["JSON diff", "API response compare", "JSON compare online", "diff tool", "compare JSON objects", "API testing", "structural diff"]}
         faq={[
