@@ -18,7 +18,7 @@ import { runTransform } from "@/lib/jsonTransform";
 // ─── Cheat-sheet snippets ─────────────────────────────────────────────────────
 const SNIPPETS = [
   { label: "Identity",        filter: "."                              },
-  { label: "Pretty",          filter: "."                              },
+  { label: "Compact",         filter: "tojson"                         },
   { label: "Keys",            filter: "keys"                           },
   { label: "Values",          filter: "values"                         },
   { label: "Length",          filter: "length"                         },
