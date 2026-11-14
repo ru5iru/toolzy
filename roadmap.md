@@ -55,5 +55,5 @@ Survey result: tools are solid but navigation, copy feedback and a few everyday 
 - [x] 4. Regex Playground: replace mode with `$1` / `$<name>` preview and copy.
 - [x] 5. JSON Formatter: JSON to TypeScript interfaces (tested generator).
 - [x] 6. Env Generator: strip values into `.env.example`, and convert `.env` to JSON.
-- [ ] 7. Verify (unit, e2e, 390 px, 1920 px), update README, DESIGN.md, sitemap, llms.txt.
+- [x] 7. Verify (unit, e2e, 390 px, 1920 px), update README, DESIGN.md, sitemap, llms.txt.
 - Done since: `/html-editor` is routed, listed in the sidebar/home/search, and documented (see the HTML WYSIWYG Editor section above).
