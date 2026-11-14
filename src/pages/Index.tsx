@@ -56,8 +56,8 @@ const Index = () => {
   return (
     <div className="max-w-[1600px]">
       <ToolSEO
-        title="Toolzy — Free Online Developer Tools"
-        description="Toolzy offers 16+ free browser-based developer tools: JSON formatter, Base64 encoder, UUID generator, JWT decoder, regex tester, hash generator, color converter, HTML editor, text utilities, and more. No sign-up. Nothing uploaded."
+        title="Toolzy — Free Online Developer Tools for Engineers"
+        description="16+ free browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, regex tester, hash generator, color converter, and more. No sign-up."
         canonicalPath="/"
         isApp={false}
         keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator", "JWT decoder", "regex tester", "hash generator"]}

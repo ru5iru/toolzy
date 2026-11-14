@@ -172,7 +172,7 @@ const SqlFormatter = () => {
       toolbar={toolbar}
     >
       <ToolSEO
-        title="SQL Formatter — Free Online SQL Beautifier"
+        title="SQL Formatter — Beautify & Format SQL Queries Online"
         description="Format, beautify and minify SQL queries for MySQL, PostgreSQL, SQLite, T-SQL, Oracle PL/SQL, BigQuery, Snowflake and more. Free, browser-only, nothing uploaded."
         canonicalPath="/sql"
         keywords={["sql formatter", "sql beautifier", "sql minifier", "mysql formatter", "postgresql formatter", "online sql formatter"]}

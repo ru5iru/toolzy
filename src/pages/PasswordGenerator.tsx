@@ -163,10 +163,10 @@ const PasswordGenerator = () => {
   };
 
   return (
-    <ToolPageLayout title="Password Generator" icon={ShieldCheck} description="Generate secure passwords and passphrases using the browser's cryptographic random source.">
+    <ToolPageLayout title="Password Generator — Random Passwords & Passphrases" icon={ShieldCheck} description="Generate secure passwords and passphrases using the browser's cryptographic random source.">
       <ToolSEO
         title="Password Generator"
-        description="Generate strong, random passwords and passphrases in your browser. Configurable length, character sets, passphrase mode, and bulk generation — nothing sent to any server."
+        description="Generate strong random passwords and passphrases in your browser. Configurable length, character sets, passphrase mode, and bulk generation. Nothing uploaded."
         canonicalPath="/password"
         keywords={["password generator", "random password", "passphrase generator", "strong password", "secure password"]}
         faq={[

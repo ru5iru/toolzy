@@ -76,7 +76,7 @@ const CurlConverter = () => {
     >
       <ToolSEO
         title="curl to Code Converter — Python, JS, TypeScript, Go, PHP, Ruby"
-        description="Paste a curl command and instantly get equivalent code in Python requests, JavaScript/TypeScript fetch, Go net/http, PHP curl, or Ruby net/http. Free and browser-only."
+        description="Paste a curl command and instantly get equivalent code in Python, JavaScript, TypeScript, Go, PHP, or Ruby. Free, browser-only, nothing uploaded."
         canonicalPath="/curl"
         keywords={["curl to python", "curl to javascript", "curl converter", "curl to code", "curl to fetch", "curl to requests"]}
         faq={[

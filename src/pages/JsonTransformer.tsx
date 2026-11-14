@@ -89,7 +89,7 @@ const JsonTransformer = () => {
       description="Filter and transform JSON with jq-compatible expressions — all in your browser."
     >
       <ToolSEO
-        title="JSON Transformer — jq-style Filter & Transform"
+        title="JSON Transformer — jq-style Filter & Transform Tool"
         description="Apply jq-compatible filters to JSON: map, select, sort_by, group_by, to_entries, flatten and more. Live output, no server required."
         canonicalPath="/json-transform"
         keywords={["json transformer", "jq online", "json filter", "json query", "json map", "json select", "jq playground"]}

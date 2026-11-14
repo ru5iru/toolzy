@@ -88,9 +88,9 @@ const DocumentSigner = () => {
   return (
     <ToolPageLayout title="Document Signer" icon={FileSignature} description={<>Sign files and verify detached signatures. Keys stay in memory unless you save one on this device. For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.</>}>
       <ToolSEO
-        title="Document Signer — Sign & Verify Files"
+        title="Document Signer — Sign & Verify Digital Signatures"
         canonicalPath="/document-signer"
-        description="Sign files and verify detached digital signatures privately in your browser. Generate RSA-PSS and ECDSA keys, export PEM and JWK, and inspect signature manifests. Nothing is uploaded."
+        description="Sign files and verify detached digital signatures in your browser. Generate RSA-PSS and ECDSA keys, export PEM and JWK. Nothing is uploaded."
         keywords={["document signer", "digital signature", "detached signature", "verify signature online", "RSA-PSS", "ECDSA", "web crypto", "sign file in browser", "PEM key generator"]}
         faq={[
           { question: "Are my documents or private keys uploaded?", answer: "No. Signing, verification and key generation use your browser's Web Crypto API. Documents and keys are not sent anywhere, and keys are kept only in this tab's memory until you close or reload it." },

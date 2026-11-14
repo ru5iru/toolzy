@@ -43,7 +43,12 @@ jobs:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: npm run build -- --base "${PAGES_BASE_PATH}/"
 
+      # Inject per-route meta tags into static HTML files for SEO crawlers.
+      - name: Prerender SEO meta tags
+        run: npm run prerender
+
       # Pages serves this document for direct visits to client-side routes.
+      # Use the generic homepage HTML (without tool-specific meta) for 404.
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
 

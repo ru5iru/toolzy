@@ -168,8 +168,8 @@ const ApiDiffTool = () => {
         <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
       </>}>
       <ToolSEO
-        title="API Response Diff Tool"
-        description="Compare two JSON API responses side-by-side with structural diff, ignore rules, type change detection, and export. Free, browser-only developer tool."
+        title="API Response Diff Tool — Free Online JSON Comparison"
+        description="Compare two JSON API responses side-by-side with structural diff, ignore rules, and type change detection. Browser-only, nothing uploaded."
         canonicalPath="/diff"
         keywords={["JSON diff", "API response compare", "JSON compare online", "diff tool", "compare JSON objects", "API testing", "structural diff"]}
         faq={[

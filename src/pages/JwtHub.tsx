@@ -964,8 +964,8 @@ const JwtHub = () => {
   return (
     <ToolPageLayout title="JWT Hub" description="Decode, encode and verify JSON Web Tokens · HMAC, RSA, ECDSA">
       <ToolSEO
-        title="JWT Hub — Decode, Encode & Verify JSON Web Tokens"
-        description="Free browser-based JWT tool. Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
+        title="JWT Hub — Free Online JWT Decoder, Encoder & Verifier"
+        description="Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
         canonicalPath="/jwt"
         keywords={["jwt decoder", "jwt encoder", "json web token", "jwt verify", "hs256", "rs256", "jwt claims", "jwt security"]}
         faq={[
