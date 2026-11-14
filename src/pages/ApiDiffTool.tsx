@@ -54,17 +54,19 @@ const ApiDiffTool = () => {
   useEffect(() => { setLeftFormat(detectFormat(left)); }, [left]);
   useEffect(() => { setRightFormat(detectFormat(right)); }, [right]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); compare(); }
-      if (e.ctrlKey && e.shiftKey && e.key === "F") { e.preventDefault(); handleFormat(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [left, right, ignoreOrder, ignoreRules]);
-
   const compare = useCallback(() => {
+    if (!left.trim() || !right.trim()) {
+      toast.error("Paste JSON into both panels first");
+      return;
+    }
+    if (leftFormat !== "json") {
+      toast.error(`Left panel contains ${leftFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      return;
+    }
+    if (rightFormat !== "json") {
+      toast.error(`Right panel contains ${rightFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      return;
+    }
     try {
       const a = JSON.parse(left);
       const b = JSON.parse(right);
@@ -87,13 +89,23 @@ const ApiDiffTool = () => {
     } catch (e: any) {
       toast.error("Invalid JSON: " + e.message);
     }
-  }, [left, right, ignoreOrder, ignoreRules]);
+  }, [left, right, leftFormat, rightFormat, ignoreOrder, ignoreRules]);
 
-  const handleFormat = () => {
+  const handleFormat = useCallback(() => {
     setLeft(prettify(left, leftFormat));
     setRight(prettify(right, rightFormat));
     toast.success("Formatted");
-  };
+  }, [left, right, leftFormat, rightFormat]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); compare(); }
+      if (e.ctrlKey && e.shiftKey && e.key === "F") { e.preventDefault(); handleFormat(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [compare, handleFormat]);
 
   const handleDrop = (side: "left" | "right") => (e: React.DragEvent) => {
     e.preventDefault();
