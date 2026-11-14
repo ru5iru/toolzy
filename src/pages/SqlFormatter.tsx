@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -46,11 +46,6 @@ const SqlFormatter = () => {
   const [indentSize, setIndentSize] = useState<IndentSize>("2");
   const [error, setError] = useState<string | null>(null);
 
-  const getIndent = (): string => {
-    if (indentSize === "tab") return "\t";
-    return " ".repeat(Number(indentSize));
-  };
-
   const doFormat = useCallback((sql: string) => {
     if (!sql.trim()) { setOutput(""); setError(null); return; }
     try {
@@ -87,6 +82,11 @@ const SqlFormatter = () => {
       setOutput("");
     }
   }, [input, dialect, keywordCase]);
+
+  // Auto-reformat when options change if we already have output
+  useEffect(() => {
+    if (output && input.trim()) doFormat(input);
+  }, [dialect, keywordCase, indentSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFormat = () => {
     doFormat(input);
