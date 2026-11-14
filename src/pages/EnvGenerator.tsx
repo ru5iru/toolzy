@@ -145,7 +145,7 @@ const EnvGenerator = () => {
 
   const displayContent = maskMode ? maskSecrets(content) : content;
 
-  const issues = parseEnv(content).issues;
+  const issues = useMemo(() => parseEnv(content).issues, [content]);
   const convert = (fn: () => string, done: string) => {
     try { setContent(fn()); toast.success(done); } catch (e) { toast.error(e instanceof Error ? e.message : "Conversion failed"); }
   };

@@ -92,7 +92,9 @@ const ColorConverter = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -104,7 +106,8 @@ const ColorConverter = () => {
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       setExtractedColors(extractColors(data, 8));
     };
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => URL.revokeObjectURL(objectUrl);
+    img.src = objectUrl;
   };
 
   // Batch convert
