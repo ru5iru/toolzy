@@ -190,7 +190,7 @@ const NumberBaseConverter = () => {
       maxWidth="narrow"
     >
       <ToolSEO
-        title="Number Base Converter — Binary, Decimal, Hex, Octal"
+        title="Number Base Converter  -  Binary, Decimal, Hex, Octal"
         description="Convert numbers between binary, octal, decimal and hex instantly. Includes bitwise AND, OR, XOR, NOT, shifts, and hex↔ASCII conversion. Browser-only."
         canonicalPath="/number-base"
         keywords={["number base converter", "binary to decimal", "hex to binary", "decimal to hex", "octal converter", "bitwise calculator", "hex to ascii"]}

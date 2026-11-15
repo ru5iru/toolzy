@@ -225,7 +225,7 @@ const CronBuilder = () => {
       maxWidth="wide"
     >
       <ToolSEO
-        title="Cron Expression Builder — Free Online Cron Generator"
+        title="Cron Expression Builder  -  Free Online Cron Generator"
         description="Build cron expressions visually. See plain-English descriptions and next 10 run times. Supports standard cron, AWS EventBridge, and GitHub Actions."
         canonicalPath="/cron"
         keywords={["cron builder", "cron expression", "cron generator", "cron editor", "aws eventbridge cron", "github actions cron", "crontab"]}

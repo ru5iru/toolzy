@@ -75,7 +75,7 @@ const ImageMetadataViewer = () => {
   return (
     <ToolPageLayout title="Image Metadata Viewer" icon={FileSearch} description="Inspect EXIF, GPS and other metadata, and remove it from JPEG and PNG files.">
       <ToolSEO
-        title="Image Metadata Viewer — EXIF, GPS & Privacy Inspector"
+        title="Image Metadata Viewer  -  EXIF, GPS & Privacy Inspector"
         description="Inspect EXIF, GPS, camera details, timestamps, IPTC and XMP tags from JPEG, PNG and TIFF images in your browser. Export JSON or CSV. Nothing uploaded."
         canonicalPath="/image-metadata"
         keywords={["image metadata viewer", "EXIF viewer online", "GPS metadata extractor", "IPTC viewer", "XMP viewer", "remove EXIF data", "image privacy tool", "photo metadata"]}

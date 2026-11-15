@@ -219,7 +219,7 @@ const TextUtilities = () => {
   return (
     <ToolPageLayout title="Text Utilities" icon={Type} description="Transform text, generate lorem ipsum, build slugs, estimate reading time and create markdown tables.">
       <ToolSEO
-        title="Text Utilities — Case Converter, Lorem Ipsum, Slug & More"
+        title="Text Utilities  -  Case Converter, Lorem Ipsum, Slug & More"
         description="Free browser-based text tools: convert case, slugify, sort lines, lorem ipsum generator, reading time estimator, and markdown table builder. No data is uploaded."
         canonicalPath="/text"
         keywords={["case converter", "camelCase converter", "snake_case converter", "kebab-case converter", "slugify", "lorem ipsum generator", "reading time estimator", "markdown table generator", "word counter"]}

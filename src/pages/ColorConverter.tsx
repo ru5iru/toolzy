@@ -149,7 +149,7 @@ const ColorConverter = () => {
   return (
     <ToolPageLayout title="Color Converter" description="Convert between HEX, RGB, HSL, HSV, CMYK · pick, palette, contrast and gradient tools.">
       <ToolSEO
-        title="Color Converter — HEX, RGB, HSL, HSV, CMYK Online Tool"
+        title="Color Converter  -  HEX, RGB, HSL, HSV, CMYK Online Tool"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
         canonicalPath="/color"
         keywords={["color converter", "HEX to RGB", "color palette generator", "WCAG contrast checker", "gradient generator", "color picker"]}

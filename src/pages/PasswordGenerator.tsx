@@ -141,10 +141,10 @@ const PasswordGenerator = () => {
       }
       setPasswords(arr);
     }
-    setSeed(s => s + 1);
   }, [mode, pool, subPools, length, count, wordCount, separator, capitalise, includeNum]);
 
-  // Generate on mount and whenever settings change (seed bump triggers this too)
+  // Generate on mount and whenever settings or seed change.
+  // seed is bumped externally (Regenerate button / setting controls) — never inside generate.
   useEffect(() => { generate(); }, [generate, seed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const primary = passwords[0] ?? "";
@@ -163,9 +163,9 @@ const PasswordGenerator = () => {
   };
 
   return (
-    <ToolPageLayout title="Password Generator — Random Passwords & Passphrases" icon={ShieldCheck} description="Generate secure passwords and passphrases using the browser's cryptographic random source.">
+    <ToolPageLayout title="Password Generator  -  Random Passwords & Passphrases" icon={ShieldCheck} description="Generate secure passwords and passphrases using the browser's cryptographic random source.">
       <ToolSEO
-        title="Password Generator — Random Passwords & Passphrases"
+        title="Password Generator  -  Random Passwords & Passphrases"
         description="Generate strong random passwords and passphrases in your browser. Configurable length, character sets, passphrase mode, and bulk generation. Nothing uploaded."
         canonicalPath="/password"
         keywords={["password generator", "random password", "passphrase generator", "strong password", "secure password"]}

@@ -159,7 +159,7 @@ const YamlConverter = () => {
       description="Convert between YAML, JSON, and TOML — runs entirely in your browser"
     >
       <ToolSEO
-        title="YAML JSON TOML Converter — Free Online Format Converter"
+        title="YAML JSON TOML Converter  -  Free Online Format Converter"
         description="Convert between YAML, JSON, and TOML instantly. Paste any config format and convert it to the other. Free, browser-only, nothing uploaded."
         canonicalPath="/yaml"
         keywords={["yaml to json", "json to yaml", "yaml to toml", "toml to yaml", "toml to json", "config converter", "yaml converter"]}

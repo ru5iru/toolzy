@@ -155,7 +155,7 @@ const ChmodCalculator = () => {
       maxWidth="narrow"
     >
       <ToolSEO
-        title="chmod Calculator — Unix File Permission Calculator"
+        title="chmod Calculator  -  Unix File Permission Calculator"
         description="Calculate Unix/Linux file permissions. Toggle checkboxes to build chmod octals and symbolic notation. Free, browser-only."
         canonicalPath="/chmod"
         keywords={["chmod calculator", "unix permissions", "linux file permissions", "octal permissions", "chmod 755", "chmod 644", "file permission calculator"]}
