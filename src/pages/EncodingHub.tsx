@@ -495,7 +495,7 @@ const EncodingHub = () => {
   return (
     <ToolPageLayout title="Encoding Hub" description="Base64, URL encoding and Data URL converter.">
       <ToolSEO
-        title="Encoding Hub — Base64, URL Encode & Data URL Converter"
+        title="Encoding Hub  -  Base64, URL Encode & Data URL Converter"
         description="Encode and decode Base64, URL-safe Base64, percent-encoded URLs, and Data URLs with auto-detect and file support. Nothing leaves your browser."
         canonicalPath="/encode"
         keywords={[

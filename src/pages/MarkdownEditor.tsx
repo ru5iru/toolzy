@@ -168,7 +168,7 @@ export default function MarkdownEditor() {
 
   return <div data-theme={light ? "light" : "dark"} className={`markdown-workspace flex flex-col min-h-0 h-full ${focus ? "fixed inset-0 z-50" : ""} ${dragging ? "ring-2 ring-inset ring-primary" : ""}`} onDragOver={event => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={event => { event.preventDefault(); setDragging(false); const file = event.dataTransfer.files[0]; if (file) void openFile(file); }}>
     <ToolSEO
-      title="Markdown Editor — Live GFM Preview in Your Browser"
+      title="Markdown Editor  -  Live GFM Preview in Your Browser"
       description="Markdown editor with live preview, GitHub-flavored Markdown, local autosave, split view, slash commands, find/replace, and Markdown or HTML exports."
       canonicalPath="/markdown"
       keywords={["markdown editor online", "GFM markdown editor", "live markdown preview", "markdown to HTML", "github flavored markdown", "local markdown editor", "markdown split view"]}

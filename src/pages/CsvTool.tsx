@@ -154,7 +154,7 @@ const CsvTool = () => {
   return (
     <ToolPageLayout title="CSV Tool" icon={Table2} description="Parse, preview, filter, sort, and export CSV, TSV, and delimited data.">
       <ToolSEO
-        title="CSV Tool — Parse, Filter, Sort & Export Data Online"
+        title="CSV Tool  -  Parse, Filter, Sort & Export Data Online"
         description="Parse CSV, TSV, and delimited text in your browser. Preview data as a table, filter rows, sort columns, view column stats, and export as CSV or JSON."
         canonicalPath="/csv"
         keywords={["csv viewer", "csv parser", "csv to json", "tsv parser", "csv filter", "csv online tool"]}
