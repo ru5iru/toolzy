@@ -45,7 +45,7 @@
 - [x] Shell: sticky top bar with tool name, responsive padding, sidebar hover.
 - [x] `ToolHeader` + `ToolPageLayout`; all pages migrated off hand-written headers; compact "Local only" chip.
 - [x] Launcher home page (search focused on load, `/` shortcut, Enter opens first match, tiles are links).
-- [ ] Next: light theme, command palette (Ctrl/Cmd+K), shared `ResultPanel` and `CopyButton`, per-tool density pass for JSON, JWT and Fake Data toolbars.
+- [x] Next: light theme, command palette (Ctrl/Cmd+K), shared `CopyButton`, per-tool density pass for JSON, JWT and Fake Data toolbars. (`ResultPanel` skipped — density handled per-tool.)
 
 ## Capability and UX plan (feat/ui-density-pass follow-up)
 Survey result: tools are solid but navigation, copy feedback and a few everyday utilities are missing.
