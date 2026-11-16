@@ -38,6 +38,7 @@ const FakeDataGenerator = () => {
   const [stats, setStats] = useState({ count: 0, ms: 0 });
   const revision = useRef(0);
   const abortRef = useRef<AbortController>();
+  const loadRevision = useRef(0);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const [tab, setTab] = useState("template");
   const [browserOpen, setBrowserOpen] = useState(false);
@@ -49,7 +50,9 @@ const FakeDataGenerator = () => {
   const [records, setRecords] = useState<Json[]>([]);
   const loadTemplate = async (value:Json) => {
     if(JSON.stringify(value).length>MAX_TEMPLATE)throw new Error("Template exceeds 100 KB");
+    const id = ++loadRevision.current;
     const issues=validateTemplate(value,await createFaker(locale));
+    if(id !== loadRevision.current) return; // stale — a newer preset was selected
     if(issues.length)throw new Error(issues.map(e=>`${e.path}: ${e.message}`).join("\n"));
     setTemplate(JSON.stringify(value,null,2));setBuilder(toBuilder(value));
   };

@@ -132,9 +132,7 @@ const CryptoSuite = () => {
   const initialTab: CryptoTab = requestedTab === "uuid" || requestedTab === "secrets" ? requestedTab : "hash";
   const [tab, setTab] = useState<CryptoTab>(initialTab);
   useEffect(() => {
-    const next = new URLSearchParams(params);
-    next.set("tab", tab);
-    setParams(next, { replace: true });
+    setParams(prev => { const n = new URLSearchParams(prev); n.set("tab", tab); return n; }, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
