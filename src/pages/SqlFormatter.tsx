@@ -58,9 +58,11 @@ const SqlFormatter = () => {
       });
       setOutput(result);
       setError(null);
+      return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to format SQL");
       setOutput("");
+      return false;
     }
   }, [dialect, keywordCase, indentSize]);
 
@@ -89,8 +91,8 @@ const SqlFormatter = () => {
   }, [dialect, keywordCase, indentSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFormat = () => {
-    doFormat(input);
-    toast.success("SQL formatted");
+    const ok = doFormat(input);
+    if (ok) toast.success("SQL formatted");
   };
 
   const handleLoadSample = () => {
