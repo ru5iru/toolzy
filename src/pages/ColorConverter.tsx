@@ -65,10 +65,11 @@ const ColorConverter = () => {
     if (rgb && hex) {
       setHistory(prev => {
         const next = [hex, ...prev.filter(h => h !== hex)].slice(0, 20);
-        saveArr(HISTORY_KEY, next);
         return next;
       });
+      saveArr(HISTORY_KEY, [hex, ...history.filter(h => h !== hex)].slice(0, 20));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hex, rgb]);
 
   const toggleFavorite = (color: string) => {
@@ -91,10 +92,12 @@ const ColorConverter = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    let mounted = true;
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
+      if (!mounted) return;
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -104,10 +107,11 @@ const ColorConverter = () => {
       canvas.height = img.height * scale;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      setExtractedColors(extractColors(data, 8));
+      if (mounted) setExtractedColors(extractColors(data, 8));
     };
-    img.onerror = () => URL.revokeObjectURL(objectUrl);
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); if (mounted) toast.error("Failed to load image"); };
     img.src = objectUrl;
+    return () => { mounted = false; };
   };
 
   // Batch convert

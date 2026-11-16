@@ -19,7 +19,13 @@ const SIMILAR = new Set("Il1O0o");
 const WORDS = ("able about above across act add age ago ahead air all allow along also always among and angle animal any appear apple apply area arm art ask away back ball band base bath be beam bear beat become before begin being below best bird bite blow blue boat body bone book both break bridge bring broad brown build burn but call came can care carry case catch cause chain chair chance change child city claim class clean clear close cloth coast cold come common contain cool copy corner could count cover crack cross crowd cut dark data deal dear deep depend describe detail different draw drive drop each early earth east edge else empty end enjoy enough enter equal even ever every examine eye face fall false far fast feel feet fill find finish fire first fish fix flow follow food force form forward found four free from full fund gain game gave give glad glass go good got grab grass great green grew grid grow guess guide half hand hang happen hard has have head heat heavy help here high hill hold home hope hot hour house how human hundred hunt idea if image inch include increase indeed iron island it join keep kill kind knew know land large last late laugh law layer lead leaf learn left let life light like line link list live local long look lost loud low made make man many may mean meet mention might mile mind mix month more most move much must near need never new next night no nor north not now number ocean off old once only open or order other our out over own pair part past path place plan plant play point point post power provide pull push put quite rain ran reach read reason record red region relate remain require rest result river road rock roll room round run safe said same saw say second seem set share sharp short show side sign simple since size small so soft soil some sort south space speak spread spring stand start step stick still stone stop store street stretch strong study such sun supply support sure system take talk tall team tell term that the their them then there they thin thing think this though three throw tie time to today together took top touch town tree try turn two type under until up use valley very view wait walk want warm was water wave way well went were west what wheel where while white wide wind wish with without wonder wood word world would write year yet you zone"
 ).split(" ");
 
-function randWord() { return WORDS[Math.floor(Math.random() * WORDS.length)]; }
+function cryptoRandInt(max: number): number {
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] % max;
+}
+
+function randWord() { return WORDS[cryptoRandInt(WORDS.length)]; }
 
 // ─── Strength ─────────────────────────────────────────────────────────────────
 function strength(pwd: string): { score: number; label: string; cls: string } {
@@ -121,7 +127,7 @@ const PasswordGenerator = () => {
           // Check if chars already has at least one from this sub-pool
           if (!chars.some(c => sp.includes(c))) {
             // Replace a random position (beyond the first `ri` slots to avoid overwriting earlier guarantees)
-            const pos = ri + Math.floor(Math.random() * (length - ri));
+            const pos = ri + cryptoRandInt(length - ri);
             chars[pos] = randChar(sp);
           }
         });
@@ -136,7 +142,7 @@ const PasswordGenerator = () => {
           return capitalise ? w.charAt(0).toUpperCase() + w.slice(1) : w;
         });
         let phrase = words.join(separator);
-        if (includeNum) phrase += separator + (Math.floor(Math.random() * 90) + 10);
+        if (includeNum) phrase += separator + (cryptoRandInt(90) + 10);
         arr.push(phrase);
       }
       setPasswords(arr);

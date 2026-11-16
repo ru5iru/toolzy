@@ -177,7 +177,7 @@ const CsvTool = () => {
           <Upload className="w-8 h-8 mx-auto text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Drop a CSV/TSV file here, or click to browse</p>
           <p className="text-xs text-muted-foreground">or</p>
-          <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); }}>Browse file</Button>
+          <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); fileRef.current?.click(); }}>Browse file</Button>
           <input ref={fileRef} type="file" accept=".csv,.tsv,.txt" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
         </div>
@@ -185,7 +185,7 @@ const CsvTool = () => {
         <div className="flex gap-2 items-center flex-wrap">
           <span className="text-xs text-muted-foreground">
             {rows.length} rows × {headers.length} cols · detected delimiter:
-            <code className="ml-1 font-mono text-foreground">{delimOverride ?? detectedDelim === "\t" ? "tab" : delimOverride ?? detectedDelim}</code>
+            <code className="ml-1 font-mono text-foreground">{(delimOverride ?? detectedDelim) === "\t" ? "tab" : (delimOverride ?? detectedDelim)}</code>
           </span>
           <div className="flex gap-1 ml-auto flex-wrap">
             {[",", "\t", ";", "|"].map(d => (

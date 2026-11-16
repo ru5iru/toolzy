@@ -112,11 +112,15 @@ const YamlConverter = () => {
 
   const handleSwap = () => {
     if (!output) return;
-    setInput(output);
-    setInputFmt(outputFmt);
-    setOutputFmt(inputFmt);
+    const prevOutput = output;
+    const prevOutputFmt = outputFmt;
+    const prevInputFmt = inputFmt;
+    setInput(prevOutput);
+    setInputFmt(prevOutputFmt);
+    setOutputFmt(prevInputFmt);
     setOutput("");
     setError(null);
+    convert(prevOutput, prevOutputFmt, prevInputFmt);
   };
 
   const handleLoadSample = () => {
@@ -132,7 +136,9 @@ const YamlConverter = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = `converted.${ext}`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success(`Downloaded converted.${ext}`);
   };

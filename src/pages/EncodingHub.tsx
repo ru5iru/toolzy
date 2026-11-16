@@ -479,13 +479,13 @@ const EncodingHub = () => {
     setQueryParams(queryParams.map((p) => (p.id === id ? { ...p, [f]: v } : p)));
 
   const batchProcess = (dir: "encode" | "decode") => {
-    const lines = input.split("\\n").filter((l) => l.trim());
+    const lines = input.split("\n").filter((l) => l.trim());
     const results = lines.map((line) =>
       dir === "encode" ? urlEncode(line, urlSubMode) : urlDecode(line).result
     );
     if (batchFormat === "json") setOutput(JSON.stringify(results, null, 2));
-    else if (batchFormat === "csv") setOutput(results.map((r) => `"${r.replace(/"/g, '""')}"`).join("\\n"));
-    else setOutput(results.join("\\n"));
+    else if (batchFormat === "csv") setOutput(results.map((r) => `"${r.replace(/"/g, '""')}"`).join("\n"));
+    else setOutput(results.join("\n"));
     toast.success(`Batch ${dir}d ${results.length} lines`);
   };
 

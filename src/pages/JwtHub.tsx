@@ -543,7 +543,11 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
     try {
       const h = JSON.parse(headerStr);
       const p = JSON.parse(payloadStr);
-      const b64u = (s: string) => btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      const b64u = (s: string) => {
+        const bytes = new TextEncoder().encode(s);
+        const bin = Array.from(bytes, (b) => String.fromCharCode(b)).join("");
+        return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      };
       const unsigned = `${b64u(JSON.stringify(h))}.${b64u(JSON.stringify(p))}.`;
       setShared({
         activeToken: unsigned,
@@ -803,9 +807,10 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
 
   const fetchJwks = async () => {
     if (!url.trim()) return;
+    const controller = new AbortController();
     setLoading(true); setError(""); setKeys([]); setSelectedKid(null);
     try {
-      const res = await fetch(url.trim(), { headers: { Accept: "application/json" } });
+      const res = await fetch(url.trim(), { signal: controller.signal, headers: { Accept: "application/json" } });
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       const data = await res.json();
       const ks: JwksKey[] = Array.isArray(data.keys) ? data.keys : [];
@@ -813,10 +818,12 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
       setKeys(ks);
       toast.success(`Loaded ${ks.length} key${ks.length !== 1 ? "s" : ""}`);
     } catch (e: any) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
       setError(e.message || "Fetch failed");
     } finally {
       setLoading(false);
     }
+    return () => controller.abort();
   };
 
   const selectedKey = keys.find(k => (k.kid ?? keys.indexOf(k).toString()) === selectedKid);
