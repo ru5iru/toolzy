@@ -108,7 +108,7 @@ export default function HtmlEditor() {
   ];
   const download = () => {
     const objectUrl = URL.createObjectURL(new Blob([htmlDocument(html)], { type: "text/html;charset=utf-8" }));
-    const anchor = document.createElement("a"); anchor.href = objectUrl; anchor.download = "document.html"; anchor.click(); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    const anchor = document.createElement("a"); anchor.href = objectUrl; anchor.download = "document.html"; document.body.appendChild(anchor); anchor.click(); document.body.removeChild(anchor); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
   };
   const applyHTML = (value: string) => { if (!editor) return; editor.commands.setContent(sanitizeHTML(value)); setHtml(editor.getHTML()); };
   const openFile = async (file?: File) => {

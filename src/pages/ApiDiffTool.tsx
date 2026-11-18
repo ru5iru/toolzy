@@ -145,7 +145,9 @@ const ApiDiffTool = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = `diff-report.${format === "json" ? "json" : "md"}`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Exported");
   };

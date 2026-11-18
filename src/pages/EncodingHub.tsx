@@ -395,7 +395,7 @@ const EncodingHub = () => {
       const a = document.createElement("a");
       a.href = detectedContent.blobUrl;
       a.download = `decoded.${mimeToExt(detectedContent.mimeType || "application/octet-stream")}`;
-      a.click();
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       return;
     } else {
       blob = new Blob([output], { type: "text/plain" });
@@ -404,7 +404,9 @@ const EncodingHub = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 

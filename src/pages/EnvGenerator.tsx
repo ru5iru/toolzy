@@ -156,7 +156,9 @@ const EnvGenerator = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = ".env";
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Downloaded .env file");
   };

@@ -107,7 +107,9 @@ const SqlFormatter = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = "formatted.sql";
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Downloaded formatted.sql");
   };
