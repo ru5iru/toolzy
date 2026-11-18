@@ -75,8 +75,8 @@ const YamlConverter = () => {
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const convert = useCallback((text: string, from: Format, to: Format): boolean => {
-    if (!text.trim()) { setOutput(""); setError(null); return true; }
+  const convert = useCallback((text: string, from: Format, to: Format): boolean | null => {
+    if (!text.trim()) { setOutput(""); setError(null); return null; }
     try {
       const data = parseInput(text, from);
       if (data === undefined || data === null) {
@@ -96,7 +96,7 @@ const YamlConverter = () => {
 
   const handleConvert = () => {
     const ok = convert(input, inputFmt, outputFmt);
-    if (ok) toast.success(`Converted ${FORMAT_LABELS[inputFmt]} → ${FORMAT_LABELS[outputFmt]}`);
+    if (ok === true) toast.success(`Converted ${FORMAT_LABELS[inputFmt]} → ${FORMAT_LABELS[outputFmt]}`);
   };
 
   const handleInputFmtChange = (fmt: Format) => {
@@ -175,12 +175,12 @@ const YamlConverter = () => {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Input</span>
-          <FormatToggle value={inputFmt} onChange={handleInputFmtChange} />
+          <FormatToggle value={inputFmt} onChange={handleInputFmtChange} exclude={outputFmt} />
         </div>
         <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Output</span>
-          <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} />
+          <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} exclude={inputFmt} />
         </div>
         <div className="ml-auto flex items-center gap-1.5">
           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleLoadSample}>Sample</Button>
@@ -195,7 +195,10 @@ const YamlConverter = () => {
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-border px-3 py-2 shrink-0">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{FORMAT_LABELS[inputFmt]}</span>
-                {input && <span className="text-xs text-muted-foreground">{input.length.toLocaleString()} chars</span>}
+                <div className="flex items-center gap-2">
+                  {input && <span className="text-xs text-muted-foreground">{input.length.toLocaleString()} chars</span>}
+                  {input && <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => { setInput(""); setOutput(""); setError(null); }}>Clear</Button>}
+                </div>
               </div>
               <textarea
                 className="flex-1 resize-none bg-card p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"

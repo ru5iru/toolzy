@@ -129,7 +129,7 @@ type CryptoTab = "hash" | "uuid" | "secrets" | "bcrypt";
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
   const requestedTab = params.get("tab");
-  const initialTab: CryptoTab = requestedTab === "uuid" || requestedTab === "secrets" ? requestedTab : "hash";
+  const initialTab: CryptoTab = (["hash", "uuid", "secrets", "bcrypt"] as CryptoTab[]).includes(requestedTab as CryptoTab) ? requestedTab as CryptoTab : "hash";
   const [tab, setTab] = useState<CryptoTab>(initialTab);
   useEffect(() => {
     setParams(prev => { const n = new URLSearchParams(prev); n.set("tab", tab); return n; }, { replace: true });
@@ -715,7 +715,8 @@ function UuidTab() {
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `uuids.${format}`; a.click();
+    a.href = url; a.download = `uuids.${format}`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 

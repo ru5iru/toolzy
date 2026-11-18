@@ -71,7 +71,7 @@ export default function MarkdownEditor() {
 
   const download = useCallback((content: string, extension: "md" | "html") => {
     const url = URL.createObjectURL(new Blob([content], { type: extension === "md" ? "text/markdown;charset=utf-8" : "text/html;charset=utf-8" }));
-    const anchor = document.createElement("a"); anchor.href = url; anchor.download = extension === "md" ? safeFilename(name) : safeFilename(name).replace(/\.md$/, ".html"); anchor.click();
+    const anchor = document.createElement("a"); anchor.href = url; anchor.download = extension === "md" ? safeFilename(name) : safeFilename(name).replace(/\.md$/, ".html"); document.body.appendChild(anchor); anchor.click(); document.body.removeChild(anchor);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, [name]);
   const save = useCallback(() => { download(text, "md"); setSnapshot(text); toast.success("Markdown downloaded; comparison snapshot updated"); }, [text, download]);

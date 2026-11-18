@@ -130,7 +130,8 @@ const CsvTool = () => {
     const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = name; a.click();
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
@@ -140,8 +141,8 @@ const CsvTool = () => {
     const nums = vals.map(Number).filter(v => !isNaN(v));
     const unique = new Set(vals).size;
     const numericPct = vals.length ? Math.round(nums.length / vals.length * 100) : 0;
-    const min = nums.length ? Math.min(...nums) : null;
-    const max = nums.length ? Math.max(...nums) : null;
+    const min = nums.length ? nums.reduce((a, b) => Math.min(a, b), Infinity) : null;
+    const max = nums.length ? nums.reduce((a, b) => Math.max(a, b), -Infinity) : null;
     const sum = nums.length ? nums.reduce((a, b) => a + b, 0) : null;
     const avg = nums.length ? sum! / nums.length : null;
     const fmt = (n: number) => Number.isInteger(n) ? n.toLocaleString() : n.toLocaleString(undefined, { maximumFractionDigits: 4 });
@@ -208,7 +209,7 @@ const CsvTool = () => {
           <textarea
             className="w-full min-h-[160px] rounded-md border border-border bg-card px-3 py-2 font-mono text-xs resize-y focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder={"name,age,city\nAlice,30,London\nBob,25,Paris"}
-            onBlur={e => { if (e.target.value) { setInput(e.target.value); e.target.value = ""; } }}
+            onChange={e => { if (e.target.value) setInput(e.target.value); }}
           />
         </div>
       )}
@@ -231,7 +232,7 @@ const CsvTool = () => {
                 />
                 {filterText && (
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    onClick={() => setFilterText("")}><X className="w-3 h-3" /></button>
+                    onClick={() => setFilterText("")} aria-label="Clear row filter"><X className="w-3 h-3" /></button>
                 )}
               </div>
               <Button variant="outline" size="sm" className="h-7 text-xs gap-1"

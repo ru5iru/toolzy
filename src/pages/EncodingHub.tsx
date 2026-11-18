@@ -280,15 +280,18 @@ const EncodingHub = () => {
             }
           }
         } else if (effective === "url") {
+          let urlResult = "";
           if (dir === "encode") {
-            setOutput(urlEncode(text, urlSubMode));
+            urlResult = urlEncode(text, urlSubMode);
+            setOutput(urlResult);
           } else {
             const r = urlDecode(text);
             if (r.error) { setError(r.error); setOutput(""); return; }
-            setOutput(r.result);
+            urlResult = r.result;
+            setOutput(urlResult);
           }
           if (dir === "encode" || dir === "decode") {
-            addUrlHistory({ input: text.slice(0, 200), output: (output || "").slice(0, 200), mode: dir, encodingMode: urlSubMode });
+            addUrlHistory({ input: text.slice(0, 200), output: urlResult.slice(0, 200), mode: dir, encodingMode: urlSubMode });
             setHistory(getUrlHistory());
           }
         } else if (effective === "dataurl") {
@@ -395,7 +398,7 @@ const EncodingHub = () => {
       const a = document.createElement("a");
       a.href = detectedContent.blobUrl;
       a.download = `decoded.${mimeToExt(detectedContent.mimeType || "application/octet-stream")}`;
-      a.click();
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       return;
     } else {
       blob = new Blob([output], { type: "text/plain" });
@@ -404,7 +407,9 @@ const EncodingHub = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 

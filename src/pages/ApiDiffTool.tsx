@@ -145,7 +145,9 @@ const ApiDiffTool = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = `diff-report.${format === "json" ? "json" : "md"}`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Exported");
   };
@@ -246,7 +248,7 @@ const ApiDiffTool = () => {
                 Response A
                 <Badge variant="outline" className="text-xs">{leftFormat.toUpperCase()}</Badge>
               </span>
-              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setLeft("")}><Trash2 className="h-3 w-3" /></Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setLeft("")} aria-label="Clear left input"><Trash2 className="h-3 w-3" /></Button>
             </div>
             <Textarea
               ref={leftRef}
@@ -268,7 +270,7 @@ const ApiDiffTool = () => {
                 Response B
                 <Badge variant="outline" className="text-xs">{rightFormat.toUpperCase()}</Badge>
               </span>
-              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setRight("")}><Trash2 className="h-3 w-3" /></Button>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setRight("")} aria-label="Clear right input"><Trash2 className="h-3 w-3" /></Button>
             </div>
             <Textarea
               ref={rightRef}

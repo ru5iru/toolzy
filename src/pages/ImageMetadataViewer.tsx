@@ -68,7 +68,9 @@ const ImageMetadataViewer = () => {
     const anchor = document.createElement("a");
     anchor.href = resource.url;
     anchor.download = `image-metadata.${kind}`;
+    document.body.appendChild(anchor);
     anchor.click();
+    document.body.removeChild(anchor);
     // Give the browser time to begin the download before releasing its URL.
     setTimeout(resource.release, 1000);
   };

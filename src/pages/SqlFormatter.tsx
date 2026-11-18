@@ -45,6 +45,7 @@ const SqlFormatter = () => {
   const [keywordCase, setKeywordCase] = useState<KeywordCase>("upper");
   const [indentSize, setIndentSize] = useState<IndentSize>("2");
   const [error, setError] = useState<string | null>(null);
+  const [lastAction, setLastAction] = useState<"format" | "minify" | null>(null);
 
   const doFormat = useCallback((sql: string) => {
     if (!sql.trim()) { setOutput(""); setError(null); return; }
@@ -68,6 +69,7 @@ const SqlFormatter = () => {
 
   const doMinify = useCallback(() => {
     if (!input.trim()) return;
+    setLastAction("minify");
     try {
       const result = sqlFormat(input, {
         language: dialect,
@@ -85,12 +87,13 @@ const SqlFormatter = () => {
     }
   }, [input, dialect, keywordCase]);
 
-  // Auto-reformat when options change if we already have output
+  // Auto-reformat when options change — only if the last action was Format, not Minify
   useEffect(() => {
-    if (output && input.trim()) doFormat(input);
+    if (lastAction === "format" && output && input.trim()) doFormat(input);
   }, [dialect, keywordCase, indentSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFormat = () => {
+    setLastAction("format");
     const ok = doFormat(input);
     if (ok) toast.success("SQL formatted");
   };
@@ -107,7 +110,9 @@ const SqlFormatter = () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = "formatted.sql";
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Downloaded formatted.sql");
   };
@@ -195,7 +200,9 @@ const SqlFormatter = () => {
                 className="h-full w-full resize-none bg-card p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={"Paste your SQL here…\n\nSupports SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, and more."}
+                onKeyDown={(e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); handleFormat(); } }}
+                placeholder={"Paste your SQL here… · Ctrl+Enter to format\n\nSupports SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, and more."}
+                aria-label="SQL input"
                 spellCheck={false}
                 autoComplete="off"
               />

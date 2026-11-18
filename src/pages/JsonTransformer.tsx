@@ -110,6 +110,7 @@ const JsonTransformer = () => {
           className="flex-1 min-w-[200px] font-mono text-sm bg-card border-border"
           placeholder=". | keys"
           spellCheck={false}
+          aria-label="jq filter expression"
         />
         <div className="flex gap-1 items-center shrink-0">
           <span className="text-xs text-muted-foreground">indent</span>
@@ -166,6 +167,7 @@ const JsonTransformer = () => {
               onChange={e => setJson(e.target.value)}
               className="flex-1 font-mono text-xs resize-none rounded-none border-0 focus-visible:ring-0 bg-card"
               spellCheck={false}
+              aria-label="JSON input"
             />
           </div>
         </ResizablePanel>

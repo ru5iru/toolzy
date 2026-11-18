@@ -233,12 +233,12 @@ const RegexPlayground = () => {
                         </span>
                         <Button variant="outline" size="icon" className="h-6 w-6"
                           onClick={() => jumpTo(selectedMatch <= 0 ? matches.length - 1 : selectedMatch - 1)}
-                          title="Previous match">
+                          aria-label="Previous match">
                           <ChevronLeft className="w-3 h-3" />
                         </Button>
                         <Button variant="outline" size="icon" className="h-6 w-6"
                           onClick={() => jumpTo(selectedMatch < 0 ? 0 : (selectedMatch + 1) % matches.length)}
-                          title="Next match">
+                          aria-label="Next match">
                           <ChevronRight className="w-3 h-3" />
                         </Button>
                       </div>

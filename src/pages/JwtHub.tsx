@@ -804,10 +804,14 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
   const [selectedKid, setSelectedKid] = useState<string | null>(null);
   const [verifyResult, setVerifyResult] = useState<"valid" | "invalid" | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const jwksAbortRef = useRef<AbortController | null>(null);
 
   const fetchJwks = async () => {
     if (!url.trim()) return;
+    // Abort any in-flight request before starting a new one
+    jwksAbortRef.current?.abort();
     const controller = new AbortController();
+    jwksAbortRef.current = controller;
     setLoading(true); setError(""); setKeys([]); setSelectedKid(null);
     try {
       const res = await fetch(url.trim(), { signal: controller.signal, headers: { Accept: "application/json" } });
@@ -823,7 +827,6 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
     } finally {
       setLoading(false);
     }
-    return () => controller.abort();
   };
 
   const selectedKey = keys.find(k => (k.kid ?? keys.indexOf(k).toString()) === selectedKid);
