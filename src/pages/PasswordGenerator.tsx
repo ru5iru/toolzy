@@ -333,7 +333,7 @@ const PasswordGenerator = () => {
                 >
                   {revealed ? pwd : "•".repeat(Math.min(pwd.length, 24))}
                 </span>
-                <CopyButton value={pwd} label="" variant="ghost" />
+                <CopyButton value={pwd} label="" variant="ghost" aria-label="Copy password" />
               </div>
             ))}
           </div>

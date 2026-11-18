@@ -293,19 +293,19 @@ const TextDiff = () => {
             {left && right && !hasChanges && (
               <span className="text-xs text-green-500 font-medium">No differences</span>
             )}
-            {changeGroups.length > 1 && (
+            {changeGroups.length >= 1 && (
               <div className="flex items-center gap-1 ml-auto">
                 <span className="text-xs text-muted-foreground font-mono">
                   {selectedGroup >= 0 ? `${selectedGroup + 1} / ${changeGroups.length}` : `${changeGroups.length} change${changeGroups.length !== 1 ? "s" : ""}`}
                 </span>
                 <Button variant="outline" size="icon" className="h-6 w-6"
                   onClick={() => jumpToGroup(selectedGroup <= 0 ? changeGroups.length - 1 : selectedGroup - 1)}
-                  title="Previous change">
+                  aria-label="Previous change">
                   <ChevronUp className="w-3 h-3" />
                 </Button>
                 <Button variant="outline" size="icon" className="h-6 w-6"
                   onClick={() => jumpToGroup(selectedGroup < 0 ? 0 : (selectedGroup + 1) % changeGroups.length)}
-                  title="Next change">
+                  aria-label="Next change">
                   <ChevronDown className="w-3 h-3" />
                 </Button>
               </div>
@@ -362,7 +362,7 @@ function UnifiedView({ lines, showInline, changeGroups, selectedGroup }: {
       if (lines[i].type === "removed" && lines[i + 1].type === "added") {
         const { left, right } = inlineDiff(lines[i].content, lines[i + 1].content);
         map.set(i, { left, right });
-        map.set(i + 1, { left: right, right: left }); // store right inline parts at added index
+        map.set(i + 1, { left, right }); // added line uses inlineParts.right (added highlights)
       }
     }
     return map;

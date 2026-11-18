@@ -113,14 +113,14 @@ function getNextRuns(expr: string, count = 10): string[] {
     const [minPart, hrPart, domPart, monPart, dowPart] = parts;
 
     // Simple next-run generator for standard cron patterns
-    // We'll iterate over the next 525,600 minutes (1 year) max
+    // Cap at 100,000 minutes (~70 days) to avoid blocking the main thread
     const now = new Date();
     const results: string[] = [];
     const start = new Date(now);
     start.setSeconds(0, 0);
     start.setMinutes(start.getMinutes() + 1); // start from next minute
 
-    for (let i = 0; i < 525600 && results.length < count; i++) {
+    for (let i = 0; i < 100000 && results.length < count; i++) {
       const d = new Date(start.getTime() + i * 60000);
       if (matchesCron(d, parts)) {
         results.push(formatDate(d));

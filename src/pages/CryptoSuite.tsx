@@ -129,7 +129,7 @@ type CryptoTab = "hash" | "uuid" | "secrets" | "bcrypt";
 const CryptoSuite = () => {
   const [params, setParams] = useSearchParams();
   const requestedTab = params.get("tab");
-  const initialTab: CryptoTab = requestedTab === "uuid" || requestedTab === "secrets" ? requestedTab : "hash";
+  const initialTab: CryptoTab = (["hash", "uuid", "secrets", "bcrypt"] as CryptoTab[]).includes(requestedTab as CryptoTab) ? requestedTab as CryptoTab : "hash";
   const [tab, setTab] = useState<CryptoTab>(initialTab);
   useEffect(() => {
     setParams(prev => { const n = new URLSearchParams(prev); n.set("tab", tab); return n; }, { replace: true });

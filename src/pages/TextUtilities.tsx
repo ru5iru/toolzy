@@ -429,7 +429,10 @@ const TextUtilities = () => {
         {/* ── READING TIME ── */}
         <TabsContent value="reading" className="space-y-4 mt-4">
           <div className="space-y-1.5">
-            <Label htmlFor="rt-text" className="text-xs text-muted-foreground">Paste your text</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="rt-text" className="text-xs text-muted-foreground">Paste your text</Label>
+              {rtText && <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setRtText("")}>Clear</Button>}
+            </div>
             <Textarea
               id="rt-text"
               value={rtText}
