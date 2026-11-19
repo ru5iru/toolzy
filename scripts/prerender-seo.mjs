@@ -169,7 +169,7 @@ const ROUTES = [
   },
   {
     path: "/curl",
-    title: "curl to Code Converter  -  Python, JS, TypeScript, Go, PHP, Ruby",
+    title: "curl to Code Converter  -  Python, JS, Go, PHP & Ruby",
     description:
       "Paste a curl command and instantly get equivalent code in Python, JavaScript, TypeScript, Go, PHP, or Ruby. Free, browser-only, nothing uploaded.",
   },

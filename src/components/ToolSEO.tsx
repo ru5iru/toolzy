@@ -41,11 +41,11 @@ export function ToolSEO({
   ogImage = DEFAULT_OG_IMAGE,
   isApp = true,
 }: ToolSEOProps) {
-  // Home page uses a plain title; tool pages get the full suffix.
+  // Home page uses a plain title; tool pages get the site suffix.
   const fullTitle =
     canonicalPath === "/"
       ? title
-      : `${title} — Free Online Tool | Toolzy`;
+      : `${title} | Toolzy`;
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
 
   // BreadcrumbList — helps search engines and AI engines show navigation context.
