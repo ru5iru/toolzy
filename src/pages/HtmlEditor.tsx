@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { WELCOME_HTML, formatHTML, htmlDocument, safeLink, sanitizeHTML } from "@/components/html-editor/htmlUtils";
+import { AboutTool } from "@/components/AboutTool";
 import "@/components/html-editor/html-editor.css";
 
 const FONT_FAMILIES = [
@@ -184,10 +185,13 @@ export default function HtmlEditor() {
     <input ref={filePicker} type="file" accept=".html,.htm,.txt" className="sr-only" aria-label="Open HTML file" onChange={event => { void openFile(event.target.files?.[0]); event.target.value = ""; }} />
     <input ref={imagePicker} type="file" accept="image/png,image/jpeg,image/gif,image/webp" className="sr-only" aria-label="Open local image" onChange={event => { insertImage(event.target.files?.[0]); event.target.value = ""; }} />
     {mobile ? <div className="grid gap-4">{visualPane}{sourcePane}</div> : <div className="h-[clamp(400px,calc(100dvh-220px),800px)]"><ResizablePanelGroup direction="horizontal"><ResizablePanel defaultSize={50} minSize={25}>{visualPane}</ResizablePanel><ResizableHandle withHandle className="mx-2 bg-transparent" /><ResizablePanel defaultSize={50} minSize={25}>{sourcePane}</ResizablePanel></ResizablePanelGroup></div>}
-    <section className="mt-8 border-t border-border pt-5 space-y-4">{faq.map(item => <div key={item.question}><h2 className="text-sm font-mono font-semibold mb-1">{item.question}</h2><p className="text-xs leading-relaxed text-muted-foreground">{item.answer}</p></div>)}</section>
+    <AboutTool title="Frequently asked questions">
+      <p>Free browser-only rich-text HTML editor with instant source code, headings, lists, links, tables, local images, and HTML download. All editing happens client-side — nothing is uploaded.</p>
+      {faq.map(item => <div key={item.question}><h3 className="text-sm font-mono font-semibold mb-1">{item.question}</h3><p className="text-xs leading-relaxed text-muted-foreground">{item.answer}</p></div>)}
+    </AboutTool>
     <Dialog open={dialog !== null} onOpenChange={open => { if (!open) setDialog(null); }}><DialogContent><DialogHeader><DialogTitle>{dialog === "import" ? "Import HTML source" : dialog === "link" ? "Insert or edit link" : "Clear document?"}</DialogTitle><DialogDescription>{dialog === "import" ? "Replace the document with supported HTML. Scripts, remote images, and unsupported styles are removed." : dialog === "link" ? "Use an HTTPS, HTTP, mailto, telephone, or heading-anchor URL." : "This removes the current content. You can undo it while this page remains open."}</DialogDescription></DialogHeader>
       {dialog === "import" && <Textarea aria-label="HTML to import" className="h-64 font-mono text-xs" value={draft} onChange={event => setDraft(event.target.value)} />}
-      {dialog === "link" && <Input aria-label="Link URL" placeholder="https://example.com" value={url} onChange={event => setUrl(event.target.value)} />}
+      {dialog === "link" && <Input aria-label="Link URL" placeholder="https://example.com" value={url} onChange={event => setUrl(event.target.value)} onKeyDown={event => { if (event.key === "Enter") { if (!safeLink(url)) { toast.error("Enter a valid, safe link URL"); return; } editor?.chain().focus().extendMarkRange("link").setLink({ href: url.trim() }).run(); setDialog(null); } }} autoFocus />}
       <DialogFooter><Button variant="outline" onClick={() => setDialog(null)}>Cancel</Button><Button onClick={() => {
         if (dialog === "import") { if (draft.length > 5 * 1024 * 1024) { toast.error("HTML must be under 5 MiB"); return; } applyHTML(draft); }
         else if (dialog === "link") { if (!safeLink(url)) { toast.error("Enter a valid, safe link URL"); return; } editor?.chain().focus().extendMarkRange("link").setLink({ href: url.trim() }).run(); }
