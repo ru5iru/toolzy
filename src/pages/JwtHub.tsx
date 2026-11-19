@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ToolSEO } from "@/components/ToolSEO";
@@ -403,7 +402,7 @@ function DecodeTab({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Label className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</Label>
+        <span className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wider text-muted-foreground">Paste JWT</span>
         <div className="flex flex-wrap items-center gap-1">
           <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setInput(SAMPLE_JWT); run(SAMPLE_JWT); toast.success("Sample token loaded"); }}>
             <Sparkles className="w-3 h-3 mr-1" /> Sample
@@ -600,7 +599,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Label className="text-xs text-muted-foreground">Algorithm</Label>
+        <span className="text-xs text-muted-foreground">Algorithm</span>
         <Select value={alg} onValueChange={setAlg}>
           <SelectTrigger className="w-[140px] h-7 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -612,9 +611,9 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {family === "HMAC" ? "Secret" : "Private Key (PEM or JWK)"}
-        </Label>
+        </span>
         {family === "HMAC" ? (
           <div className="relative">
             <Input type={showSecret ? "text" : "password"} value={secret} onChange={e => setSecret(e.target.value)} placeholder="HMAC secret..." className="font-mono text-xs pr-9 h-8" />
@@ -628,12 +627,12 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs text-[hsl(var(--info))] uppercase tracking-wider">Header</Label>
+        <span className="text-xs text-[hsl(var(--info))] uppercase tracking-wider">Header</span>
         <Textarea value={headerStr} onChange={e => setHeaderStr(e.target.value)} className="min-h-[90px] font-mono text-xs bg-card border-[hsl(var(--info))]/30 resize-none" />
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs text-[hsl(var(--success-foreground))] uppercase tracking-wider">Payload</Label>
+        <span className="text-xs text-[hsl(var(--success-foreground))] uppercase tracking-wider">Payload</span>
         <Textarea value={payloadStr} onChange={e => setPayloadStr(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); sign(); } }} placeholder='{"sub": "1234567890"} · Ctrl+Enter to sign' className="min-h-[110px] font-mono text-xs bg-card border-[hsl(var(--success))]/30 resize-none" />
       </div>
 
@@ -718,7 +717,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">JWT</Label>
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">JWT</span>
         <Textarea value={token} onChange={e => setToken(e.target.value)} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); verify(); } }} placeholder="Paste JWT to verify… (Ctrl+Enter to verify)" className="min-h-[90px] font-mono text-xs bg-card resize-none" />
       </div>
 
@@ -729,9 +728,9 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {family === "HMAC" ? "Secret" : "Public Key (PEM or JWK)"}
-        </Label>
+        </span>
         {family === "HMAC" || !family ? (
           <div className="relative">
             <Input type={showSecret ? "text" : "password"} value={secret} onChange={e => setSecret(e.target.value)} placeholder="Secret..." className="font-mono text-xs pr-9 h-8" />
@@ -763,7 +762,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       {parsed && (
         <div className="space-y-1">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Claims</Label>
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Claims</span>
           <ClaimsChecklist payload={parsed.payload} />
         </div>
       )}
@@ -773,15 +772,19 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
           <ChevronDown className="w-3 h-3" /> Server-side verification examples
         </CollapsibleTrigger>
         <CollapsibleContent className="pt-2 space-y-2">
-          <div className="flex gap-1">
+          <div className="flex gap-1" role="tablist" aria-label="Code language">
             {(Object.keys(VERIFY_CODE) as (keyof typeof VERIFY_CODE)[]).map(k => (
-              <button
+              <Button
                 key={k}
                 onClick={() => setCodeLang(k)}
-                className={`px-2 py-1 rounded text-xs font-mono ${codeLang === k ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                variant={codeLang === k ? "selected" : "ghost"}
+                size="sm"
+                role="tab"
+                aria-selected={codeLang === k}
+                className="h-7 px-2 text-xs font-mono"
               >
                 {k}
-              </button>
+              </Button>
             ))}
           </div>
           <pre className="bg-muted/50 border border-border rounded-md p-3 font-mono text-[11px] overflow-auto max-h-[220px]">
@@ -875,7 +878,7 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">JWKS Endpoint URL</Label>
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">JWKS Endpoint URL</span>
         <div className="flex gap-2">
           <Input value={url} onChange={e => setUrl(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchJwks()} placeholder="https://example.com/.well-known/jwks.json" className="font-mono text-xs h-8 flex-1" />
           <Button size="sm" onClick={fetchJwks} disabled={loading} className="h-8 shrink-0">
@@ -885,7 +888,7 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
         </div>
         <div className="flex flex-wrap gap-1 pt-1">
           {WELL_KNOWN_EXAMPLES.map(ex => (
-            <button key={ex.label} onClick={() => setUrl(ex.url)} className="text-xs rounded border border-border px-2 py-0.5 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors">{ex.label}</button>
+            <Button key={ex.label} onClick={() => setUrl(ex.url)} variant="outline" size="sm" className="h-6 text-xs">{ex.label}</Button>
           ))}
         </div>
       </div>
@@ -894,7 +897,7 @@ function JwksTab({ shared, setShared }: { shared: SharedState; setShared: (s: Pa
 
       {keys.length > 0 && (
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Keys ({keys.length})</Label>
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Keys ({keys.length})</span>
           <div className="space-y-1.5 max-h-[300px] overflow-auto">
             {keys.map((k, i) => {
               const id = k.kid ?? i.toString();
@@ -980,7 +983,7 @@ const JwtHub = () => {
   return (
     <ToolPageLayout title="JWT Hub" description="Decode, encode and verify JSON Web Tokens · HMAC, RSA, ECDSA">
       <ToolSEO
-        title="JWT Hub  -  Free Online JWT Decoder, Encoder & Verifier"
+        title="JWT Hub - Free Online JWT Decoder, Encoder & Verifier"
         description="Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
         canonicalPath="/jwt"
         keywords={["jwt decoder", "jwt encoder", "json web token", "jwt verify", "hs256", "rs256", "jwt claims", "jwt security"]}
