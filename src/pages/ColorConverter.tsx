@@ -153,7 +153,7 @@ const ColorConverter = () => {
   return (
     <ToolPageLayout title="Color Converter" description="Convert between HEX, RGB, HSL, HSV, CMYK · pick, palette, contrast and gradient tools.">
       <ToolSEO
-        title="Color Converter  -  HEX, RGB, HSL, HSV, CMYK Online Tool"
+        title="Color Converter - HEX, RGB, HSL, HSV, CMYK Online Tool"
         description="Convert colors between HEX, RGB, HSL, HSV, CMYK. Generate palettes, check WCAG contrast, create gradients, and extract colors from images. Free online tool."
         canonicalPath="/color"
         keywords={["color converter", "HEX to RGB", "color palette generator", "WCAG contrast checker", "gradient generator", "color picker"]}
@@ -234,12 +234,14 @@ const ColorConverter = () => {
             <div className="rounded-lg border border-border overflow-hidden">
               <div className="flex items-center justify-between px-3 py-1.5 bg-muted/50">
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Preview</span>
-                <div className="flex gap-1">
+                <div className="flex gap-1" role="group" aria-label="Preview background">
                   {(["dark", "light"] as const).map(t => (
-                    <button key={t} onClick={() => setBgToggle(t)}
-                      className={`text-[10px] px-2 py-0.5 rounded ${bgToggle === t ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
+                    <Button key={t} onClick={() => setBgToggle(t)}
+                      variant={bgToggle === t ? "selected" : "ghost"}
+                      size="sm"
+                      className="h-5 text-[10px] px-2 py-0">
                       {t}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -308,12 +310,14 @@ const ColorConverter = () => {
 
         {/* Palette */}
         <TabsContent value="palette" className="space-y-4 mt-4">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Palette type">
             {["complementary", "analogous", "triadic", "tetradic", "monochromatic", "shades", "tints"].map(t => (
-              <button key={t} onClick={() => setPaletteType(t)}
-                className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${paletteType === t ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}>
+              <Button key={t} onClick={() => setPaletteType(t)}
+                variant={paletteType === t ? "selected" : "outline"}
+                size="sm"
+                className="h-7 text-xs capitalize">
                 {t}
-              </button>
+              </Button>
             ))}
           </div>
           {rgb && (
@@ -332,14 +336,14 @@ const ColorConverter = () => {
         <TabsContent value="contrast" className="space-y-4 mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs text-muted-foreground">Foreground</label>
+              <span className="text-xs text-muted-foreground">Foreground</span>
               <div className="flex gap-2">
                 <Input value={fgInput} onChange={e => setFgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
                 <input type="color" value={fgRgb ? rgbToHex(fgRgb).substring(0, 7) : "#ffffff"} onChange={e => setFgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-xs text-muted-foreground">Background</label>
+              <span className="text-xs text-muted-foreground">Background</span>
               <div className="flex gap-2">
                 <Input value={bgInput} onChange={e => setBgInput(e.target.value)} className="font-mono text-sm bg-card border-border" />
                 <input type="color" value={bgRgb ? rgbToHex(bgRgb).substring(0, 7) : "#000000"} onChange={e => setBgInput(e.target.value)} className="w-10 h-10 rounded border-0 cursor-pointer bg-transparent" />
@@ -374,12 +378,14 @@ const ColorConverter = () => {
         {/* Gradient */}
         <TabsContent value="gradient" className="space-y-4 mt-4">
           <div className="flex flex-wrap gap-3 items-end">
-            <div className="flex gap-1">
+            <div className="flex gap-1" role="group" aria-label="Gradient type">
               {(["linear", "radial"] as const).map(t => (
-                <button key={t} onClick={() => setGradType(t)}
-                  className={`text-xs px-3 py-1.5 rounded-md border ${gradType === t ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}>
+                <Button key={t} onClick={() => setGradType(t)}
+                  variant={gradType === t ? "selected" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs capitalize">
                   {t}
-                </button>
+                </Button>
               ))}
             </div>
             {gradType === "linear" && (
