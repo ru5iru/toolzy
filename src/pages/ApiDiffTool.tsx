@@ -170,7 +170,7 @@ const ApiDiffTool = () => {
         <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
       </>}>
       <ToolSEO
-        title="API Response Diff Tool  -  Free Online JSON Comparison"
+        title="API Response Diff Tool - Free Online JSON Comparison"
         description="Compare two JSON API responses side-by-side with structural diff, ignore rules, and type change detection. Browser-only, nothing uploaded."
         canonicalPath="/diff"
         keywords={["JSON diff", "API response compare", "JSON compare online", "diff tool", "compare JSON objects", "API testing", "structural diff"]}
@@ -231,7 +231,7 @@ const ApiDiffTool = () => {
             {ignoreRules.map((rule, i) => (
               <Badge key={i} variant="secondary" className="text-xs font-mono gap-1">
                 {rule}
-                <button onClick={() => setIgnoreRules(ignoreRules.filter((_, j) => j !== i))}><X className="h-2.5 w-2.5" /></button>
+                <Button variant="ghost" size="icon" className="h-3.5 w-3.5 p-0" onClick={() => setIgnoreRules(ignoreRules.filter((_, j) => j !== i))} aria-label={`Remove ignore rule ${rule}`}><X className="h-2.5 w-2.5" /></Button>
               </Badge>
             ))}
           </div>
