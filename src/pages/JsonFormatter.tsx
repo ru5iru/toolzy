@@ -245,9 +245,9 @@ const JsonFormatter = () => {
           )}
         </div>
 
-        <div className="flex rounded-md border border-border overflow-hidden ml-auto">
-          <button onClick={() => setViewMode("text")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "text" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Text</button>
-          <button onClick={() => setViewMode("tree")} className={`px-2 py-0.5 text-xs transition-colors ${viewMode === "tree" ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:bg-accent/10"}`}>Tree</button>
+        <div className="flex rounded-md border border-border overflow-hidden ml-auto" role="group" aria-label="View mode">
+          <Button onClick={() => setViewMode("text")} variant={viewMode === "text" ? "selected" : "ghost"} size="sm" aria-pressed={viewMode === "text"} className="h-7 px-2 text-xs rounded-none border-0">Text</Button>
+          <Button onClick={() => setViewMode("tree")} variant={viewMode === "tree" ? "selected" : "ghost"} size="sm" aria-pressed={viewMode === "tree"} className="h-7 px-2 text-xs rounded-none border-l border-border border-r-0 border-t-0 border-b-0">Tree</Button>
         </div>
       </div>
 
@@ -264,7 +264,7 @@ const JsonFormatter = () => {
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
             <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Input</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Input</span>
               {input && (
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {input.length.toLocaleString()} chars · {input.split("\n").length} lines · {new TextEncoder().encode(input).length.toLocaleString()} B
@@ -285,7 +285,7 @@ const JsonFormatter = () => {
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
             <div className="h-9 shrink-0 flex items-center justify-between px-2 border-b border-border">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Output</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Output</span>
               {viewMode === "tree" && parsedData !== null && (
                 <div className="flex gap-1">
                   <Button variant="ghost" size="sm" onClick={expandAll} className="h-5 px-1.5 text-xs gap-0.5"><Maximize2 className="w-2.5 h-2.5" />Expand</Button>
