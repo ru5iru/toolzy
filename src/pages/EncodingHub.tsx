@@ -526,16 +526,14 @@ const EncodingHub = () => {
       {/* Mode selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Encoding mode">
         {(Object.keys(MODE_LABELS) as HubMode[]).map((m) => (
-          <button
+          <Button
             key={m}
             role="tab"
             aria-selected={mode === m}
+            variant={mode === m ? "selected" : "outline"}
+            size="sm"
             onClick={() => setMode(m)}
-            className={`shrink-0 h-8 px-3 rounded-md text-xs font-medium border transition-colors duration-150 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-              mode === m
-                ? "border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
-                : "border-input text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-[hsl(var(--border-hover))]"
-            }`}
+            className="shrink-0 h-8 px-3 text-xs"
           >
             {MODE_LABELS[m]}
             {mode === "auto" && m === "auto" && detectExplain && (
@@ -543,7 +541,7 @@ const EncodingHub = () => {
                 {MODE_LABELS[detectedSubMode]}
               </span>
             )}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -665,7 +663,7 @@ const EncodingHub = () => {
             className={`relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer
               ${hexDragOver ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-muted/30"}`}
             onDragOver={(e) => { e.preventDefault(); setHexDragOver(true); }}
-            onDragLeave={() => setHexDragOver(false)}
+            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setHexDragOver(false); }}
             onDrop={(e) => { e.preventDefault(); setHexDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleHexFile(f); }}
             onClick={() => hexFileRef.current?.click()}
           >
@@ -914,7 +912,7 @@ const EncodingHub = () => {
           className={`flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors cursor-pointer
             ${b64DragOver ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-muted/30"}`}
           onDragOver={(e) => { e.preventDefault(); setB64DragOver(true); }}
-          onDragLeave={() => setB64DragOver(false)}
+          onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setB64DragOver(false); }}
           onDrop={(e) => { e.preventDefault(); setB64DragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleB64File(f); }}
           onClick={() => b64FileRef.current?.click()}
         >
