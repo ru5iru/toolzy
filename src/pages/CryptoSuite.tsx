@@ -139,7 +139,7 @@ const CryptoSuite = () => {
   return (
     <ToolPageLayout title="Crypto Suite" description="Hash, HMAC, UUID generation and secret tools · all computed locally">
       <ToolSEO
-        title="Crypto Suite  -  Hash, UUID & Random Secret Generator"
+        title="Crypto Suite - Hash, UUID & Random Secret Generator"
         description="Generate SHA-256/512 hashes with HMAC, create UUID v4/v5 tokens in bulk, and generate JWT secrets and AES keys — all via the native Web Crypto API, in your browser."
         canonicalPath="/crypto"
         keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator", "random secret generator", "jwt secret generator", "random key generator", "api token generator"]}
@@ -416,24 +416,24 @@ function HashTab() {
       {/* Input */}
       {mode === "text" && (
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Input text</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Input text</span>
           <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Text to hash…" className="min-h-[140px] font-mono text-sm bg-card border-border" />
           {text && <PasswordStrength text={text} />}
         </div>
       )}
       {mode === "hex" && (
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Hex input</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Hex input</span>
           <Textarea value={hex} onChange={(e) => setHex(e.target.value)} placeholder="deadbeefcafebabe…" className="min-h-[120px] font-mono text-sm bg-card border-border" />
           {hexError && <p className="text-xs text-destructive">{hexError}</p>}
         </div>
       )}
       {mode === "file" && (
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">File</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">File</span>
           <label
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-            onDragLeave={() => setDragOver(false)}
+            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOver(false); }}
             onDrop={onDrop}
             className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-lg p-8 cursor-pointer transition-colors duration-150 ${dragOver ? "bg-accent border-primary" : "bg-muted border-border"}`}
           >
@@ -468,7 +468,7 @@ function HashTab() {
       </div>
       {hmac && (
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Secret key</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Secret key</span>
           <div className="flex gap-2">
             <Input type={showSecret ? "text" : "password"} value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Shared secret" className="font-mono" />
             <Button variant="outline" size="icon" onClick={() => setShowSecret((s) => !s)} aria-label={showSecret ? "Hide secret" : "Show secret"}>
@@ -481,7 +481,7 @@ function HashTab() {
 
       {/* Algorithm visibility */}
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground uppercase tracking-wider">Algorithms</label>
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Algorithms</span>
         <div className="flex flex-wrap gap-2">
           {ALL_ALGOS.map((a) => {
             const active = visible.includes(a);
@@ -504,7 +504,7 @@ function HashTab() {
 
       {/* Output format */}
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground uppercase tracking-wider">Output format</label>
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Output format</span>
         <div className="flex flex-wrap gap-2">
           {([
             ["hex", "Hex (lower)"],
@@ -554,11 +554,11 @@ function HashTab() {
         <CollapsibleContent className="space-y-3 pt-3">
           <div className="grid md:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Hash A</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Hash A</span>
               <Input value={hashA} onChange={(e) => setHashA(e.target.value)} className="font-mono text-xs" />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Hash B</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Hash B</span>
               <Input value={hashB} onChange={(e) => setHashB(e.target.value)} className="font-mono text-xs" />
             </div>
           </div>
@@ -776,7 +776,7 @@ function UuidTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="border border-border rounded-lg p-4 bg-card space-y-4">
           <div>
-            <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Version</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Version</span>
             <div className="grid grid-cols-4 gap-2">
               {(["v1", "v4", "v3", "v5"] as Version[]).map((v) => (
                 <Button key={v} size="sm" variant={version === v ? "selected" : "outline"} onClick={() => setVersion(v)}>{v.toUpperCase()}</Button>
@@ -788,7 +788,7 @@ function UuidTab() {
             <CopyButton value={MAX_UUID} message="Max UUID copied" label="Copy Max UUID" size="sm" variant="outline" className="h-7 text-xs" ariaLabel="Copy Max UUID (RFC 9562)" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Count: {count.toLocaleString()}</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Count: {count.toLocaleString()}</span>
             <Slider value={[count]} onValueChange={([v]) => setCount(v)} min={1} max={10000} step={1} />
             <div className="flex gap-2 mt-2 flex-wrap">
               {[1, 10, 100, 500, 1000, 5000, 10000].map((n) => (
@@ -798,7 +798,7 @@ function UuidTab() {
           </div>
           {(version === "v3" || version === "v5") && (
             <div className="space-y-2">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Namespace</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Namespace</span>
               <div className="flex gap-1 flex-wrap">
                 {(["DNS", "URL", "OID", "X500", "custom"] as const).map((ns) => (
                   <Button key={ns} size="sm" variant={nsType === ns ? "selected" : "outline"} className="h-7 text-xs" onClick={() => setNsType(ns)}>{ns}</Button>
@@ -813,7 +813,7 @@ function UuidTab() {
         </div>
 
         <div className="border border-border rounded-lg p-4 bg-card space-y-3">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider block">Format options</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider block">Format options</span>
           <div className="grid grid-cols-2 gap-2">
             {([
               ["Uppercase", "uppercase"],
@@ -828,7 +828,7 @@ function UuidTab() {
             ))}
           </div>
           <div className="pt-2 border-t border-border">
-            <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Sort by</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Sort by</span>
             <div className="flex gap-2">
               {([
                 ["order", "Order"],
@@ -840,7 +840,7 @@ function UuidTab() {
             </div>
           </div>
           <div className="pt-2 border-t border-border">
-            <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Export {exportFmt && <span className="text-foreground/60">(last: .{exportFmt})</span>}</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Export {exportFmt && <span className="text-foreground/60">(last: .{exportFmt})</span>}</span>
             <div className="flex gap-2 flex-wrap">
               {(["txt", "csv", "json", "sql"] as ExportFormat[]).map((f) => (
                 <Button key={f} size="sm" variant={exportFmt === f ? "selected" : "outline"} className="h-7 text-xs" onClick={() => exportUuids(f)}>
@@ -896,7 +896,7 @@ function UuidTab() {
       {/* Validator + decoder */}
       <div className="grid md:grid-cols-2 gap-4">
         <div className="border border-border rounded-lg p-4 bg-card space-y-3">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Validate</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Validate</span>
           <div className="flex gap-2">
             <Input value={validateInput} onChange={(e) => setValidateInput(e.target.value)} placeholder="Paste a UUID" className="font-mono text-xs" />
             <Button size="sm" onClick={() => setValidation(validateUUID(validateInput))}>Check</Button>
@@ -908,7 +908,7 @@ function UuidTab() {
           )}
         </div>
         <div className="border border-border rounded-lg p-4 bg-card space-y-3">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Decode v1 timestamp</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Decode v1 timestamp</span>
           <div className="flex gap-2">
             <Input value={decodeInput} onChange={(e) => setDecodeInput(e.target.value)} placeholder="v1 UUID" className="font-mono text-xs" />
             <Button size="sm" onClick={() => setDecoded(decodeV1(decodeInput))}>Decode</Button>
@@ -1021,7 +1021,7 @@ function BcryptTab() {
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Lock className="w-4 h-4 text-primary" />Hash a password</h3>
 
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password</label>
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Password</span>
           <div className="relative">
             <Input
               type={showPw ? "text" : "password"}
@@ -1039,7 +1039,7 @@ function BcryptTab() {
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Cost rounds: {rounds}</label>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">Cost rounds: {rounds}</span>
             <span className="text-xs text-muted-foreground font-mono">{costMs[rounds] ?? "slow"}</span>
           </div>
           <Slider min={10} max={14} step={1} value={[rounds]} onValueChange={([v]) => setRounds(v)} className="w-full" />
@@ -1071,7 +1071,7 @@ function BcryptTab() {
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-primary" />Verify a hash</h3>
 
         <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-muted-foreground">Password to verify</label>
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Password to verify</span>
           <div className="relative">
             <Input
               type={showVerifyPw ? "text" : "password"}
@@ -1088,7 +1088,7 @@ function BcryptTab() {
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">bcrypt hash</label>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">bcrypt hash</span>
             {hash && <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => { setVerifyHash(hash); setVerifyResult(null); }}>Use generated hash</Button>}
           </div>
           <Input
