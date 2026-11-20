@@ -154,8 +154,8 @@ const RegexPlayground = () => {
   };
 
   return (
-    <ToolPageLayout title="Regex Playground  -  Live Regex Tester with Highlights" icon={Regex} description="Live regex tester with real-time match highlighting, capture groups, replace preview, and a snippet library.">
-      <ToolSEO title="Regex Playground  -  Live Regex Tester with Highlights" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
+    <ToolPageLayout title="Regex Playground - Live Regex Tester with Highlights" icon={Regex} description="Live regex tester with real-time match highlighting, capture groups, replace preview, and a snippet library.">
+      <ToolSEO title="Regex Playground - Live Regex Tester with Highlights" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
 
       {/* Snippet bar */}
       <div className="flex flex-wrap items-center gap-2">
@@ -171,7 +171,7 @@ const RegexPlayground = () => {
       {/* Pattern + flags row */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex-1 min-w-[200px] space-y-1">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Pattern</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Pattern</span>
           <div className="relative flex items-center">
             <span className="absolute left-3 text-muted-foreground font-mono text-sm select-none">/</span>
             <Input value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="[a-z]+" className="bg-card border-border font-mono pl-6 pr-6" />
@@ -179,7 +179,7 @@ const RegexPlayground = () => {
           </div>
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Flags</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Flags</span>
           <Input value={flags} onChange={(e) => setFlags(e.target.value)} placeholder="g" className="w-20 bg-card border-border font-mono" />
         </div>
       </div>
@@ -200,7 +200,7 @@ const RegexPlayground = () => {
       )}
 
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground uppercase tracking-wider">Test String</label>
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Test String</span>
         <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter text to test against…" className="min-h-[150px] font-mono text-sm bg-card border-border resize-none" />
       </div>
 
@@ -217,7 +217,7 @@ const RegexPlayground = () => {
               <>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <label className="text-xs text-muted-foreground uppercase tracking-wider">Highlighted Matches</label>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Highlighted Matches</span>
                     {matches.length > 0 && (
                       <span className="inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-xs font-mono text-primary">
                         {matches.length} match{matches.length !== 1 ? "es" : ""}
@@ -268,7 +268,7 @@ const RegexPlayground = () => {
                 {replaced !== null && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs text-muted-foreground uppercase tracking-wider">Replaced text</label>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wider">Replaced text</span>
                       <CopyButton value={replaced} label="Copy" variant="outline" />
                     </div>
                     <pre className="code-surface max-h-[300px] overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-card p-4">{replaced}</pre>
@@ -278,7 +278,7 @@ const RegexPlayground = () => {
                 {matches.length > 0 && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs text-muted-foreground uppercase tracking-wider">Match details</label>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wider">Match details</span>
                       <div className="flex items-center gap-1.5">
                         <Button
                           variant="outline" size="sm" className="h-7 text-xs gap-1"
