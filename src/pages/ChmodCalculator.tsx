@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/CopyButton";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
@@ -155,7 +156,7 @@ const ChmodCalculator = () => {
       maxWidth="narrow"
     >
       <ToolSEO
-        title="chmod Calculator  -  Unix File Permission Calculator"
+        title="chmod Calculator - Unix File Permission Calculator"
         description="Calculate Unix/Linux file permissions. Toggle checkboxes to build chmod octals and symbolic notation. Free, browser-only."
         canonicalPath="/chmod"
         keywords={["chmod calculator", "unix permissions", "linux file permissions", "octal permissions", "chmod 755", "chmod 644", "file permission calculator"]}
@@ -196,14 +197,15 @@ const ChmodCalculator = () => {
                       <td className="py-2 pr-4 text-xs font-semibold text-foreground">{label}</td>
                       {(["r", "w", "x"] as PermBit[]).map((bit) => (
                         <td key={bit} className="py-2 px-2 text-center">
-                          <button
+                          <Button
+                            variant="ghost"
+                            className={`h-8 w-16 font-mono font-semibold text-xs border ${permBg(p[bit], bit)}`}
                             onClick={() => toggle(key, bit)}
-                            className={`inline-flex h-8 w-16 items-center justify-center rounded-md border text-xs font-mono font-semibold transition-all ${permBg(p[bit], bit)}`}
                             aria-label={`Toggle ${bit} for ${key}`}
                             aria-pressed={p[bit]}
                           >
                             {p[bit] ? bit : "−"}
-                          </button>
+                          </Button>
                         </td>
                       ))}
                       <td className="py-2 pl-4 text-right font-mono text-lg font-bold text-foreground tabular-nums">
@@ -218,16 +220,17 @@ const ChmodCalculator = () => {
                   <td className="py-2 px-2 text-center" colSpan={3}>
                     <div className="flex justify-center gap-2">
                       {SPECIAL_BITS.map(({ key, label, sym, desc }) => (
-                        <button
+                        <Button
                           key={key}
+                          variant="ghost"
+                          className={`h-8 px-3 font-mono font-semibold text-xs border ${special[key] ? "bg-purple-500/15 text-purple-400 border-purple-500/30" : "bg-card text-muted-foreground border-border"}`}
                           onClick={() => toggleSpecial(key)}
                           title={desc}
                           aria-label={`Toggle ${label}`}
                           aria-pressed={special[key]}
-                          className={`inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-mono font-semibold transition-all ${special[key] ? "bg-purple-500/15 text-purple-400 border-purple-500/30" : "bg-card text-muted-foreground border-border"}`}
                         >
                           {label}&nbsp;<span className="opacity-60">{sym}</span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </td>
@@ -285,6 +288,7 @@ const ChmodCalculator = () => {
             <input
               type="text"
               inputMode="numeric"
+              aria-label="Octal permission value"
               maxLength={4}
               value={octalInput}
               onChange={(e) => handleOctalChange(e.target.value)}
@@ -300,14 +304,15 @@ const ChmodCalculator = () => {
           <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Common presets</h2>
           <div className="grid gap-1.5 sm:grid-cols-2">
             {PRESETS.map(({ label, octal: oct, note }) => (
-              <button
+              <Button
                 key={`${label}-${oct}`}
+                variant="ghost"
+                className="w-full justify-start gap-2 px-3 py-2 h-auto border border-border hover:bg-secondary group"
                 onClick={() => applyPreset(oct)}
-                className="flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left transition-colors hover:bg-secondary group"
               >
                 <code className="text-sm font-bold font-mono text-primary w-8 shrink-0">{oct}</code>
                 <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors truncate">{note}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
