@@ -145,16 +145,18 @@ const YamlConverter = () => {
 
   const formats: Format[] = ["yaml", "json", "toml"];
 
-  const FormatToggle = ({ value, onChange, exclude }: { value: Format; onChange: (f: Format) => void; exclude?: Format }) => (
-    <div className="flex gap-1 rounded-md border border-border bg-background p-0.5">
+  const FormatToggle = ({ value, onChange, exclude, label }: { value: Format; onChange: (f: Format) => void; exclude?: Format; label: string }) => (
+    <div className="flex gap-1 rounded-md border border-border bg-background p-0.5" role="group" aria-label={label}>
       {formats.filter(f => f !== exclude).map(f => (
-        <button
+        <Button
           key={f}
+          variant={value === f ? "selected" : "ghost"}
+          size="sm"
+          className="rounded h-auto px-2.5 py-1 text-xs"
           onClick={() => onChange(f)}
-          className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${value === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
         >
           {FORMAT_LABELS[f]}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -165,7 +167,7 @@ const YamlConverter = () => {
       description="Convert between YAML, JSON, and TOML — runs entirely in your browser"
     >
       <ToolSEO
-        title="YAML JSON TOML Converter  -  Free Online Format Converter"
+        title="YAML JSON TOML Converter - Free Online Format Converter"
         description="Convert between YAML, JSON, and TOML instantly. Paste any config format and convert it to the other. Free, browser-only, nothing uploaded."
         canonicalPath="/yaml"
         keywords={["yaml to json", "json to yaml", "yaml to toml", "toml to yaml", "toml to json", "config converter", "yaml converter"]}
@@ -175,12 +177,12 @@ const YamlConverter = () => {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Input</span>
-          <FormatToggle value={inputFmt} onChange={handleInputFmtChange} exclude={outputFmt} />
+          <FormatToggle value={inputFmt} onChange={handleInputFmtChange} exclude={outputFmt} label="Input format" />
         </div>
         <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Output</span>
-          <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} exclude={inputFmt} />
+          <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} exclude={inputFmt} label="Output format" />
         </div>
         <div className="ml-auto flex items-center gap-1.5">
           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleLoadSample}>Sample</Button>
@@ -202,6 +204,7 @@ const YamlConverter = () => {
               </div>
               <textarea
                 className="flex-1 resize-none bg-card p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+                aria-label={`${FORMAT_LABELS[inputFmt]} input`}
                 value={input}
                 onChange={(e) => { setInput(e.target.value); convert(e.target.value, inputFmt, outputFmt); }}
                 placeholder={`Paste ${FORMAT_LABELS[inputFmt]} here…`}
