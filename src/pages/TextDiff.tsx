@@ -244,7 +244,7 @@ const TextDiff = () => {
       toolbar={toolbar}
     >
       <ToolSEO
-        title="Text & Code Diff Tool  -  Free Online Diff Comparator"
+        title="Text & Code Diff Tool - Free Online Diff Comparator"
         description="Compare two texts or code snippets side-by-side or in unified view. Inline word-level highlights on changed lines. Free, browser-only, nothing uploaded."
         canonicalPath="/text-diff"
         keywords={["text diff", "code diff", "online diff tool", "compare text", "file diff", "diff viewer", "side by side diff", "inline diff"]}
@@ -260,6 +260,7 @@ const TextDiff = () => {
             </div>
             <textarea
               className="flex-1 resize-none bg-card p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+              aria-label="Original text"
               value={left}
               onChange={(e) => setLeft(e.target.value)}
               placeholder={"Paste the original text here…"}
@@ -273,6 +274,7 @@ const TextDiff = () => {
             </div>
             <textarea
               className="flex-1 resize-none bg-card p-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+              aria-label="Modified text"
               value={right}
               onChange={(e) => setRight(e.target.value)}
               placeholder={"Paste the modified text here…"}
