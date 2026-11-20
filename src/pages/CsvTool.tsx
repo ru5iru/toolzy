@@ -155,7 +155,7 @@ const CsvTool = () => {
   return (
     <ToolPageLayout title="CSV Tool" icon={Table2} description="Parse, preview, filter, sort, and export CSV, TSV, and delimited data.">
       <ToolSEO
-        title="CSV Tool  -  Parse, Filter, Sort & Export Data Online"
+        title="CSV Tool - Parse, Filter, Sort & Export Data Online"
         description="Parse CSV, TSV, and delimited text in your browser. Preview data as a table, filter rows, sort columns, view column stats, and export as CSV or JSON."
         canonicalPath="/csv"
         keywords={["csv viewer", "csv parser", "csv to json", "tsv parser", "csv filter", "csv online tool"]}
@@ -205,9 +205,10 @@ const CsvTool = () => {
 
       {!input && (
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground uppercase tracking-wider">Or paste CSV text</label>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Or paste CSV text</span>
           <textarea
             className="w-full min-h-[160px] rounded-md border border-border bg-card px-3 py-2 font-mono text-xs resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Paste CSV text"
             placeholder={"name,age,city\nAlice,30,London\nBob,25,Paris"}
             onChange={e => { if (e.target.value) setInput(e.target.value); }}
           />
@@ -229,10 +230,11 @@ const CsvTool = () => {
                   onChange={e => setFilterText(e.target.value)}
                   placeholder="Filter rows…"
                   className="h-7 text-xs pl-2 w-40 bg-card"
+                  aria-label="Filter rows"
                 />
                 {filterText && (
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    onClick={() => setFilterText("")} aria-label="Clear row filter"><X className="w-3 h-3" /></button>
+                  <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground hover:text-foreground"
+                    onClick={() => setFilterText("")} aria-label="Clear row filter"><X className="w-3 h-3" /></Button>
                 )}
               </div>
               <Button variant="outline" size="sm" className="h-7 text-xs gap-1"
@@ -258,10 +260,10 @@ const CsvTool = () => {
                     <th className="px-2 py-1.5 text-left font-medium text-muted-foreground border-b border-border w-10">#</th>
                     {headers.map((h, ci) => (
                       <th key={ci} className="px-2 py-1.5 text-left font-medium text-muted-foreground border-b border-border whitespace-nowrap">
-                        <button className="flex items-center gap-1 hover:text-foreground transition-colors" onClick={() => handleSort(ci)}>
+                        <Button variant="ghost" className="flex items-center gap-1 hover:text-foreground transition-colors h-auto p-0 font-medium text-muted-foreground" onClick={() => handleSort(ci)} aria-label={`Sort by ${h || `column ${ci + 1}`}`}>
                           {h || <span className="text-muted-foreground/50 italic">col {ci + 1}</span>}
                           <ArrowUpDown className={`w-3 h-3 ${sortCol === ci ? "text-primary" : "opacity-30"}`} />
-                        </button>
+                        </Button>
                       </th>
                     ))}
                   </tr>
