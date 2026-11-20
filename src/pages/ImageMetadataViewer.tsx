@@ -77,7 +77,7 @@ const ImageMetadataViewer = () => {
   return (
     <ToolPageLayout title="Image Metadata Viewer" icon={FileSearch} description="Inspect EXIF, GPS and other metadata, and remove it from JPEG and PNG files.">
       <ToolSEO
-        title="Image Metadata Viewer  -  EXIF, GPS & Privacy Inspector"
+        title="Image Metadata Viewer - EXIF, GPS & Privacy Inspector"
         description="Inspect EXIF, GPS, camera details, timestamps, IPTC and XMP tags from JPEG, PNG and TIFF images in your browser. Export JSON or CSV. Nothing uploaded."
         canonicalPath="/image-metadata"
         keywords={["image metadata viewer", "EXIF viewer online", "GPS metadata extractor", "IPTC viewer", "XMP viewer", "remove EXIF data", "image privacy tool", "photo metadata"]}
@@ -97,7 +97,7 @@ const ImageMetadataViewer = () => {
       />
       <input ref={picker} type="file" className="sr-only" tabIndex={-1} aria-label="Select image file" accept=".jpg,.jpeg,.png,.tif,.tiff,image/jpeg,image/png,image/tiff" onChange={e => { const selected = e.target.files?.[0]; if (selected) select(selected); e.target.value = ""; }} />
       <div className={`border border-dashed rounded-lg p-6 mb-4 text-center ${dragging ? "border-primary bg-secondary" : "border-border"}`}
-        onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)}
+        onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragging(false); }}
         onDrop={e => {
           e.preventDefault(); setDragging(false);
           const dropped = Array.from(e.dataTransfer.files).filter(f => /\.(jpe?g|png|tiff?)$/i.test(f.name) || f.type.startsWith("image/"));
