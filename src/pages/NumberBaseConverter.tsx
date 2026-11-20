@@ -190,7 +190,7 @@ const NumberBaseConverter = () => {
       maxWidth="narrow"
     >
       <ToolSEO
-        title="Number Base Converter  -  Binary, Decimal, Hex, Octal"
+        title="Number Base Converter - Binary, Decimal, Hex, Octal"
         description="Convert numbers between binary, octal, decimal and hex instantly. Includes bitwise AND, OR, XOR, NOT, shifts, and hex↔ASCII conversion. Browser-only."
         canonicalPath="/number-base"
         keywords={["number base converter", "binary to decimal", "hex to binary", "decimal to hex", "octal converter", "bitwise calculator", "hex to ascii"]}
@@ -221,6 +221,7 @@ const NumberBaseConverter = () => {
                   <input
                     type="text"
                     inputMode="text"
+                    aria-label={label}
                     value={values[base]}
                     onChange={(e) => handleChange(base, e.target.value)}
                     placeholder={placeholder}
@@ -270,6 +271,7 @@ const NumberBaseConverter = () => {
               <div className="relative flex-1">
                 <input
                   type="text"
+                  aria-label="ASCII text"
                   value={asciiInput || hexAscii || ""}
                   onChange={(e) => handleAsciiChange(e.target.value)}
                   placeholder="Type ASCII to encode, or convert from hex above"
@@ -295,10 +297,11 @@ const NumberBaseConverter = () => {
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div className="flex-1 min-w-[120px]">
-              <label className="mb-1 block text-xs text-muted-foreground">A (decimal)</label>
+              <span className="mb-1 block text-xs text-muted-foreground">A (decimal)</span>
               <input
                 type="text"
                 inputMode="numeric"
+                aria-label="A (decimal)"
                 value={bitwiseA}
                 onChange={(e) => setBitwiseA(e.target.value)}
                 placeholder="255"
@@ -306,10 +309,11 @@ const NumberBaseConverter = () => {
               />
             </div>
             <div className="flex-1 min-w-[120px]">
-              <label className="mb-1 block text-xs text-muted-foreground">B (decimal)</label>
+              <span className="mb-1 block text-xs text-muted-foreground">B (decimal)</span>
               <input
                 type="text"
                 inputMode="numeric"
+                aria-label="B (decimal)"
                 value={bitwiseB}
                 onChange={(e) => setBitwiseB(e.target.value)}
                 placeholder="170"
