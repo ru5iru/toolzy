@@ -81,7 +81,7 @@ const TimezoneSelect = ({
 
   return (
     <div className="space-y-1.5 min-w-[220px]">
-      <label className="text-xs text-muted-foreground font-medium">{label}</label>
+      <span className="text-xs text-muted-foreground font-medium">{label}</span>
       <div className="relative">
         <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
         <Input
@@ -290,11 +290,11 @@ const DateTimeTool = () => {
   };
 
   return (
-    <ToolPageLayout title="Date & Time Toolkit  -  Timestamps, Timezones & Cron" description="Unix timestamps, timezone conversion and cron expression builder" toolbar={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
+    <ToolPageLayout title="Date & Time Toolkit - Timestamps, Timezones & Cron" description="Unix timestamps, timezone conversion and cron expression builder" toolbar={<div className="flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border rounded-md px-3 py-1.5 bg-card">
           <Clock className="h-3.5 w-3.5 text-primary" />
           <span>{liveNow.toISOString().replace("T", " ").slice(0, 19)} UTC</span>
         </div>}>
-      <ToolSEO title="Date & Time Toolkit  -  Timestamps, Timezones & Cron" description="Convert Unix timestamps to human dates, compare timezones, and build cron expressions with a visual cron generator. Free online date/time tools." canonicalPath="/datetime" keywords={["Unix timestamp converter", "timezone converter", "cron expression generator", "epoch converter", "date time tool"]} faq={[{question:"How do I convert a Unix timestamp?",answer:"Enter a Unix timestamp (seconds since epoch) and click Convert to see the human-readable date, or enter a date to get the Unix timestamp."},{question:"What is a cron expression?",answer:"A cron expression defines a schedule using five fields: minute, hour, day of month, month, and day of week. This tool helps you build and visualize cron schedules."},{question:"How do I calculate the difference between two dates?",answer:"Use the Date Difference section: pick a start and end date and instantly see the gap in days, hours, and minutes."},{question:"Which timezones are supported?",answer:"All IANA timezones supported by your browser — over 400 zones, searchable and grouped by region, with live UTC offsets."}]} howToSteps={["Enter a Unix timestamp or date to convert","Use the timezone section to compare times across zones","Build cron expressions using the interactive generator"]} />
+      <ToolSEO title="Date & Time Toolkit - Timestamps, Timezones & Cron" description="Convert Unix timestamps to human dates, compare timezones, and build cron expressions with a visual cron generator. Free online date/time tools." canonicalPath="/datetime" keywords={["Unix timestamp converter", "timezone converter", "cron expression generator", "epoch converter", "date time tool"]} faq={[{question:"How do I convert a Unix timestamp?",answer:"Enter a Unix timestamp (seconds since epoch) and click Convert to see the human-readable date, or enter a date to get the Unix timestamp."},{question:"What is a cron expression?",answer:"A cron expression defines a schedule using five fields: minute, hour, day of month, month, and day of week. This tool helps you build and visualize cron schedules."},{question:"How do I calculate the difference between two dates?",answer:"Use the Date Difference section: pick a start and end date and instantly see the gap in days, hours, and minutes."},{question:"Which timezones are supported?",answer:"All IANA timezones supported by your browser — over 400 zones, searchable and grouped by region, with live UTC offsets."}]} howToSteps={["Enter a Unix timestamp or date to convert","Use the timezone section to compare times across zones","Build cron expressions using the interactive generator"]} />
 
 
       {/* Unix ↔ Human */}
@@ -306,11 +306,14 @@ const DateTimeTool = () => {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-end gap-3">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground font-medium">Unix Timestamp</label>
-              <div className="flex gap-0.5">
+              <span className="text-xs text-muted-foreground font-medium">Unix Timestamp</span>
+              <div className="flex gap-0.5" role="group" aria-label="Timestamp unit">
                 {(["s", "ms"] as const).map((u) => (
-                  <button
+                  <Button
                     key={u}
+                    variant={tsUnit === u ? "selected" : "ghost"}
+                    size="sm"
+                    className="h-5 px-2 text-[10px] font-mono"
                     onClick={() => {
                       if (u === tsUnit) return;
                       const n = Number(timestamp);
@@ -319,10 +322,9 @@ const DateTimeTool = () => {
                       }
                       setTsUnit(u);
                     }}
-                    className={`px-2 py-0.5 text-[10px] font-mono rounded border transition-colors ${tsUnit === u ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/40"}`}
                   >
                     {u}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -338,7 +340,7 @@ const DateTimeTool = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground font-medium">ISO 8601 Date</label>
+            <span className="text-xs text-muted-foreground font-medium">ISO 8601 Date</span>
             <div className="flex gap-1.5">
               <Input value={dateStr} onChange={(e) => setDateStr(e.target.value)} className="bg-background border-border font-mono text-sm" />
               <Button variant="outline" size="sm" className="h-9 px-3 shrink-0" onClick={fromDate}>→ TS</Button>
@@ -375,7 +377,7 @@ const DateTimeTool = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] items-start gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground font-medium">Date/Time</label>
+            <span className="text-xs text-muted-foreground font-medium">Date/Time</span>
             <Input type="datetime-local" value={tzInput} onChange={(e) => setTzInput(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
             <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => setTzInput(new Date().toISOString().slice(0, 16))}>
               Set to now
@@ -444,11 +446,11 @@ const DateTimeTool = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground font-medium">Start date</label>
+            <span className="text-xs text-muted-foreground font-medium">Start date</span>
             <Input type="datetime-local" value={diffStart} onChange={(e) => setDiffStart(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground font-medium">End date</label>
+            <span className="text-xs text-muted-foreground font-medium">End date</span>
             <Input type="datetime-local" value={diffEnd} onChange={(e) => setDiffEnd(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
           </div>
         </div>
@@ -478,13 +480,15 @@ const DateTimeTool = () => {
             const city = tz.split("/").pop()?.replace(/_/g, " ") ?? tz;
             return (
               <div key={tz} className="border border-border rounded-lg p-3 bg-background relative group">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1.5 right-1.5 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setWorldClocks((c) => c.filter((z) => z !== tz))}
-                  className="absolute top-1.5 right-1.5 h-5 w-5 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-muted"
                   aria-label={`Remove ${tz}`}
                 >
                   <X className="w-3 h-3 text-muted-foreground" />
-                </button>
+                </Button>
                 <div className="text-xs text-muted-foreground truncate pr-5">{tz.replace(/_/g, " ")}</div>
                 <div className="font-mono font-semibold text-xl mt-0.5 tabular-nums">{time}</div>
                 <div className="flex items-center gap-2 mt-1">
@@ -499,7 +503,7 @@ const DateTimeTool = () => {
         {/* Add timezone */}
         <div className="flex items-end gap-2 flex-wrap">
           <div className="space-y-1 flex-1 min-w-[180px]">
-            <label className="text-xs text-muted-foreground">Add timezone</label>
+            <span className="text-xs text-muted-foreground">Add timezone</span>
             <div className="flex gap-1.5">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-muted-foreground" />
@@ -537,11 +541,11 @@ const DateTimeTool = () => {
           <p className="text-xs text-muted-foreground font-medium">Count business days between two dates</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Start date</label>
+              <span className="text-xs text-muted-foreground">Start date</span>
               <Input type="date" value={bizStart} onChange={(e) => setBizStart(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">End date</label>
+              <span className="text-xs text-muted-foreground">End date</span>
               <Input type="date" value={bizEnd} onChange={(e) => setBizEnd(e.target.value)} className="bg-background border-border font-mono text-sm h-9" />
             </div>
           </div>
@@ -557,16 +561,16 @@ const DateTimeTool = () => {
           <p className="text-xs text-muted-foreground font-medium">Add business days to a date</p>
           <div className="flex items-end gap-2 flex-wrap">
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Start from</label>
+              <span className="text-xs text-muted-foreground">Start from</span>
               <Input type="date" value={bizStart} onChange={(e) => setBizStart(e.target.value)} className="bg-background border-border font-mono text-sm h-9 w-40" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Business days to add</label>
+              <span className="text-xs text-muted-foreground">Business days to add</span>
               <Input type="number" value={bizAddDaysInput} onChange={(e) => setBizAddDaysInput(e.target.value)} className="bg-background border-border font-mono text-sm h-9 w-24" />
             </div>
             {bizResult.addDays && (
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Result</label>
+                <span className="text-xs text-muted-foreground">Result</span>
                 <div className="flex items-center gap-2 h-9">
                   <span className="border border-border rounded px-3 py-1.5 bg-background font-mono text-sm text-primary">{bizResult.addDays}</span>
                   <CopyButton value={bizResult.addDays} message="Copied!" variant="ghost" size="icon" className="h-7 w-7" />
@@ -585,7 +589,7 @@ const DateTimeTool = () => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground font-medium">Proposed meeting time (your local time)</label>
+          <span className="text-xs text-muted-foreground font-medium">Proposed meeting time (your local time)</span>
           <Input type="datetime-local" value={meetingTime} onChange={(e) => setMeetingTime(e.target.value)} className="bg-background border-border font-mono text-sm h-9 max-w-xs" />
         </div>
 
@@ -609,13 +613,15 @@ const DateTimeTool = () => {
 
             return (
               <div key={tz} className="border border-border rounded-lg p-3 bg-background relative group space-y-1">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1.5 right-1.5 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setMeetingZones((z) => z.filter((x) => x !== tz))}
-                  className="absolute top-1.5 right-1.5 h-5 w-5 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-muted"
                   aria-label={`Remove ${tz}`}
                 >
                   <X className="w-3 h-3 text-muted-foreground" />
-                </button>
+                </Button>
                 <div className="text-xs text-muted-foreground truncate pr-5">{tz.replace(/_/g, " ")} <span className="font-mono text-primary">{offset}</span></div>
                 <div className="font-mono text-sm font-semibold">{localTime}</div>
                 {badge && (
@@ -629,7 +635,7 @@ const DateTimeTool = () => {
         {/* Add timezone to meeting */}
         <div className="flex items-end gap-2 flex-wrap">
           <div className="space-y-1 flex-1 min-w-[180px]">
-            <label className="text-xs text-muted-foreground">Add participant timezone</label>
+            <span className="text-xs text-muted-foreground">Add participant timezone</span>
             <div className="flex gap-1.5">
               <div className="relative">
                 <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-muted-foreground" />
