@@ -165,7 +165,7 @@ const EnvGenerator = () => {
 
   return (
     <ToolPageLayout title="Environment Generator" description="Build and validate .env files from templates · Compare .env files side-by-side">
-      <ToolSEO title="Environment File Generator  -  .env Builder & Differ" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Compare two .env files with key-level diff." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator", ".env diff"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."},{question:"Is my configuration data uploaded anywhere?",answer:"No. The .env file is built entirely in your browser — secrets and values never leave your machine."},{question:"How does the .env diff work?",answer:"Paste two .env files and the diff compares them key-by-key, showing added, removed, changed, and unchanged variables."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file","Use the Diff tab to compare two .env files"]} />
+      <ToolSEO title="Environment File Generator - .env Builder & Differ" description="Build .env configuration files with pre-built templates for Node.js, Laravel, Spring Boot, React, and Django. Compare two .env files with key-level diff." canonicalPath="/env" keywords={[".env generator", "environment variables", "dotenv builder", "env file template", "config generator", ".env diff"]} faq={[{question:"What .env templates are available?",answer:"Templates for Node.js, Laravel, Spring Boot, React, and Django with common environment variables pre-filled."},{question:"Can I add custom variables?",answer:"Yes. Add custom key-value pairs using the form below the template selector, or edit the textarea directly."},{question:"Is my configuration data uploaded anywhere?",answer:"No. The .env file is built entirely in your browser — secrets and values never leave your machine."},{question:"How does the .env diff work?",answer:"Paste two .env files and the diff compares them key-by-key, showing added, removed, changed, and unchanged variables."}]} howToSteps={["Select a template (Node, Laravel, Spring Boot, React, Django)","Add custom variables using the key-value form","Copy to clipboard or download as a .env file","Use the Diff tab to compare two .env files"]} />
 
       <Tabs defaultValue="build" className="w-full">
         <TabsList>
@@ -176,7 +176,7 @@ const EnvGenerator = () => {
         {/* ── Build tab ── */}
         <TabsContent value="build" className="space-y-4 mt-4">
           <div>
-            <label className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Templates</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-2">Templates</span>
             <div className="flex flex-wrap gap-2">
               {Object.keys(templates).map((t) => (
                 <Button key={t} variant="secondary" size="sm" onClick={() => loadTemplate(t)}>{t}</Button>
@@ -185,11 +185,11 @@ const EnvGenerator = () => {
           </div>
           <div className="flex items-end gap-2 flex-wrap">
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Key</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Key</span>
               <Input value={newKey} onChange={(e) => setNewKey(e.target.value)} placeholder="MY_VAR" className="w-40 bg-card border-border font-mono" />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Value</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Value</span>
               <Input
                 value={newVal}
                 onChange={(e) => setNewVal(e.target.value)}
@@ -241,7 +241,7 @@ const EnvGenerator = () => {
         <TabsContent value="diff" className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block">Before</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider block">Before</span>
               <Textarea
                 value={diffA}
                 onChange={(e) => setDiffA(e.target.value)}
@@ -250,7 +250,7 @@ const EnvGenerator = () => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider block">After</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider block">After</span>
               <Textarea
                 value={diffB}
                 onChange={(e) => setDiffB(e.target.value)}
