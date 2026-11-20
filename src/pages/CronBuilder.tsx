@@ -225,7 +225,7 @@ const CronBuilder = () => {
       maxWidth="wide"
     >
       <ToolSEO
-        title="Cron Expression Builder  -  Free Online Cron Generator"
+        title="Cron Expression Builder - Free Online Cron Generator"
         description="Build cron expressions visually. See plain-English descriptions and next 10 run times. Supports standard cron, AWS EventBridge, and GitHub Actions."
         canonicalPath="/cron"
         keywords={["cron builder", "cron expression", "cron generator", "cron editor", "aws eventbridge cron", "github actions cron", "crontab"]}
@@ -240,9 +240,10 @@ const CronBuilder = () => {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {FIELD_DEFS.map((fd) => (
                 <div key={fd.name}>
-                  <label className="mb-1 block text-xs text-muted-foreground">{fd.label}</label>
+                  <span className="mb-1 block text-xs text-muted-foreground">{fd.label}</span>
                   <input
                     type="text"
+                    aria-label={fd.label}
                     value={fields[fd.name]}
                     onChange={(e) => handleFieldChange(fd.name, e.target.value)}
                     placeholder={fd.placeholder}
@@ -274,7 +275,7 @@ const CronBuilder = () => {
           <div className="rounded-lg border border-border bg-card p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Platform syntax</h2>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" role="group" aria-label="Platform syntax">
                 {(["standard", "aws", "github"] as Platform[]).map((p) => (
                   <Button
                     key={p}
@@ -306,6 +307,7 @@ const CronBuilder = () => {
             <div className="flex gap-2">
               <input
                 type="text"
+                aria-label="Cron expression"
                 value={rawExpr}
                 onChange={(e) => setRawExpr(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") handleRawApply(); }}
@@ -331,14 +333,15 @@ const CronBuilder = () => {
                   <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">{group}</p>
                   <div className="flex flex-col gap-0.5">
                     {items.map(({ label, expr: e }) => (
-                      <button
+                      <Button
                         key={e}
+                        variant="ghost"
+                        className="w-full justify-between gap-2 px-2 py-1.5 h-auto hover:bg-secondary group"
                         onClick={() => handlePreset(e)}
-                        className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-secondary group"
                       >
                         <span className="text-xs text-foreground">{label}</span>
                         <code className="text-[11px] font-mono text-muted-foreground group-hover:text-foreground transition-colors shrink-0">{e}</code>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
