@@ -10,25 +10,25 @@
 
   <!-- Core data tools -->
   <url>
-    <loc>https://devtools.rusiru.cc/json</loc>
+    <loc>https://devtools.rusiru.cc/json/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/encode</loc>
+    <loc>https://devtools.rusiru.cc/encode/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/crypto</loc>
+    <loc>https://devtools.rusiru.cc/crypto/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/jwt</loc>
+    <loc>https://devtools.rusiru.cc/jwt/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -36,67 +36,67 @@
 
   <!-- Developer utilities -->
   <url>
-    <loc>https://devtools.rusiru.cc/regex</loc>
+    <loc>https://devtools.rusiru.cc/regex/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/datetime</loc>
+    <loc>https://devtools.rusiru.cc/datetime/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/diff</loc>
+    <loc>https://devtools.rusiru.cc/diff/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/fake-data</loc>
+    <loc>https://devtools.rusiru.cc/fake-data/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/env</loc>
+    <loc>https://devtools.rusiru.cc/env/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/sql</loc>
+    <loc>https://devtools.rusiru.cc/sql/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/number-base</loc>
+    <loc>https://devtools.rusiru.cc/number-base/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/cron</loc>
+    <loc>https://devtools.rusiru.cc/cron/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/text-diff</loc>
+    <loc>https://devtools.rusiru.cc/text-diff/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/curl</loc>
+    <loc>https://devtools.rusiru.cc/curl/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/json-transform</loc>
+    <loc>https://devtools.rusiru.cc/json-transform/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -104,37 +104,37 @@
 
   <!-- Design and text -->
   <url>
-    <loc>https://devtools.rusiru.cc/color</loc>
+    <loc>https://devtools.rusiru.cc/color/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/text</loc>
+    <loc>https://devtools.rusiru.cc/text/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/markdown</loc>
+    <loc>https://devtools.rusiru.cc/markdown/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/html-editor</loc>
+    <loc>https://devtools.rusiru.cc/html-editor/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/yaml</loc>
+    <loc>https://devtools.rusiru.cc/yaml/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/chmod</loc>
+    <loc>https://devtools.rusiru.cc/chmod/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -142,19 +142,19 @@
 
   <!-- Privacy and security tools -->
   <url>
-    <loc>https://devtools.rusiru.cc/image-metadata</loc>
+    <loc>https://devtools.rusiru.cc/image-metadata/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/document-signer</loc>
+    <loc>https://devtools.rusiru.cc/document-signer/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/certificate</loc>
+    <loc>https://devtools.rusiru.cc/certificate/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -162,19 +162,19 @@
 
   <!-- Password and data tools -->
   <url>
-    <loc>https://devtools.rusiru.cc/password</loc>
+    <loc>https://devtools.rusiru.cc/password/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/csv</loc>
+    <loc>https://devtools.rusiru.cc/csv/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://devtools.rusiru.cc/http-status</loc>
+    <loc>https://devtools.rusiru.cc/http-status/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>

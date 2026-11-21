@@ -46,7 +46,7 @@ export function ToolSEO({
     canonicalPath === "/"
       ? title
       : `${title} | Toolzy`;
-  const canonicalUrl = `${BASE_URL}${canonicalPath}`;
+  const canonicalUrl = `${BASE_URL}${canonicalPath.endsWith('/') ? canonicalPath : canonicalPath + '/'}`;
 
   // BreadcrumbList — helps search engines and AI engines show navigation context.
   const breadcrumbSchema = canonicalPath !== "/" && {
