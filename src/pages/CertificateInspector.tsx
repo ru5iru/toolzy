@@ -23,7 +23,7 @@ const CertificateInspector = () => {
   return (
     <ToolPageLayout title="Certificate Inspector" icon={ScrollText} description={<>Decode X.509 certificates and requests. Shows what a certificate states; it does not validate trust or revocation. To sign files, see <Link to="/document-signer" className="underline hover:text-foreground">Document Signer</Link>.</>}>
       <ToolSEO
-        title="X.509 Certificate Inspector  -  Decode SSL Certs & CSRs"
+        title="X.509 Certificate Inspector - Decode SSL Certs & CSRs"
         canonicalPath="/certificate"
         description="Decode X.509 certificates and CSRs in your browser. Inspect subject, issuer, validity, SANs, key usage and fingerprints instantly. Nothing uploaded."
         keywords={["x509 decoder", "certificate decoder", "csr decoder", "ssl certificate inspector", "pem certificate viewer", "certificate fingerprint", "subject alternative name"]}
