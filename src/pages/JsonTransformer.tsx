@@ -89,7 +89,7 @@ const JsonTransformer = () => {
       description="Filter and transform JSON with jq-compatible expressions — all in your browser."
     >
       <ToolSEO
-        title="JSON Transformer  -  jq-style Filter & Transform Tool"
+        title="JSON Transformer - jq-style Filter & Transform Tool"
         description="Apply jq-compatible filters to JSON: map, select, sort_by, group_by, to_entries, flatten and more. Live output, no server required."
         canonicalPath="/json-transform"
         keywords={["json transformer", "jq online", "json filter", "json query", "json map", "json select", "jq playground"]}
@@ -112,7 +112,7 @@ const JsonTransformer = () => {
           spellCheck={false}
           aria-label="jq filter expression"
         />
-        <div className="flex gap-1 items-center shrink-0">
+        <div className="flex gap-1 items-center shrink-0" role="group" aria-label="Indent">
           <span className="text-xs text-muted-foreground">indent</span>
           {[0, 2, 4].map(n => (
             <Button key={n} variant={indent === n ? "selected" : "outline"} size="sm"
@@ -124,15 +124,17 @@ const JsonTransformer = () => {
       </div>
 
       {/* Snippet chips */}
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter snippets">
         {SNIPPETS.map(s => (
-          <button
+          <Button
             key={s.label}
-            className="px-2 py-0.5 rounded border border-border bg-secondary text-xs font-mono hover:bg-primary/10 hover:border-primary/40 transition-colors"
+            variant="outline"
+            className="h-auto px-2 py-0.5 font-mono text-xs"
             onClick={() => setFilter(s.filter)}
+            aria-label={`Apply filter: ${s.label}`}
           >
             {s.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -141,14 +143,16 @@ const JsonTransformer = () => {
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0">History</span>
           {filterHistory.map((h) => (
-            <button
+            <Button
               key={h}
-              className="px-2 py-0.5 rounded border border-border bg-card text-xs font-mono text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-foreground transition-colors max-w-[220px] truncate"
+              variant="ghost"
+              className="h-auto px-2 py-0.5 font-mono text-xs text-muted-foreground border border-border max-w-[220px] truncate"
               title={h}
               onClick={() => setFilter(h)}
+              aria-label={`Reapply filter: ${h}`}
             >
               {h}
-            </button>
+            </Button>
           ))}
         </div>
       )}
