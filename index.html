@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-rh="true">Toolzy — Free Online Developer Tools | JSON, Base64, JWT, UUID & More</title>
-    <meta data-rh="true" name="description" content="Toolzy offers 16+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder/decoder, JWT decoder/encoder, UUID generator, regex tester, hash generator, color converter, text utilities, Markdown editor, HTML editor, and more. No signup required. Nothing uploaded.">
-    <meta name="keywords" content="developer tools, JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, hash generator, color converter, URL encoder, date time converter, API diff, fake data generator, env generator, text utilities, markdown editor, certificate inspector, online tools, free tools">
+    <meta data-rh="true" name="description" content="Toolzy offers 27+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, hash generator, color converter, SQL formatter, curl converter, text diff, Markdown editor, HTML editor, and more. No signup required. Nothing uploaded.">
+    <meta name="keywords" content="developer tools, JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, hash generator, color converter, URL encoder, date time converter, SQL formatter, curl converter, text diff, cron builder, chmod calculator, YAML converter, number base converter, CSV tool, password generator, fake data generator, env generator, text utilities, markdown editor, certificate inspector, online tools, free tools">
     <meta name="author" content="Toolzy" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <!-- Add your Google Search Console verification meta tag here once you verify https://devtools.rusiru.cc -->
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Toolzy" />
     <meta data-rh="true" property="og:title" content="Toolzy — Free Online Developer Tools">
-    <meta data-rh="true" property="og:description" content="16+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, hash generator, text utilities, Markdown editor, HTML editor, and more. Nothing uploaded.">
+    <meta data-rh="true" property="og:description" content="27+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, SQL formatter, curl converter, text diff, Markdown editor, HTML editor, and more. Nothing uploaded.">
     <meta data-rh="true" property="og:url" content="https://devtools.rusiru.cc/">
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a8941552-9ffd-43fb-a460-b27723f2980b/id-preview-75720018--c01f4f33-6220-46a1-bfb7-420b0ce8af24.lovable.app-1774889779954.png">
     <meta property="og:image:width" content="1200" />
@@ -32,7 +32,7 @@
     <!-- Twitter (fallback; individual tool pages override via react-helmet-async) -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta data-rh="true" name="twitter:title" content="Toolzy — Free Online Developer Tools">
-    <meta data-rh="true" name="twitter:description" content="16+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, hash generator, text utilities, and more.">
+    <meta data-rh="true" name="twitter:description" content="27+ free, fast, browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, UUID generator, regex tester, SQL formatter, curl converter, text diff, and more.">
     <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a8941552-9ffd-43fb-a460-b27723f2980b/id-preview-75720018--c01f4f33-6220-46a1-bfb7-420b0ce8af24.lovable.app-1774889779954.png">
 
     <!-- Structured Data: WebSite + Sitelinks SearchBox (GEO/AEO) -->
@@ -42,7 +42,7 @@
       "@type": "WebSite",
       "name": "Toolzy",
       "url": "https://devtools.rusiru.cc",
-      "description": "16+ free, fast, browser-based developer tools for encoding, decoding, formatting, hashing, and generating data.",
+      "description": "27+ free, fast, browser-based developer tools for encoding, decoding, formatting, hashing, generating data, and more.",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -81,26 +81,36 @@
       "applicationSubCategory": "UtilityApplication",
       "operatingSystem": "Any (Browser-based)",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "A comprehensive suite of 16+ free online developer tools including JSON formatter & validator, Base64 encoder/decoder, JWT decoder/encoder, UUID generator, regex tester, hash generator (SHA-256, SHA-512, HMAC), color converter, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, certificate inspector, and more. All tools run entirely in your browser — no data is sent to any server.",
+      "description": "A comprehensive suite of 27+ free online developer tools including JSON formatter & validator, Base64 encoder/decoder, JWT decoder/encoder, UUID generator, regex tester, hash generator (SHA-256, SHA-512, HMAC), SQL formatter, curl command converter, color converter, text diff, YAML converter, chmod calculator, password generator, CSV viewer, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, certificate inspector, and more. All tools run entirely in your browser — no data is sent to any server.",
       "url": "https://devtools.rusiru.cc",
       "featureList": [
         "JSON formatting, validation, minification and schema generation",
+        "JSON transformation with jq-style queries",
         "Base64 and URL encoding/decoding with file support",
         "JWT decode, encode and signature verification",
         "UUID v1/v3/v4/v5 generation and validation",
         "Cryptographic hashing: SHA-1, SHA-256, SHA-384, SHA-512, HMAC",
+        "Password generator with strength meter and entropy display",
         "Color conversion: HEX, RGB, HSL, HSV, CMYK with WCAG contrast checker",
         "Text case conversion, slugify, sort and deduplicate lines",
+        "Side-by-side text diff with unified and split view",
+        "API response diff tool",
         "Markdown editor with live preview and HTML export",
         "Visual WYSIWYG HTML editor with source output and download",
+        "SQL formatter and beautifier with dialect support",
+        "curl command converter to fetch, Python, Node.js and more",
+        "YAML ↔ JSON converter with validation",
+        "CSV viewer and editor with sorting and filtering",
+        "Number base converter: binary, octal, decimal, hexadecimal",
+        "Unix chmod calculator with symbolic and octal notation",
+        "Cron expression builder with human-readable descriptions",
+        "Date, time and timezone conversion",
+        "Regex tester with live highlighting and replace",
+        "Fake data generator with templates, locales and seeds",
+        ".env file builder with framework templates",
         "Image EXIF/GPS/IPTC/XMP metadata inspection and removal",
         "X.509 certificate and CSR decoder",
-        "Digital document signing and verification (RSA-PSS, ECDSA)",
-        "Date, time and timezone conversion with cron expression builder",
-        "Regex tester with live highlighting and replace",
-        "API response diff tool",
-        "Fake data generator with templates, locales and seeds",
-        ".env file builder with framework templates"
+        "Digital document signing and verification (RSA-PSS, ECDSA)"
       ],
       "screenshot": "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a8941552-9ffd-43fb-a460-b27723f2980b/id-preview-75720018--c01f4f33-6220-46a1-bfb7-420b0ce8af24.lovable.app-1774889779954.png"
     }

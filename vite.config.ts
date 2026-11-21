@@ -31,11 +31,13 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id: string) {
           if (!id.includes("node_modules")) return;
-          // React runtime — always eagerly loaded; isolate for stable long-term caching
+          // React runtime — always eagerly loaded; isolate for stable long-term caching.
+          // Use /node_modules/react/ (not /react/) to avoid false-matching scoped
+          // packages whose paths contain "/react/" (e.g. @tiptap/react, @uiw/react-*).
           if (
-            id.includes("/react/") ||
-            id.includes("/react-dom/") ||
-            id.includes("/scheduler/")
+            id.includes("/node_modules/react/") ||
+            id.includes("/node_modules/react-dom/") ||
+            id.includes("/node_modules/scheduler/")
           ) return "vendor-react";
           // Routing + query layer — shared across all routes
           if (id.includes("/react-router") || id.includes("/@tanstack/")) return "vendor-router";

@@ -105,7 +105,7 @@ const Index = () => {
             <li key={tool.url}>
               <RouterLink
                 to={tool.url}
-                aria-label={`Open ${tool.title} — ${tool.description}`}
+                aria-label={`${tool.title} — ${tool.description}`}
                 className="group flex h-full items-start gap-3 rounded-lg border border-border bg-card p-3.5 transition-[border-color,background-color,transform] duration-150 hover:border-primary/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:translate-y-px"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary text-primary transition-colors group-hover:bg-primary/15">
