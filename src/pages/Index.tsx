@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight, Settings2, Cpu, Filter } from "lucide-react";
+import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight, Settings2, Cpu, Filter, Signal } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
 import { Button } from "@/components/ui/button";
 
@@ -33,6 +33,7 @@ const tools = [
   { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
   { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
   { title: "JSON Transformer", description: "Filter and transform JSON with jq-compatible expressions — map, select, sort_by, group_by, to_entries, flatten and more, live in your browser", url: "/json-transform", icon: Filter },
+  { title: "HTTP Status Codes", description: "Complete reference for all 1xx–5xx HTTP response codes — search by code or name, expand for RFC details, copy any code in one click", url: "/http-status", icon: Signal },
 ];
 
 const Index = () => {
@@ -58,12 +59,12 @@ const Index = () => {
     <div className="max-w-[1600px]">
       <ToolSEO
         title="Toolzy - Free Online Developer Tools for Engineers"
-        description="27+ free browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, regex tester, hash generator, color converter, and more. No sign-up."
+        description="28+ free browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, regex tester, HTTP status codes reference, hash generator, color converter, and more. No sign-up."
         canonicalPath="/"
         isApp={false}
         keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator", "JWT decoder", "regex tester", "hash generator"]}
         faq={[
-          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 27+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, certificate inspector, curl converter, JSON transformer, CSV tool, chmod calculator, password generator, and more." },
+          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 28+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, HTTP status codes reference, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, certificate inspector, curl converter, JSON transformer, CSV tool, chmod calculator, password generator, and more." },
           { question: "Are these developer tools free?", answer: "Yes. All tools are 100% free, run entirely in your browser, and require no sign-up or installation." },
           { question: "Is my data safe when using Toolzy?", answer: "Yes. All processing happens client-side in your browser using the Web Crypto API and local JavaScript. No data, files, or keys are ever sent to any server." },
           { question: "Do the tools work offline?", answer: "Yes. After the page loads, all tools work without a network connection. The only exceptions are static locale files that the Fake Data Generator downloads on demand." },
