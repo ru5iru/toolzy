@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Braces, Binary, Link, Fingerprint, Palette, KeyRound, GitCompare, Users, FileText, Hash, Clock, Regex, Search, X, FileSearch, FileSignature, ScrollText, Type, FileCode2, Database, Timer, Diff, FileJson2, Lock, KeySquare, Table2, ArrowLeftRight, Settings2, Cpu, Filter } from "lucide-react";
 import { ToolSEO } from "@/components/ToolSEO";
+import { Button } from "@/components/ui/button";
 
 const tools = [
   { title: "HTML Editor", description: "WYSIWYG editor with live HTML source, tables, links, local image embed, and instant download", url: "/html-editor", icon: FileCode2 },
@@ -56,13 +57,13 @@ const Index = () => {
   return (
     <div className="max-w-[1600px]">
       <ToolSEO
-        title="Toolzy  -  Free Online Developer Tools for Engineers"
-        description="16+ free browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, regex tester, hash generator, color converter, and more. No sign-up."
+        title="Toolzy - Free Online Developer Tools for Engineers"
+        description="27+ free browser-based developer tools: JSON formatter, Base64 encoder, JWT decoder, regex tester, hash generator, color converter, and more. No sign-up."
         canonicalPath="/"
         isApp={false}
         keywords={["developer tools", "online dev tools", "free developer utilities", "web developer tools", "JSON formatter", "Base64 encoder", "UUID generator", "JWT decoder", "regex tester", "hash generator"]}
         faq={[
-          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 16+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, and certificate inspector." },
+          { question: "What developer tools does Toolzy offer?", answer: "Toolzy offers 27+ free utilities including a JSON formatter & validator, Base64 encoder/decoder, URL encoder, UUID generator, color converter, JWT decoder & encoder, API diff tool, fake data generator, env file builder, hash generator, date/time toolkit, regex playground, text utilities, Markdown editor, HTML WYSIWYG editor, image metadata viewer, document signer, certificate inspector, curl converter, JSON transformer, CSV tool, chmod calculator, password generator, and more." },
           { question: "Are these developer tools free?", answer: "Yes. All tools are 100% free, run entirely in your browser, and require no sign-up or installation." },
           { question: "Is my data safe when using Toolzy?", answer: "Yes. All processing happens client-side in your browser using the Web Crypto API and local JavaScript. No data, files, or keys are ever sent to any server." },
           { question: "Do the tools work offline?", answer: "Yes. After the page loads, all tools work without a network connection. The only exceptions are static locale files that the Fake Data Generator downloads on demand." },
@@ -91,9 +92,9 @@ const Index = () => {
             className="h-10 w-full rounded-lg border border-border bg-card pl-10 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground hover:border-[hsl(var(--border-hover))] focus:outline-none focus:ring-2 focus:ring-ring"
           />
           {query && (
-            <button onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 text-muted-foreground hover:bg-secondary hover:text-foreground">
               <X className="h-4 w-4" aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </div>
         {filteredTools.length === 0 && (
