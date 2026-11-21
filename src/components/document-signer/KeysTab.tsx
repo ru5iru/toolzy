@@ -180,11 +180,11 @@ export const KeysTab = ({ keys, onAdd, onDelete, onRemember, onForget, storageSu
             <ul className="border border-border rounded-lg divide-y divide-border" aria-label="Keys">
               {keys.map((key) => (
                 <li key={key.id}>
-                  <button type="button" onClick={() => setSelectedId(key.id)} aria-pressed={selected?.id === key.id}
-                    className={`w-full text-left px-3 py-2 hover:bg-secondary ${selected?.id === key.id ? "bg-secondary" : ""}`}>
+                  <Button variant="ghost" onClick={() => setSelectedId(key.id)} aria-pressed={selected?.id === key.id}
+                    className={`w-full justify-start text-left px-3 py-2 h-auto hover:bg-secondary ${selected?.id === key.id ? "bg-secondary" : ""}`}>
                     <div className="flex items-center gap-2 text-sm font-mono"><KeyRound className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" /><span className="truncate">{key.name}</span></div>
                     <div className="text-xs text-muted-foreground mt-0.5">{algorithmById(key.algorithm).label} · {hasPrivateKey(key) ? "key pair" : "public only"}{key.persisted ? " · saved on device" : ""}</div>
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

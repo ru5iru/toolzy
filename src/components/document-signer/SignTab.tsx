@@ -113,7 +113,7 @@ export const SignTab = ({ keys, session, onOpenKeys, onQuickGenerate }: SignTabP
             <HashSelect id="sign-hash" value={hash} label={key && !usesSigningHash(algorithmById(key.algorithm)) ? "Document hash (Ed25519 signs the data itself)" : "Hash algorithm"} onChange={(next) => { invalidate(); setHash(next); }} />
           </div>
         )}
-        {key && <p className="text-xs text-muted-foreground">Algorithm follows the key: {algorithmById(key.algorithm).label}. Need another type? <button type="button" className="underline hover:text-foreground" onClick={onOpenKeys}>Manage keys</button></p>}
+        {key && <p className="text-xs text-muted-foreground">Algorithm follows the key: {algorithmById(key.algorithm).label}. Need another type? <Button variant="ghost" className="h-auto p-0 text-xs underline hover:text-foreground" onClick={onOpenKeys}>Manage keys</Button></p>}
 
         <div className="flex flex-wrap gap-2">
           <Button onClick={sign} disabled={!file || !key || busy || !fingerprint}>

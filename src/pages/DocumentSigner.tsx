@@ -88,7 +88,7 @@ const DocumentSigner = () => {
   return (
     <ToolPageLayout title="Document Signer" icon={FileSignature} description={<>Sign files and verify detached signatures. Keys stay in memory unless you save one on this device. For plain hashes and HMAC, use <Link to="/crypto?tab=hash" className="underline hover:text-foreground">Crypto Suite</Link>.</>}>
       <ToolSEO
-        title="Document Signer  -  Sign & Verify Digital Signatures"
+        title="Document Signer - Sign & Verify Digital Signatures"
         canonicalPath="/document-signer"
         description="Sign files and verify detached digital signatures in your browser. Generate RSA-PSS and ECDSA keys, export PEM and JWK. Nothing is uploaded."
         keywords={["document signer", "digital signature", "detached signature", "verify signature online", "RSA-PSS", "ECDSA", "web crypto", "sign file in browser", "PEM key generator"]}
