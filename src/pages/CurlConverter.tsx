@@ -75,7 +75,7 @@ const CurlConverter = () => {
       description="Convert curl commands to Python, JavaScript, TypeScript, Go, PHP, or Ruby — and back to a clean curl."
     >
       <ToolSEO
-        title="curl to Code Converter  -  Python, JS, Go, PHP & Ruby"
+        title="curl to Code Converter - Python, JS, Go, PHP & Ruby"
         description="Paste a curl command and instantly get equivalent code in Python, JavaScript, TypeScript, Go, PHP, or Ruby. Free, browser-only, nothing uploaded."
         canonicalPath="/curl"
         keywords={["curl to python", "curl to javascript", "curl converter", "curl to code", "curl to fetch", "curl to requests"]}
@@ -100,7 +100,7 @@ const CurlConverter = () => {
         {/* ── Input ── */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs text-muted-foreground uppercase tracking-wider">curl command</label>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">curl command</span>
             {curlInput && (
               <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground px-2"
                 onClick={() => setCurlInput("")} title="Clear">
@@ -113,6 +113,7 @@ const CurlConverter = () => {
             onChange={e => setCurlInput(e.target.value)}
             placeholder={`curl -X POST https://api.example.com/data \\\n  -H "Content-Type: application/json" \\\n  -d '{"key":"value"}'`}
             className="min-h-[220px] font-mono text-sm bg-card border-border resize-y"
+            aria-label="curl command"
             spellCheck={false}
           />
           {curlInput && !parsed && (
@@ -159,7 +160,7 @@ const CurlConverter = () => {
       {parsed && (
         <>
           {/* Language selector */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Target language">
             <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
             {LANGS.map(l => (
               <Button key={l.key} variant={lang === l.key ? "selected" : "outline"} size="sm"
@@ -170,9 +171,9 @@ const CurlConverter = () => {
           {/* Output tabs: code + normalised curl */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">
                 {LANGS.find(l => l.key === lang)?.label} · {LANGS.find(l => l.key === lang)?.ext}
-              </label>
+              </span>
               <div className="flex items-center gap-1.5">
                 <CopyButton value={output} label="Copy" variant="outline" />
                 <Button variant="outline" size="sm" onClick={() => {
@@ -196,7 +197,7 @@ const CurlConverter = () => {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider">Normalised curl</label>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Normalised curl</span>
               <CopyButton value={normalised} label="Copy" variant="outline" />
             </div>
             <pre className="rounded-lg border border-border bg-card/50 p-4 font-mono text-xs overflow-auto whitespace-pre">
