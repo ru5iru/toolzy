@@ -219,7 +219,7 @@ const TextUtilities = () => {
   return (
     <ToolPageLayout title="Text Utilities" icon={Type} description="Transform text, generate lorem ipsum, build slugs, estimate reading time and create markdown tables.">
       <ToolSEO
-        title="Text Utilities  -  Case Converter, Lorem Ipsum, Slug & More"
+        title="Text Utilities - Case Converter, Lorem Ipsum, Slug & More"
         description="Free browser-based text tools: convert case, slugify, sort lines, lorem ipsum generator, reading time estimator, and markdown table builder. No data is uploaded."
         canonicalPath="/text"
         keywords={["case converter", "camelCase converter", "snake_case converter", "kebab-case converter", "slugify", "lorem ipsum generator", "reading time estimator", "markdown table generator", "word counter"]}
@@ -273,10 +273,10 @@ const TextUtilities = () => {
               </div>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Input value={findText} onChange={(e) => setFindText(e.target.value)} placeholder="Find…" className="font-mono text-sm h-8 pr-16" />
+                  <Input value={findText} onChange={(e) => setFindText(e.target.value)} placeholder="Find…" className="font-mono text-sm h-8 pr-16" aria-label="Find text" />
                   {findText && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono">{findCount} match{findCount !== 1 ? "es" : ""}</span>}
                 </div>
-                <Input value={replaceText} onChange={(e) => setReplaceText(e.target.value)} placeholder="Replace with…" className="font-mono text-sm h-8 flex-1" />
+                <Input value={replaceText} onChange={(e) => setReplaceText(e.target.value)} placeholder="Replace with…" className="font-mono text-sm h-8 flex-1" aria-label="Replace with" />
                 <Button size="sm" className="h-8 shrink-0" onClick={applyReplace} disabled={!findText || !text}>Replace all</Button>
               </div>
             </div>
@@ -310,9 +310,9 @@ const TextUtilities = () => {
         <TabsContent value="lorem" className="space-y-4 mt-4">
           <div className="flex flex-wrap items-end gap-3 p-3 rounded-lg bg-card border border-border">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Type</Label>
+              <span className="text-xs text-muted-foreground">Type</span>
               <Select value={loremType} onValueChange={(v) => setLoremType(v as typeof loremType)}>
-                <SelectTrigger className="h-8 w-36 text-xs"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-8 w-36 text-xs" aria-label="Lorem ipsum type"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="paragraphs">Paragraphs</SelectItem>
                   <SelectItem value="sentences">Sentences</SelectItem>
@@ -321,16 +321,16 @@ const TextUtilities = () => {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Count</Label>
+              <span className="text-xs text-muted-foreground">Count</span>
               <Input
-                type="number" value={loremCount} min={1}
+                type="number" value={loremCount} min={1} aria-label="Lorem ipsum count"
                 max={loremType === "words" ? 500 : loremType === "sentences" ? 50 : 20}
                 onChange={(e) => setLoremCount(e.target.value)}
                 className="h-8 w-24 text-xs font-mono"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Start with classic</Label>
+              <span className="text-xs text-muted-foreground">Start with classic</span>
               <div className="flex items-center gap-2 h-8">
                 <Switch id="lorem-classic" checked={loremClassic} onCheckedChange={setLoremClassic} />
                 <Label htmlFor="lorem-classic" className="text-xs cursor-pointer text-muted-foreground">"Lorem ipsum…"</Label>
@@ -376,9 +376,9 @@ const TextUtilities = () => {
 
             <div className="flex flex-wrap items-end gap-3 p-3 rounded-lg bg-card border border-border">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Separator</Label>
+                <span className="text-xs text-muted-foreground">Separator</span>
                 <Select value={slugSep} onValueChange={setSlugSep}>
-                  <SelectTrigger className="h-8 w-32 text-xs font-mono"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-8 w-32 text-xs font-mono" aria-label="Separator"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="-">Hyphen (-)</SelectItem>
                     <SelectItem value="_">Underscore (_)</SelectItem>
@@ -387,7 +387,7 @@ const TextUtilities = () => {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Stop words</Label>
+                <span className="text-xs text-muted-foreground">Stop words</span>
                 <div className="flex items-center gap-2 h-8">
                   <Switch id="slug-stop" checked={slugStrip} onCheckedChange={setSlugStrip} />
                   <Label htmlFor="slug-stop" className="text-xs cursor-pointer text-muted-foreground">Remove common words</Label>
@@ -397,7 +397,7 @@ const TextUtilities = () => {
 
             {slugOutput ? (
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Slug</Label>
+                <span className="text-xs text-muted-foreground">Slug</span>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 font-mono text-sm bg-card border border-border rounded-md px-3 py-2 break-all">{slugOutput}</code>
                   <CopyButton value={slugOutput} label="Copy" size="sm" variant="outline" className="shrink-0" />
@@ -514,24 +514,28 @@ const TextUtilities = () => {
               </Button>
             </div>
             <div className="space-y-1.5">
-              {mdCols.map((col) => (
+              {mdCols.map((col, ci) => (
                 <div key={col.id} className="flex items-center gap-2">
                   <Input
                     value={col.header}
                     onChange={(e) => updateMdCol(col.id, "header", e.target.value)}
                     placeholder="Column header"
                     className="h-8 text-xs font-mono flex-1"
+                    aria-label={`Column ${ci + 1} header`}
                   />
-                  <div className="flex items-center border border-border rounded-md overflow-hidden shrink-0">
+                  <div className="flex items-center border border-border rounded-md overflow-hidden shrink-0" role="group" aria-label={`Column ${ci + 1} alignment`}>
                     {(["left","center","right"] as ColAlign[]).map((a) => (
-                      <button
+                      <Button
                         key={a}
+                        variant="ghost"
+                        size="icon"
                         onClick={() => updateMdCol(col.id, "align", a)}
-                        className={`h-8 w-8 flex items-center justify-center text-xs transition-colors ${col.align === a ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted/50"}`}
-                        title={`Align ${a}`}
+                        className={`h-8 w-8 rounded-none text-xs transition-colors ${col.align === a ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted/50"}`}
+                        aria-label={`Align ${a}`}
+                        aria-pressed={col.align === a}
                       >
                         {a === "left" ? <AlignLeft className="w-3.5 h-3.5" /> : a === "center" ? <AlignCenter className="w-3.5 h-3.5" /> : <AlignRight className="w-3.5 h-3.5" />}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                   <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground" onClick={() => removeMdCol(col.id)} disabled={mdCols.length <= 1}>
@@ -561,6 +565,7 @@ const TextUtilities = () => {
                       onChange={(e) => updateMdCell(row.id, col.id, e.target.value)}
                       placeholder={col.header}
                       className="h-8 text-xs font-mono flex-1 min-w-0"
+                      aria-label={`Row ${ri + 1}, ${col.header || `column ${mdCols.indexOf(col) + 1}`}`}
                     />
                   ))}
                   <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground" onClick={() => removeMdRow(row.id)} disabled={mdRows.length <= 1}>
@@ -581,6 +586,7 @@ const TextUtilities = () => {
               value={mdOutput}
               readOnly
               className="font-mono text-xs bg-card resize-none min-h-[120px]"
+              aria-label="Markdown table output"
             />
           </div>
         </TabsContent>
