@@ -229,6 +229,19 @@ const CronBuilder = () => {
         description="Build cron expressions visually. See plain-English descriptions and next 10 run times. Supports standard cron, AWS EventBridge, and GitHub Actions."
         canonicalPath="/cron"
         keywords={["cron builder", "cron expression", "cron generator", "cron editor", "aws eventbridge cron", "github actions cron", "crontab"]}
+        faq={[
+          { question: "What is a cron expression?", answer: "A cron expression is a string of five fields (minute, hour, day of month, month, day of week) that defines a repeating schedule. For example, '0 9 * * 1-5' runs a job at 9:00 AM every weekday." },
+          { question: "How do I run a job every 5 minutes?", answer: "Set the minute field to '*/5' and all other fields to '*'. The resulting expression '*/5 * * * *' triggers the job at minute 0, 5, 10, 15, and so on every hour." },
+          { question: "What is the difference between standard cron and AWS EventBridge?", answer: "AWS EventBridge cron uses six fields (adding a year field) and uses '?' instead of '*' for the day fields to avoid ambiguity. For example, a standard '0 12 * * ?' becomes 'cron(0 12 * * ? *)' in EventBridge." },
+          { question: "How do I write a cron schedule for GitHub Actions?", answer: "GitHub Actions uses standard 5-field POSIX cron syntax under the 'schedule' trigger. For example, 'on: schedule: - cron: 0 6 * * 1' runs a workflow every Monday at 6:00 AM UTC. This tool outputs the expression ready to paste into your workflow YAML." },
+          { question: "What do the special characters mean in cron?", answer: "'*' means every value. '/' means step (e.g. */5 means every 5 units). ',' separates a list of values (e.g. 1,3,5). '-' defines a range (e.g. 1-5 means 1 through 5). '?' is used in some variants (AWS, Quartz) to mean 'any' for day fields." },
+        ]}
+        howToSteps={[
+          "Type values into the minute, hour, day, month, and weekday fields, or select a preset schedule (hourly, daily, weekly, monthly).",
+          "Read the plain-English description below the fields to confirm the schedule is what you expect.",
+          "Check the next 10 run times to verify the timing is correct.",
+          "Select the output format (standard cron, AWS EventBridge, or GitHub Actions) and copy the expression.",
+        ]}
       />
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">

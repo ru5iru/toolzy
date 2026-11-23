@@ -160,6 +160,18 @@ const ChmodCalculator = () => {
         description="Calculate Unix/Linux file permissions. Toggle checkboxes to build chmod octals and symbolic notation. Free, browser-only."
         canonicalPath="/chmod"
         keywords={["chmod calculator", "unix permissions", "linux file permissions", "octal permissions", "chmod 755", "chmod 644", "file permission calculator"]}
+        faq={[
+          { question: "What is chmod?", answer: "chmod (change mode) is a Unix command that sets the read, write, and execute permissions for the owner, group, and other users of a file or directory." },
+          { question: "What does chmod 755 mean?", answer: "chmod 755 gives the owner full read, write, and execute permissions (7), while group and others get read and execute permissions only (5 each). This is the standard setting for public-facing executables and directories." },
+          { question: "What does chmod 644 mean?", answer: "chmod 644 gives the owner read and write permissions (6), while group and others get read-only permissions (4 each). This is the standard setting for web server files and configuration files." },
+          { question: "What is the difference between symbolic and octal notation?", answer: "Octal notation uses three digits (e.g. 755) where each digit represents owner, group, and other permissions as a sum of 4 (read), 2 (write), and 1 (execute). Symbolic notation uses letters like rwxr-xr-x to show the same permissions in a more readable form." },
+          { question: "Does chmod affect directories differently?", answer: "Yes. The execute bit on a directory controls whether users can enter (cd into) that directory, not whether they can run a file. Read allows listing the directory contents, and write allows creating or deleting files inside it." },
+        ]}
+        howToSteps={[
+          "Toggle the read, write, and execute checkboxes for owner, group, and other, or type an octal value directly (e.g. 755).",
+          "Read the generated octal value and symbolic notation (e.g. rwxr-xr-x) to confirm the permissions.",
+          "Copy the ready-to-run chmod command and paste it into your terminal.",
+        ]}
       />
 
       <div className="space-y-3">
