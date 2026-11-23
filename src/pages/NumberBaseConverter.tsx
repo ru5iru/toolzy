@@ -191,9 +191,22 @@ const NumberBaseConverter = () => {
     >
       <ToolSEO
         title="Number Base Converter - Binary, Decimal, Hex, Octal"
-        description="Convert numbers between binary, octal, decimal and hex instantly. Includes bitwise AND, OR, XOR, NOT, shifts, and hex↔ASCII conversion. Browser-only."
+        description="Convert numbers between binary, octal, decimal and hex instantly. Includes bitwise AND, OR, XOR, NOT, shifts, and hex to ASCII conversion. Browser-only."
         canonicalPath="/number-base"
         keywords={["number base converter", "binary to decimal", "hex to binary", "decimal to hex", "octal converter", "bitwise calculator", "hex to ascii"]}
+        faq={[
+          { question: "How do I convert a decimal number to binary?", answer: "Type the decimal number into the decimal field. The binary equivalent updates instantly in the binary field. For example, decimal 255 converts to binary 11111111." },
+          { question: "How do I convert hexadecimal to decimal?", answer: "Type the hex value (with or without the 0x prefix) into the hexadecimal field. The decimal value appears immediately. For example, hex FF converts to decimal 255." },
+          { question: "What bases does this converter support?", answer: "This tool converts between base 2 (binary), base 8 (octal), base 10 (decimal), and base 16 (hexadecimal). All four fields update simultaneously as you type in any one of them." },
+          { question: "What bitwise operations are available?", answer: "The tool supports bitwise AND, OR, XOR, NOT (ones complement), left shift (LSH), and right shift (RSH). Enter two operands (or one for NOT/shifts) and select the operation to see the result in all four bases." },
+          { question: "How do I look up the hex value of an ASCII character?", answer: "Use the ASCII lookup section: type a character to see its hex, decimal, octal, and binary values, or type a hex code to see the character it represents." },
+        ]}
+        howToSteps={[
+          "Type a number into any of the four base fields (binary, octal, decimal, or hexadecimal).",
+          "All other fields update instantly with the equivalent values.",
+          "Use the bitwise section to apply AND, OR, XOR, NOT, or shift operations to two numbers.",
+          "Use the ASCII section to convert between characters and their numeric codes.",
+        ]}
       />
 
       <div className="space-y-3">

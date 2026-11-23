@@ -183,6 +183,18 @@ const SqlFormatter = () => {
         description="Format, beautify and minify SQL queries for MySQL, PostgreSQL, SQLite, T-SQL, Oracle PL/SQL, BigQuery, Snowflake and more. Free, browser-only, nothing uploaded."
         canonicalPath="/sql"
         keywords={["sql formatter", "sql beautifier", "sql minifier", "mysql formatter", "postgresql formatter", "online sql formatter"]}
+        faq={[
+          { question: "Which SQL dialects does this formatter support?", answer: "The formatter supports SQL, MySQL, PostgreSQL, SQLite, MariaDB, Microsoft T-SQL, Transact-SQL, Spark SQL, Oracle PL/SQL, BigQuery, Snowflake, SingleStoreDB, Trino, DB2, and HANA SQL: 15 dialects in total." },
+          { question: "What is the difference between formatting and minifying SQL?", answer: "Formatting (beautifying) adds indentation, newlines, and uppercase keywords to make SQL readable for humans. Minifying removes all unnecessary whitespace to produce a compact single-line query suitable for embedding in code or reducing payload size." },
+          { question: "Does this tool send my SQL to a server?", answer: "No. All formatting and minification runs entirely in your browser using the sql-formatter library. Your query never leaves your machine." },
+          { question: "Why should I format my SQL queries?", answer: "Formatted SQL is easier to read, review, and debug. Consistent indentation and capitalization conventions make it faster to spot missing clauses, bad JOIN conditions, or accidental cross joins in complex queries." },
+        ]}
+        howToSteps={[
+          "Paste your SQL query into the left panel.",
+          "Select your SQL dialect from the dropdown (MySQL, PostgreSQL, SQLite, BigQuery, etc.).",
+          "Click Format to beautify the query, or Minify to compress it into a single line.",
+          "Copy the result or download it as a .sql file.",
+        ]}
       />
 
       <div className="h-[clamp(400px,calc(100dvh-200px),900px)]">

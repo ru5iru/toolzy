@@ -191,6 +191,20 @@ const YamlConverter = () => {
         description="Convert between YAML, JSON, and TOML instantly. Paste any config format and convert it to the other. Free, browser-only, nothing uploaded."
         canonicalPath="/yaml"
         keywords={["yaml to json", "json to yaml", "yaml to toml", "toml to yaml", "toml to json", "config converter", "yaml converter"]}
+        faq={[
+          { question: "Which format conversions does this tool support?", answer: "The tool converts in all directions between YAML, JSON, and TOML: YAML to JSON, JSON to YAML, YAML to TOML, TOML to YAML, JSON to TOML, and TOML to JSON." },
+          { question: "What is YAML used for?", answer: "YAML (YAML Ain't Markup Language) is a human-readable data serialization format widely used for configuration files in tools such as Docker Compose, Kubernetes, Ansible, GitHub Actions, and many CI/CD systems." },
+          { question: "What is TOML?", answer: "TOML (Tom's Obvious Minimal Language) is a configuration file format designed to be easy to read and write. It is used by Rust projects (Cargo.toml), Python packaging (pyproject.toml), and Hugo static site generator, among others." },
+          { question: "Does this tool send my config data to a server?", answer: "No. All conversion runs entirely in your browser using the js-yaml and @iarna/toml libraries. Your configuration data never leaves your machine." },
+          { question: "What happens if my input has a syntax error?", answer: "The tool displays a parse error with the line number and message so you can locate and fix the problem before converting." },
+        ]}
+        howToSteps={[
+          "Select the source format (YAML, JSON, or TOML) from the left panel dropdown.",
+          "Paste your configuration into the left panel.",
+          "Select the target format from the right panel dropdown.",
+          "The converted output appears instantly in the right panel.",
+          "Copy the result or download it as a file.",
+        ]}
       />
 
       <div className="h-[clamp(400px,calc(100dvh-210px),900px)]">

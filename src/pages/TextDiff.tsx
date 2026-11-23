@@ -248,6 +248,20 @@ const TextDiff = () => {
         description="Compare two texts or code snippets side-by-side or in unified view. Inline word-level highlights on changed lines. Free, browser-only, nothing uploaded."
         canonicalPath="/text-diff"
         keywords={["text diff", "code diff", "online diff tool", "compare text", "file diff", "diff viewer", "side by side diff", "inline diff"]}
+        faq={[
+          { question: "How does the text diff work?", answer: "The tool uses the Myers diff algorithm to find the minimum number of line insertions and deletions needed to transform the original text into the changed text. Added lines are highlighted green, removed lines are highlighted red, and unchanged lines are shown without color." },
+          { question: "What is the difference between split view and unified view?", answer: "Split view shows the original and changed texts side by side with aligned diff lines, making it easy to compare them visually. Unified view shows all changes in a single column, with added lines prefixed by + and removed lines prefixed by -, similar to the git diff output format." },
+          { question: "Can I ignore whitespace differences?", answer: "Yes. Enable the ignore-whitespace option to skip differences that consist only of spaces, tabs, or line endings. This is useful when comparing code that has been reformatted or re-indented without logic changes." },
+          { question: "Can I download the diff as a patch file?", answer: "Yes. Click the download button to save the diff as a .patch file in unified diff format, which can be applied to the original file using the patch command or git apply." },
+          { question: "Does this tool send my text to a server?", answer: "No. All comparison runs in your browser using the diff library. Neither the original nor the changed text leaves your machine." },
+        ]}
+        howToSteps={[
+          "Paste the original text in the left panel and the modified text in the right panel.",
+          "Click Compare (or wait for auto-compare) to see the differences highlighted line by line.",
+          "Toggle between split view and unified view to find the layout that works best for you.",
+          "Optionally enable ignore-whitespace to skip formatting-only changes.",
+          "Download the .patch file if you need to apply or share the diff.",
+        ]}
       />
 
       <div className="h-[clamp(400px,calc(100dvh-200px),900px)] flex flex-col gap-3">
