@@ -26,19 +26,19 @@ import { ToolPageLayout } from "@/components/ToolPageLayout";
 
 // ---------- Algorithm metadata ----------
 const ALG_META: Record<string, { family: string; grade: "best" | "good" | "weak" | "critical"; note: string }> = {
-  HS256: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
-  HS384: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
-  HS512: { family: "HMAC", grade: "weak", note: "Symmetric — secret must be shared between issuer and verifier" },
-  RS256: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
-  RS384: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
-  RS512: { family: "RSA", grade: "good", note: "Asymmetric — public key can be published safely" },
-  PS256: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
-  PS384: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
-  PS512: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding — recommended for new systems" },
-  ES256: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
-  ES384: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
-  ES512: { family: "ECDSA", grade: "best", note: "Elliptic curve — small keys, strong security" },
-  none:  { family: "None", grade: "critical", note: "No signature — NEVER use in production" },
+  HS256: { family: "HMAC", grade: "weak", note: "Symmetric: secret must be shared between issuer and verifier" },
+  HS384: { family: "HMAC", grade: "weak", note: "Symmetric: secret must be shared between issuer and verifier" },
+  HS512: { family: "HMAC", grade: "weak", note: "Symmetric: secret must be shared between issuer and verifier" },
+  RS256: { family: "RSA", grade: "good", note: "Asymmetric: public key can be published safely" },
+  RS384: { family: "RSA", grade: "good", note: "Asymmetric: public key can be published safely" },
+  RS512: { family: "RSA", grade: "good", note: "Asymmetric: public key can be published safely" },
+  PS256: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding: recommended for new systems" },
+  PS384: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding: recommended for new systems" },
+  PS512: { family: "RSA-PSS", grade: "best", note: "Asymmetric with PSS padding: recommended for new systems" },
+  ES256: { family: "ECDSA", grade: "best", note: "Elliptic curve: small keys, strong security" },
+  ES384: { family: "ECDSA", grade: "best", note: "Elliptic curve: small keys, strong security" },
+  ES512: { family: "ECDSA", grade: "best", note: "Elliptic curve: small keys, strong security" },
+  none:  { family: "None", grade: "critical", note: "No signature: NEVER use in production" },
 };
 
 const ALG_GRADE_COLOR: Record<string, string> = {
@@ -89,7 +89,7 @@ function computeSecurity(header: Record<string, any> | null, payload: Record<str
   const alg = String(header.alg || "").toLowerCase();
 
   if (alg === "none") {
-    findings.push({ severity: "critical", message: "Algorithm is 'none' — token is unsigned", fix: "Use HS256, RS256, or ES256." });
+    findings.push({ severity: "critical", message: "Algorithm is 'none': token is unsigned", fix: "Use HS256, RS256, or ES256." });
   } else if (alg === "hs256") {
     if (secretLen > 0 && secretLen < 32) {
       findings.push({ severity: "high", message: `HS256 secret is only ${secretLen} chars`, fix: "Use a secret of 32+ random characters." });
@@ -98,7 +98,7 @@ function computeSecurity(header: Record<string, any> | null, payload: Record<str
   }
 
   if (!payload.exp) {
-    findings.push({ severity: "medium", message: "Missing exp claim — token never expires", fix: "Add an exp claim (e.g. now + 1h)." });
+    findings.push({ severity: "medium", message: "Missing exp claim: token never expires", fix: "Add an exp claim (e.g. now + 1h)." });
   } else {
     const diff = payload.exp * 1000 - Date.now();
     if (diff > 24 * 60 * 60 * 1000) {
@@ -236,7 +236,7 @@ function TokenPreview({ token }: { token: string }) {
           )}
         </div>
       ) : (
-        <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet — paste, encode, or verify a JWT.</p>
+        <p className="text-xs text-muted-foreground italic py-4 text-center">No token yet: paste, encode, or verify a JWT.</p>
       )}
       {copied && (
         <p className="text-xs text-[hsl(var(--success-foreground))] text-center capitalize">{copied} copied ✓</p>
@@ -650,7 +650,7 @@ function EncodeTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       {shared.signatureStatus === "unsigned" && (
         <p className="text-xs text-[hsl(var(--warning-foreground))] flex items-center gap-1">
-          <AlertTriangle className="w-3 h-3" /> Unsigned preview — click Sign to generate signature
+          <AlertTriangle className="w-3 h-3" /> Unsigned preview: click Sign to generate signature
         </p>
       )}
     </div>
@@ -723,7 +723,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
 
       <div className="flex items-center gap-2 text-xs">
         <span className="text-muted-foreground">Algorithm:</span>
-        <Badge variant="outline" className="font-mono">{alg || "—"}</Badge>
+        <Badge variant="outline" className="font-mono">{alg || ""}</Badge>
         {family && <span className="text-muted-foreground">({family})</span>}
       </div>
 
@@ -756,7 +756,7 @@ function VerifyTab({ shared, setShared }: { shared: SharedState; setShared: (s: 
           {result === "valid" ? <ShieldCheck className="w-4 h-4" /> : result === "warn-none" ? <ShieldAlert className="w-4 h-4" /> : <ShieldX className="w-4 h-4" />}
           {result === "valid" && "Signature valid"}
           {result === "invalid" && "Signature invalid"}
-          {result === "warn-none" && "Warning: algorithm is 'none' — token is unsigned"}
+          {result === "warn-none" && "Warning: algorithm is 'none', token is unsigned"}
         </div>
       )}
 
@@ -984,7 +984,7 @@ const JwtHub = () => {
     <ToolPageLayout title="JWT Hub" description="Decode, encode and verify JSON Web Tokens · HMAC, RSA, ECDSA">
       <ToolSEO
         title="JWT Hub - Free Online JWT Decoder, Encoder & Verifier"
-        description="Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures — all client-side, nothing leaves your browser."
+        description="Decode and inspect JWT claims, encode and sign tokens with HS256/RS256, and verify signatures: all client-side, nothing leaves your browser."
         canonicalPath="/jwt"
         keywords={["jwt decoder", "jwt encoder", "json web token", "jwt verify", "hs256", "rs256", "jwt claims", "jwt security"]}
         faq={[

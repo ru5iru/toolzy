@@ -34,14 +34,14 @@ const SPECIAL_BITS: { key: keyof Special; label: string; sym: string; desc: stri
 ];
 
 const PRESETS: { label: string; octal: string; note: string }[] = [
-  { label: "644",  octal: "644",  note: "Files — owner read/write, rest read-only" },
-  { label: "755",  octal: "755",  note: "Executables/dirs — owner all, rest read+exec" },
-  { label: "600",  octal: "600",  note: "Private files — owner read/write only" },
-  { label: "700",  octal: "700",  note: "Private dir/script — owner only" },
+  { label: "644",  octal: "644",  note: "Files: owner read/write, rest read-only" },
+  { label: "755",  octal: "755",  note: "Executables/dirs: owner all, rest read+exec" },
+  { label: "600",  octal: "600",  note: "Private files: owner read/write only" },
+  { label: "700",  octal: "700",  note: "Private dir/script: owner only" },
   { label: "666",  octal: "666",  note: "World-writable file (not recommended)" },
   { label: "777",  octal: "777",  note: "World-writable dir (not recommended)" },
   { label: "400",  octal: "400",  note: "Read-only (SSH key)" },
-  { label: "711",  octal: "711",  note: "Executables — owner all, rest exec only" },
+  { label: "711",  octal: "711",  note: "Executables: owner all, rest exec only" },
   { label: "4755", octal: "4755", note: "setuid + 755 (e.g. sudo, ping)" },
   { label: "2755", octal: "2755", note: "setgid + 755 (shared dir, inherit group)" },
   { label: "1777", octal: "1777", note: "sticky + 777 (e.g. /tmp)" },
@@ -235,7 +235,7 @@ const ChmodCalculator = () => {
                     </div>
                   </td>
                   <td className="py-2 pl-4 text-right font-mono text-lg font-bold text-foreground tabular-nums">
-                    {(special.setuid ? 4 : 0) + (special.setgid ? 2 : 0) + (special.sticky ? 1 : 0) || <span className="text-muted-foreground text-sm">—</span>}
+                    {(special.setuid ? 4 : 0) + (special.setgid ? 2 : 0) + (special.sticky ? 1 : 0)}
                   </td>
                 </tr>
               </tbody>
@@ -319,10 +319,10 @@ const ChmodCalculator = () => {
       </div>
 
       <AboutTool>
-        <p>Unix file permissions are represented as three octal digits — one each for the owner, group, and others. Each digit is the sum of <strong>Read (4)</strong>, <strong>Write (2)</strong>, and <strong>Execute (1)</strong>. For example, <code>755</code> means owner has all three (4+2+1=7), and group/others have read+execute (4+1=5).</p>
+        <p>Unix file permissions are represented as three octal digits: one each for the owner, group, and others. Each digit is the sum of <strong>Read (4)</strong>, <strong>Write (2)</strong>, and <strong>Execute (1)</strong>. For example, <code>755</code> means owner has all three (4+2+1=7), and group/others have read+execute (4+1=5).</p>
         <p className="mt-2">A fourth leading digit encodes the <strong>special bits</strong>: <strong>setuid (4)</strong> makes an executable run as the file owner; <strong>setgid (2)</strong> runs as the group (and makes new files in a directory inherit the group); <strong>sticky (1)</strong> on a directory prevents users from deleting others' files (classic use: <code>/tmp</code>). In symbolic notation, the execute position shows <code>s</code> (setuid/setgid with exec), <code>S</code> (without exec), <code>t</code> (sticky with exec), or <code>T</code> (sticky without exec).</p>
         <p className="mt-2">Symbolic notation uses <code>rwx</code> for each set, with <code>-</code> for absent permissions. <code>-rwxr-xr-x</code> is equivalent to <code>755</code>. The leading character is <code>-</code> for files and <code>d</code> for directories.</p>
-        <p className="mt-2">The <strong>umask</strong> value is the bitwise complement of the base permissions — it tells the shell which bits to <em>remove</em> from new files. For <code>chmod 644</code>, the umask is <code>133</code>; for <code>755</code>, it's <code>022</code>. All computation is done in your browser.</p>
+        <p className="mt-2">The <strong>umask</strong> value is the bitwise complement of the base permissions: it tells the shell which bits to <em>remove</em> from new files. For <code>chmod 644</code>, the umask is <code>133</code>; for <code>755</code>, it's <code>022</code>. All computation is done in your browser.</p>
       </AboutTool>
     </ToolPageLayout>
   );

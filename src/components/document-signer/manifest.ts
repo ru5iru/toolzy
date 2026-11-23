@@ -42,7 +42,7 @@ export function parseManifest(text: string): Manifest {
   const result = manifestSchema.safeParse(json);
   if (!result.success) {
     const issue = result.error.issues[0];
-    throw new Error(`Invalid manifest: ${issue.path.join(".") || "root"} — ${issue.message}`);
+    throw new Error(`Invalid manifest: ${issue.path.join(".") || "root"}: ${issue.message}`);
   }
   return result.data;
 }

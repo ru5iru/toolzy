@@ -72,7 +72,7 @@ const CurlConverter = () => {
     <ToolPageLayout
       title="curl ↔ Code"
       icon={Terminal}
-      description="Convert curl commands to Python, JavaScript, TypeScript, Go, PHP, or Ruby — and back to a clean curl."
+      description="Convert curl commands to Python, JavaScript, TypeScript, Go, PHP, or Ruby, and back to a clean curl."
     >
       <ToolSEO
         title="curl to Code Converter - Python, JS, Go, PHP & Ruby"
@@ -208,7 +208,7 @@ const CurlConverter = () => {
       )}
 
       <AboutTool>
-        <p>Paste any <code>curl</code> command and this tool parses it into a structured request (method, URL, headers, body, auth) then generates equivalent code in your chosen language — all in the browser with no network calls.</p>
+        <p>Paste any <code>curl</code> command and this tool parses it into a structured request (method, URL, headers, body, auth) then generates equivalent code in your chosen language, all in the browser with no network calls.</p>
         <p className="mt-2">Supported flags include <code>-X</code>, <code>-H</code>, <code>-d</code> / <code>--data-raw</code> / <code>--data-binary</code>, <code>-F</code> (form), <code>-u</code> (basic auth), <code>-k</code> (insecure), <code>--compressed</code>, <code>-L</code> (follow redirects), and the <code>--json</code> shorthand from curl 7.82+. Multi-line commands using <code>\</code> line continuations are supported.</p>
       </AboutTool>
     </ToolPageLayout>

@@ -175,7 +175,7 @@ const SqlFormatter = () => {
   return (
     <ToolPageLayout
       title="SQL Formatter"
-      description="Format and minify SQL queries for any dialect — runs entirely in your browser"
+      description="Format and minify SQL queries for any dialect: runs entirely in your browser"
       toolbar={toolbar}
     >
       <ToolSEO
@@ -249,7 +249,7 @@ const SqlFormatter = () => {
       <AboutTool>
         <p>SQL Formatter uses the open-source <code>sql-formatter</code> library to parse and reformat SQL queries according to dialect-specific syntax rules. It supports 15 dialects including MySQL, PostgreSQL, SQLite, T-SQL (SQL Server), Oracle PL/SQL, BigQuery, Snowflake, ClickHouse, and more.</p>
         <p className="mt-2">Keyword casing controls whether reserved words like SELECT, FROM, WHERE are uppercased, lowercased, or left as-is. Indentation can be set to 2 spaces, 4 spaces, or tabs. Minify removes all unnecessary whitespace.</p>
-        <p className="mt-2">Everything runs in your browser — SQL is never sent to any server.</p>
+        <p className="mt-2">Everything runs in your browser: SQL is never sent to any server.</p>
       </AboutTool>
     </ToolPageLayout>
   );

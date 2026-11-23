@@ -79,7 +79,7 @@ export const SchemaPanel = ({ parsedData }: SchemaPanelProps) => {
       {validationErrors !== null && (
         <div className="text-xs space-y-1">
           {validationErrors.length === 0 ? (
-            <p className="text-[hsl(var(--success-foreground))] flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Valid — JSON matches the schema</p>
+            <p className="text-[hsl(var(--success-foreground))] flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Valid: JSON matches the schema</p>
           ) : (
             validationErrors.map((e, i) => (
               <p key={i} className="text-destructive flex items-center gap-1"><XCircle className="w-3.5 h-3.5 shrink-0" /> {e}</p>

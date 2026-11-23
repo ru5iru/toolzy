@@ -137,7 +137,7 @@ export function exportAsMarkdown(diffs: DiffEntry[]): string {
   md += `## Details\n\n`;
   for (const d of diffs) {
     const icon = d.type === "added" ? "🟢" : d.type === "removed" ? "🔴" : d.type === "type_changed" ? "🟠" : "🟡";
-    md += `${icon} **${d.path}** — ${d.type.toUpperCase()}\n`;
+    md += `${icon} **${d.path}**: ${d.type.toUpperCase()}\n`;
     if (d.left !== undefined) md += `  - Left: \`${d.left}\`\n`;
     if (d.right !== undefined) md += `  - Right: \`${d.right}\`\n`;
     md += "\n";

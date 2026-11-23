@@ -76,7 +76,7 @@ export const CleanCopyPanel = ({ file, inspection, originalPreviewUrl, onClose }
             const checked = mode === "all" ? has : selected.includes(kind);
             return <li key={kind} className="flex items-start gap-2">
               <Checkbox id={`kind-${kind}`} className="mt-0.5" checked={checked} disabled={!has || mode === "all"} onCheckedChange={c => setSelected(s => c ? [...s, kind] : s.filter(k => k !== kind))} />
-              <Label htmlFor={`kind-${kind}`} className={`font-normal leading-snug ${has ? "" : "text-muted-foreground"}`}><span className="font-medium">{KIND_INFO[kind].label}</span>{!has && " — not present"}<span className="block text-xs text-muted-foreground">{KIND_INFO[kind].description}</span></Label>
+              <Label htmlFor={`kind-${kind}`} className={`font-normal leading-snug ${has ? "" : "text-muted-foreground"}`}><span className="font-medium">{KIND_INFO[kind].label}</span>{!has && " (not present)"}<span className="block text-xs text-muted-foreground">{KIND_INFO[kind].description}</span></Label>
             </li>;
           })}
         </ul>

@@ -567,7 +567,7 @@ const ColorConverter = () => {
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-2">When to Use HSL vs RGB</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            HSL (Hue, Saturation, Lightness) is more intuitive for creating color variations — adjusting lightness creates tints and shades, while saturation controls vibrancy. RGB is closer to how screens display color. Use HSL when designing palettes and RGB/HEX for final implementation.
+            HSL (Hue, Saturation, Lightness) is more intuitive for creating color variations: adjusting lightness creates tints and shades, while saturation controls vibrancy. RGB is closer to how screens display color. Use HSL when designing palettes and RGB/HEX for final implementation.
           </p>
         </section>
         <section>

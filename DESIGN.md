@@ -145,3 +145,7 @@ The home page is a launcher, not a landing page, and is left-aligned like the to
 7. **Density pass (done):** fluid left-aligned pages, tighter padding and 16 px rhythm, viewport-filling panels, `AboutTool` for long copy, 1920 px and 390 px audits.
 8. **Navigation and capabilities (done):** command palette, `CopyButton`, Text Utilities, regex replace, JSON to TypeScript, `.env` example/JSON conversion.
 9. **Later:** a light theme, per-tool keyboard shortcut hints, a shared `ResultPanel`, migrating remaining clipboard call sites to `CopyButton`.
+
+## 13. Copy rules
+
+- **No em dashes.** Never use the em dash character (—) in any UI string, tool description, aria-label, About section, structured data value, or page content. Reword the sentence or use a colon, comma, or the word "and".

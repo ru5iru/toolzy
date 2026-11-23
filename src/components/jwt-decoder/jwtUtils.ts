@@ -23,20 +23,20 @@ export interface SecurityScore {
 }
 
 export const CLAIM_TOOLTIPS: Record<string, string> = {
-  iss: "Issuer — identifies the principal that issued the JWT",
-  sub: "Subject — identifies the principal subject of the JWT",
-  aud: "Audience — identifies the recipients the JWT is intended for",
-  exp: "Expiration Time — time after which the JWT must not be accepted",
-  nbf: "Not Before — time before which the JWT must not be accepted",
-  iat: "Issued At — time at which the JWT was issued",
-  jti: "JWT ID — unique identifier for the JWT",
-  alg: "Algorithm — the signing algorithm used",
-  typ: "Type — the type of token (usually 'JWT')",
-  kid: "Key ID — hint for which key was used to sign",
-  scope: "Scope — OAuth 2.0 scopes granted",
-  roles: "Roles — user roles or permissions",
-  email: "Email — user's email address",
-  name: "Name — user's display name",
+  iss: "Issuer: identifies the principal that issued the JWT",
+  sub: "Subject: identifies the principal subject of the JWT",
+  aud: "Audience: identifies the recipients the JWT is intended for",
+  exp: "Expiration Time: time after which the JWT must not be accepted",
+  nbf: "Not Before: time before which the JWT must not be accepted",
+  iat: "Issued At: time at which the JWT was issued",
+  jti: "JWT ID: unique identifier for the JWT",
+  alg: "Algorithm: the signing algorithm used",
+  typ: "Type: the type of token (usually 'JWT')",
+  kid: "Key ID: hint for which key was used to sign",
+  scope: "Scope: OAuth 2.0 scopes granted",
+  roles: "Roles: user roles or permissions",
+  email: "Email: user's email address",
+  name: "Name: user's display name",
 };
 
 function base64UrlDecode(s: string): string {
@@ -65,13 +65,13 @@ export function decodeJwt(token: string): DecodedJwt {
   try {
     header = JSON.parse(base64UrlDecode(parts[0]));
   } catch {
-    throw new Error("Failed to decode header — invalid Base64 or JSON");
+    throw new Error("Failed to decode header: invalid Base64 or JSON");
   }
 
   try {
     payload = JSON.parse(base64UrlDecode(parts[1]));
   } catch {
-    throw new Error("Failed to decode payload — invalid Base64 or JSON");
+    throw new Error("Failed to decode payload: invalid Base64 or JSON");
   }
 
   return {
@@ -115,7 +115,7 @@ export function calculateSecurityScore(header: Record<string, any>, payload: Rec
   const alg = header.alg?.toLowerCase() || "";
   if (alg === "none") {
     score -= 40;
-    issues.push({ severity: "critical", message: "Algorithm is 'none' — token is unsigned and insecure" });
+    issues.push({ severity: "critical", message: "Algorithm is 'none': token is unsigned and insecure" });
   } else if (alg.startsWith("hs")) {
     if (alg === "hs256") {
       score -= 5;
@@ -126,7 +126,7 @@ export function calculateSecurityScore(header: Record<string, any>, payload: Rec
   // Expiration
   if (!payload.exp) {
     score -= 20;
-    issues.push({ severity: "warning", message: "No expiration claim (exp) — token never expires" });
+    issues.push({ severity: "warning", message: "No expiration claim (exp): token never expires" });
   } else {
     const info = formatTimestamp(payload.exp);
     if (info.expired) {
@@ -159,7 +159,7 @@ export function calculateSecurityScore(header: Record<string, any>, payload: Rec
   }
   if (!payload.jti) {
     score -= 5;
-    issues.push({ severity: "info", message: "Missing 'jti' (JWT ID) — no replay protection" });
+    issues.push({ severity: "info", message: "Missing 'jti' (JWT ID): no replay protection" });
   }
 
   score = Math.max(0, score);

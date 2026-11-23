@@ -29,7 +29,7 @@ export const SignatureVerifier = ({ token, algorithm }: Props) => {
         setResult(valid);
         toast[valid ? "success" : "error"](valid ? "Signature valid" : "Signature invalid");
       } else {
-        toast.info("RSA/ECDSA verification requires public key import — coming soon");
+        toast.info("RSA/ECDSA verification requires public key import: coming soon");
         setResult(null);
       }
     } catch (e: any) {

@@ -173,10 +173,10 @@ export default function MarkdownEditor() {
       canonicalPath="/markdown"
       keywords={["markdown editor online", "GFM markdown editor", "live markdown preview", "markdown to HTML", "github flavored markdown", "local markdown editor", "markdown split view"]}
       faq={[
-        { question: "Is my text uploaded anywhere?", answer: "No. Everything — editing, rendering, comparison, autosave — happens locally in your browser. Your document is saved on this device only. No text is sent to any server." },
+        { question: "Is my text uploaded anywhere?", answer: "No. Everything (editing, rendering, comparison, autosave) happens locally in your browser. Your document is saved on this device only. No text is sent to any server." },
         { question: "What Markdown syntax is supported?", answer: "GitHub-Flavored Markdown (GFM): tables, task lists, strikethrough, footnotes, fenced code blocks with syntax highlighting, and sanitized inline HTML. Remote images are blocked to prevent content from leaving the browser." },
         { question: "How does the split view work?", answer: "Split view shows the editor on the left and a live rendered preview on the right, with optional synchronized scrolling. Switch modes with Alt+1 (Editor), Alt+2 (Split), Alt+3 (Preview), or Alt+4 (Compare)." },
-        { question: "Can I open and save Markdown files from my computer?", answer: "Yes. Use the Open button or drag and drop a .md, .markdown, or .txt file. The editor saves back to your device — it does not write to your file system automatically, but you can download the file at any time." },
+        { question: "Can I open and save Markdown files from my computer?", answer: "Yes. Use the Open button or drag and drop a .md, .markdown, or .txt file. The editor saves back to your device; it does not write to your file system automatically, but you can download the file at any time." },
         { question: "Can I export to HTML?", answer: "Yes. Use the Export menu to download a standalone .html file, copy the HTML to your clipboard, or print the rendered document as a PDF." },
       ]}
       howToSteps={[

@@ -105,7 +105,7 @@ export function detectEncoding(input: string): DetectionResult {
 
   if (hasPercent && !hasBroken) {
     if (hasSpecial) {
-      return { isEncoded: true, isPartiallyEncoded: true, isDoubleEncoded: false, suggestion: "Partially encoded — decode or re-encode", confidence: 70 };
+      return { isEncoded: true, isPartiallyEncoded: true, isDoubleEncoded: false, suggestion: "Partially encoded: decode or re-encode", confidence: 70 };
     }
     return { isEncoded: true, isPartiallyEncoded: false, isDoubleEncoded: false, suggestion: "Decode", confidence: 85 };
   }
@@ -245,7 +245,7 @@ export function securityScan(input: string): string[] {
   if (/javascript:/i.test(decoded)) warnings.push("Potential XSS: javascript: protocol detected");
   if (/on\w+\s*=/i.test(decoded)) warnings.push("Potential XSS: inline event handler detected");
   if (/['"].*(?:--|;|\/\*)/i.test(decoded)) warnings.push("Potential SQL injection pattern detected");
-  if (/%00/.test(input)) warnings.push("Null byte detected — possible injection");
+  if (/%00/.test(input)) warnings.push("Null byte detected: possible injection");
   return warnings;
 }
 

@@ -7,33 +7,33 @@ import { Button } from "@/components/ui/button";
 const tools = [
   { title: "HTML Editor", description: "WYSIWYG editor with live HTML source, tables, links, local image embed, and instant download", url: "/html-editor", icon: FileCode2 },
   { title: "Markdown Editor", description: "Write Markdown with live preview, slash suggestions, local autosave, and HTML exports", url: "/markdown", icon: FileText },
-  { title: "JSON Formatter", description: "Format, validate & minify JSON — tree view, sort keys, schema inference, CSV/XML/YAML export", url: "/json", icon: Braces },
+  { title: "JSON Formatter", description: "Format, validate & minify JSON: tree view, sort keys, schema inference, CSV/XML/YAML export", url: "/json", icon: Braces },
   { title: "Base64 & Encoding", description: "Encode & decode Base64, URL-safe Base64, URL components, Data URLs, and Unicode", url: "/base64", icon: Binary },
-  { title: "JWT Hub", description: "Decode, verify & encode JWTs — security scoring, algorithm details, expiry visualization", url: "/jwt", icon: KeyRound },
+  { title: "JWT Hub", description: "Decode, verify & encode JWTs: security scoring, algorithm details, expiry visualization", url: "/jwt", icon: KeyRound },
   { title: "Crypto Suite", description: "SHA hashes, UUID v1–v5, password generator with strength meter, and secure secrets", url: "/uuid", icon: Fingerprint },
   { title: "Color Converter", description: "Convert HEX/RGB/HSL/HSV/CMYK, build palettes, check contrast, extract from images", url: "/color", icon: Palette },
-  { title: "API Diff", description: "Deep-compare JSON/YAML responses — structured diff, ignore rules, Markdown export", url: "/diff", icon: GitCompare },
+  { title: "API Diff", description: "Deep-compare JSON/YAML responses: structured diff, ignore rules, Markdown export", url: "/diff", icon: GitCompare },
   { title: "Fake Data Generator", description: "Generate realistic test data in JSON, CSV, SQL, YAML or NDJSON with Faker.js templates", url: "/fake-data", icon: Users },
-  { title: "Env Generator", description: "Build .env files from templates — parse, convert to JSON, strip to .example", url: "/env", icon: Settings2 },
-  { title: "Hash Generator", description: "SHA-1, SHA-256, SHA-384, SHA-512 hashes via Web Crypto — file and text input", url: "/hash", icon: Hash },
+  { title: "Env Generator", description: "Build .env files from templates: parse, convert to JSON, strip to .example", url: "/env", icon: Settings2 },
+  { title: "Hash Generator", description: "SHA-1, SHA-256, SHA-384, SHA-512 hashes via Web Crypto: file and text input", url: "/hash", icon: Hash },
   { title: "Date & Time", description: "Unix timestamp ↔ date, timezone converter, cron expression builder", url: "/datetime", icon: Clock },
-  { title: "Regex Playground", description: "Live regex tester — real-time match highlighting, capture groups, replace preview, snippet library", url: "/regex", icon: Regex },
-  { title: "Image Metadata Viewer", description: "Inspect EXIF, GPS, camera details and timestamps — strip metadata, all locally in your browser", url: "/image-metadata", icon: FileSearch },
+  { title: "Regex Playground", description: "Live regex tester: real-time match highlighting, capture groups, replace preview, snippet library", url: "/regex", icon: Regex },
+  { title: "Image Metadata Viewer", description: "Inspect EXIF, GPS, camera details and timestamps: strip metadata, all locally in your browser", url: "/image-metadata", icon: FileSearch },
   { title: "Document Signer", description: "Sign files and verify detached signatures with RSA-PSS or ECDSA keys, privately in your browser", url: "/document-signer", icon: FileSignature },
   { title: "Text Utilities", description: "Change case, sort and dedupe lines, slugify, number lines, and count words & characters", url: "/text", icon: Type },
   { title: "Certificate Inspector", description: "Decode X.509 certificates and CSRs: subject, issuer, validity, SANs, key usage, fingerprints", url: "/certificate", icon: ScrollText },
   { title: "URL Encode", description: "Encode & decode URL components and full URLs", url: "/url-encode", icon: Link },
-  { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects — MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
-  { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly — with bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Cpu },
-  { title: "Cron Builder", description: "Build cron schedules visually — plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
-  { title: "Text & Code Diff", description: "Compare two texts or code snippets — side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
-  { title: "YAML / JSON / TOML", description: "Convert between YAML, JSON, and TOML — instant live conversion, swap inputs, download result", url: "/yaml", icon: FileJson2 },
-  { title: "chmod Calculator", description: "Build Unix file permissions interactively — toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
-  { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases — configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
-  { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data — auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
-  { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby — paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
-  { title: "JSON Transformer", description: "Filter and transform JSON with jq-compatible expressions — map, select, sort_by, group_by, to_entries, flatten and more, live in your browser", url: "/json-transform", icon: Filter },
-  { title: "HTTP Status Codes", description: "Complete reference for all 1xx–5xx HTTP response codes — search by code or name, expand for RFC details, copy any code in one click", url: "/http-status", icon: Signal },
+  { title: "SQL Formatter", description: "Format and minify SQL for 15 dialects: MySQL, PostgreSQL, T-SQL, BigQuery, Snowflake, and more", url: "/sql", icon: Database },
+  { title: "Number Base Converter", description: "Convert between binary, octal, decimal and hex instantly: bitwise AND, OR, XOR, NOT, LSH, RSH", url: "/number-base", icon: Cpu },
+  { title: "Cron Builder", description: "Build cron schedules visually: plain-English description, next 10 runs, AWS EventBridge and GitHub Actions syntax", url: "/cron", icon: Timer },
+  { title: "Text & Code Diff", description: "Compare two texts or code snippets: side-by-side and unified views with line numbers, ignore whitespace, and patch download", url: "/text-diff", icon: Diff },
+  { title: "YAML / JSON / TOML", description: "Convert between YAML, JSON, and TOML: instant live conversion, swap inputs, download result", url: "/yaml", icon: FileJson2 },
+  { title: "chmod Calculator", description: "Build Unix file permissions interactively: toggle read/write/execute checkboxes, get octal, symbolic notation and chmod command", url: "/chmod", icon: Lock },
+  { title: "Password Generator", description: "Generate cryptographically secure passwords and passphrases: configurable length, character sets, passphrase mode, and bulk generation, all in-browser", url: "/password", icon: KeySquare },
+  { title: "CSV Tool", description: "Parse, preview, filter, sort and export CSV, TSV, and pipe-delimited data: auto-detect delimiter, column stats, download as CSV or JSON, all in-browser", url: "/csv", icon: Table2 },
+  { title: "curl ↔ Code", description: "Convert curl commands to Python requests, JavaScript fetch, Go net/http, PHP curl, or Ruby: paste any curl one-liner and get production-ready code instantly", url: "/curl", icon: ArrowLeftRight },
+  { title: "JSON Transformer", description: "Filter and transform JSON with jq-compatible expressions: map, select, sort_by, group_by, to_entries, flatten and more, live in your browser", url: "/json-transform", icon: Filter },
+  { title: "HTTP Status Codes", description: "Complete reference for all 1xx–5xx HTTP response codes: search by code or name, expand for RFC details, copy any code in one click", url: "/http-status", icon: Signal },
 ];
 
 const Index = () => {
@@ -106,7 +106,7 @@ const Index = () => {
             <li key={tool.url}>
               <RouterLink
                 to={tool.url}
-                aria-label={`${tool.title} — ${tool.description}`}
+                aria-label={`${tool.title}: ${tool.description}`}
                 className="group flex h-full items-start gap-3 rounded-lg border border-border bg-card p-3.5 transition-[border-color,background-color,transform] duration-150 hover:border-primary/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:translate-y-px"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary text-primary transition-colors group-hover:bg-primary/15">

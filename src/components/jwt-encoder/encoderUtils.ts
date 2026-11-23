@@ -144,7 +144,7 @@ export function assessEncoderSecurity(
 
   if (alg.toLowerCase() === "none") {
     score -= 40;
-    issues.push({ severity: "critical", message: "Algorithm 'none' — token is unsigned" });
+    issues.push({ severity: "critical", message: "Algorithm 'none': token is unsigned" });
   } else if (alg === "HS256") {
     score -= 5;
     issues.push({ severity: "info", message: "HS256 is acceptable; RS256/ES256 preferred for production" });
@@ -153,10 +153,10 @@ export function assessEncoderSecurity(
   if (family === "HMAC") {
     if (!secret) {
       score -= 30;
-      issues.push({ severity: "critical", message: "Empty secret — token can be forged" });
+      issues.push({ severity: "critical", message: "Empty secret: token can be forged" });
     } else if (secret.length < 16) {
       score -= 15;
-      issues.push({ severity: "warning", message: "Secret is short (<16 chars) — use a stronger secret" });
+      issues.push({ severity: "warning", message: "Secret is short (<16 chars): use a stronger secret" });
     } else if (secret.length < 32) {
       score -= 5;
       issues.push({ severity: "info", message: "Consider a 32+ char secret for production" });
@@ -165,7 +165,7 @@ export function assessEncoderSecurity(
 
   if (!payload.exp) {
     score -= 20;
-    issues.push({ severity: "warning", message: "Missing 'exp' — token never expires" });
+    issues.push({ severity: "warning", message: "Missing 'exp': token never expires" });
   }
   if (!payload.iss) {
     score -= 10;

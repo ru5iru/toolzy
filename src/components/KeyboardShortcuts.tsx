@@ -15,13 +15,13 @@ const GLOBAL: [string, string][] = [
 ];
 
 const BY_TOOL: [string, string][] = [
-  ["Markdown Editor — save", `${mod} S`],
-  ["Markdown Editor — open file", `${mod} O`],
-  ["Markdown Editor — find & replace", `${mod} F`],
-  ["Markdown Editor — focus mode", "Alt F"],
-  ["Markdown Editor — toggle view", "Alt 1 / 2 / 3"],
-  ["Encoding Hub — convert", `${mod} Enter`],
-  ["API Diff — compare", `${mod} Enter`],
+  ["Markdown Editor: save", `${mod} S`],
+  ["Markdown Editor: open file", `${mod} O`],
+  ["Markdown Editor: find & replace", `${mod} F`],
+  ["Markdown Editor: focus mode", "Alt F"],
+  ["Markdown Editor: toggle view", "Alt 1 / 2 / 3"],
+  ["Encoding Hub: convert", `${mod} Enter`],
+  ["API Diff: compare", `${mod} Enter`],
 ];
 
 function Shortcut({ label, keys }: { label: string; keys: string }) {

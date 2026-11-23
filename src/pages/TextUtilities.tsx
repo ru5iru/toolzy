@@ -230,7 +230,7 @@ const TextUtilities = () => {
           { question: "Is my text sent to a server?", answer: "No. All transformations run entirely in your browser." },
         ]}
         howToSteps={[
-          "Pick a tab — Transform, Lorem Ipsum, Slug, Reading Time, or Markdown Table",
+          "Pick a tab: Transform, Lorem Ipsum, Slug, Reading Time, or Markdown Table",
           "Paste or type your text",
           "Use the available options and copy the result",
         ]}
@@ -416,7 +416,7 @@ const TextUtilities = () => {
                 <div className="flex flex-wrap gap-2">
                   {(["-","_","."] as const).map((sep) => (
                     <div key={sep} className="flex items-center gap-1.5 bg-muted/40 border border-border rounded px-2 py-1">
-                      <code className="text-xs font-mono text-muted-foreground">{advancedSlug(slugInput, sep, slugStrip) || "—"}</code>
+                      <code className="text-xs font-mono text-muted-foreground">{advancedSlug(slugInput, sep, slugStrip) || ""}</code>
                       <CopyButton value={advancedSlug(slugInput, sep, slugStrip)} variant="ghost" size="icon" className="h-5 w-5" ariaLabel={`Copy with ${sep}`} />
                     </div>
                   ))}

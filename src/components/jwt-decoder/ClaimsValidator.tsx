@@ -16,9 +16,9 @@ export const ClaimsValidator = ({ payload }: Props) => {
 
   const validate = () => {
     const checks: typeof results = [];
-    if (expectedIss) checks.push({ claim: "iss", expected: expectedIss, actual: payload.iss || "—", match: payload.iss === expectedIss });
-    if (expectedAud) checks.push({ claim: "aud", expected: expectedAud, actual: String(payload.aud || "—"), match: String(payload.aud) === expectedAud || (Array.isArray(payload.aud) && payload.aud.includes(expectedAud)) });
-    if (expectedSub) checks.push({ claim: "sub", expected: expectedSub, actual: payload.sub || "—", match: payload.sub === expectedSub });
+    if (expectedIss) checks.push({ claim: "iss", expected: expectedIss, actual: payload.iss || "", match: payload.iss === expectedIss });
+    if (expectedAud) checks.push({ claim: "aud", expected: expectedAud, actual: String(payload.aud || ""), match: String(payload.aud) === expectedAud || (Array.isArray(payload.aud) && payload.aud.includes(expectedAud)) });
+    if (expectedSub) checks.push({ claim: "sub", expected: expectedSub, actual: payload.sub || "", match: payload.sub === expectedSub });
     setResults(checks);
     const allPass = checks.every(c => c.match);
     toast[allPass ? "success" : "error"](allPass ? "All claims match" : "Some claims don't match");
