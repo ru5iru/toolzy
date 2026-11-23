@@ -164,10 +164,10 @@ const ApiDiffTool = () => {
 
   return (
     <ToolPageLayout title="API Response Diff" description="Compare JSON responses structurally · Ctrl+Enter to compare" toolbar={<>
-        <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
-          <History className="h-4 w-4 mr-1" /> History
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setShowHistory(!showHistory)}>
+          <History className="h-3.5 w-3.5 mr-1.5" /> History
         </Button>
-        <Button variant="ghost" size="sm" onClick={handleFormat}>Format</Button>
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleFormat}>Format</Button>
       </>}>
       <ToolSEO
         title="API Response Diff Tool - Free Online JSON Comparison"

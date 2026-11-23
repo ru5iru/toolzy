@@ -11,7 +11,6 @@ import { CopyButton } from "@/components/CopyButton";
 import { AboutTool } from "@/components/AboutTool";
 import { ToolSEO } from "@/components/ToolSEO";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
-import { Braces } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { runTransform } from "@/lib/jsonTransform";
 
@@ -82,11 +81,34 @@ const JsonTransformer = () => {
 
   const lineCount = (s: string) => s ? s.split("\n").length : 0;
 
+  const toolbar = (
+    <>
+      <span className="text-xs text-muted-foreground font-mono shrink-0">filter</span>
+      <Input
+        value={filter}
+        onChange={e => setFilter(e.target.value)}
+        className="flex-1 min-w-[200px] font-mono text-sm bg-card border-border"
+        placeholder=". | keys"
+        spellCheck={false}
+        aria-label="jq filter expression"
+      />
+      <div className="flex gap-1 items-center shrink-0" role="group" aria-label="Indent">
+        <span className="text-xs text-muted-foreground">indent</span>
+        {[0, 2, 4].map(n => (
+          <Button key={n} variant={indent === n ? "selected" : "outline"} size="sm"
+            className="h-7 w-8 font-mono text-xs" onClick={() => setIndent(n)}>
+            {n === 0 ? "0" : n}
+          </Button>
+        ))}
+      </div>
+    </>
+  );
+
   return (
     <ToolPageLayout
       title="JSON Transformer"
-      icon={Braces}
       description="Filter and transform JSON with jq-compatible expressions: all in your browser."
+      toolbar={toolbar}
     >
       <ToolSEO
         title="JSON Transformer - jq-style Filter & Transform Tool"
@@ -100,28 +122,6 @@ const JsonTransformer = () => {
         ]}
         howToSteps={["Paste or edit JSON in the left panel", "Type a jq filter in the filter bar", "View transformed output on the right", "Adjust indent and copy the result"]}
       />
-
-      {/* Filter bar */}
-      <div className="flex gap-2 items-center flex-wrap">
-        <span className="text-xs text-muted-foreground font-mono shrink-0">filter</span>
-        <Input
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-          className="flex-1 min-w-[200px] font-mono text-sm bg-card border-border"
-          placeholder=". | keys"
-          spellCheck={false}
-          aria-label="jq filter expression"
-        />
-        <div className="flex gap-1 items-center shrink-0" role="group" aria-label="Indent">
-          <span className="text-xs text-muted-foreground">indent</span>
-          {[0, 2, 4].map(n => (
-            <Button key={n} variant={indent === n ? "selected" : "outline"} size="sm"
-              className="h-7 w-8 font-mono text-xs" onClick={() => setIndent(n)}>
-              {n === 0 ? "0" : n}
-            </Button>
-          ))}
-        </div>
-      </div>
 
       {/* Snippet chips */}
       <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter snippets">

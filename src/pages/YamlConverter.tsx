@@ -161,10 +161,30 @@ const YamlConverter = () => {
     </div>
   );
 
+  const toolbar = (
+    <>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">Input</span>
+        <FormatToggle value={inputFmt} onChange={handleInputFmtChange} exclude={outputFmt} label="Input format" />
+      </div>
+      <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">Output</span>
+        <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} exclude={inputFmt} label="Output format" />
+      </div>
+      <div className="ml-auto flex items-center gap-1.5">
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleLoadSample}>Sample</Button>
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleSwap} disabled={!output}>Swap</Button>
+        <Button size="sm" className="h-8 text-xs" onClick={handleConvert} disabled={!input.trim()}>Convert</Button>
+      </div>
+    </>
+  );
+
   return (
     <ToolPageLayout
       title="YAML / JSON / TOML Converter"
       description="Convert between YAML, JSON, and TOML: runs entirely in your browser"
+      toolbar={toolbar}
     >
       <ToolSEO
         title="YAML JSON TOML Converter - Free Online Format Converter"
@@ -172,24 +192,6 @@ const YamlConverter = () => {
         canonicalPath="/yaml"
         keywords={["yaml to json", "json to yaml", "yaml to toml", "toml to yaml", "toml to json", "config converter", "yaml converter"]}
       />
-
-      {/* Format selector bar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Input</span>
-          <FormatToggle value={inputFmt} onChange={handleInputFmtChange} exclude={outputFmt} label="Input format" />
-        </div>
-        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Output</span>
-          <FormatToggle value={outputFmt} onChange={handleOutputFmtChange} exclude={inputFmt} label="Output format" />
-        </div>
-        <div className="ml-auto flex items-center gap-1.5">
-          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleLoadSample}>Sample</Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleSwap} disabled={!output}>Swap</Button>
-          <Button size="sm" className="h-8 text-xs" onClick={handleConvert} disabled={!input.trim()}>Convert</Button>
-        </div>
-      </div>
 
       <div className="h-[clamp(400px,calc(100dvh-210px),900px)]">
         <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border border-border">
