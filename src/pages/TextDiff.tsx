@@ -240,7 +240,7 @@ const TextDiff = () => {
   return (
     <ToolPageLayout
       title="Text & Code Diff"
-      description="Compare two texts or code snippets and highlight the differences — runs in your browser"
+      description="Compare two texts or code snippets and highlight the differences: runs in your browser"
       toolbar={toolbar}
     >
       <ToolSEO
@@ -326,7 +326,7 @@ const TextDiff = () => {
 
       <AboutTool>
         <p>Compares two pieces of text line by line using the Myers diff algorithm. Added lines are highlighted in green, removed lines in red, and unchanged lines are shown normally.</p>
-        <p className="mt-2">Side-by-side view places original and modified text in adjacent columns. When "Inline highlights" is on, changed lines also show word-level highlights — the specific words that differ are marked within each line, making it easy to spot small edits. Unified view shows changes in a single column with <code>+</code> / <code>−</code> prefixes (like <code>git diff</code>). The "Ignore whitespace" option trims leading and trailing spaces before comparison. Everything runs in your browser — text is never uploaded.</p>
+        <p className="mt-2">Side-by-side view places original and modified text in adjacent columns. When "Inline highlights" is on, changed lines also show word-level highlights: the specific words that differ are marked within each line, making it easy to spot small edits. Unified view shows changes in a single column with <code>+</code> / <code>−</code> prefixes (like <code>git diff</code>). The "Ignore whitespace" option trims leading and trailing spaces before comparison. Everything runs in your browser; text is never uploaded.</p>
       </AboutTool>
     </ToolPageLayout>
   );

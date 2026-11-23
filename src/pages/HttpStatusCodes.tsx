@@ -59,7 +59,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 200,
       name: "OK",
       description: "Request succeeded. Response body contains the result.",
-      detail: "The request has succeeded. The meaning of a success varies depending on the HTTP method: GET — resource has been fetched; POST — the resource describing the result of the action is transmitted; PUT/PATCH — the resource has been updated; HEAD — headers are identical to a GET for the same resource.",
+      detail: "The request has succeeded. The meaning of a success varies depending on the HTTP method: GET: resource has been fetched; POST: the resource describing the result of the action is transmitted; PUT/PATCH: the resource has been updated; HEAD: headers are identical to a GET for the same resource.",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.3.1",
     },
@@ -199,7 +199,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 400,
       name: "Bad Request",
       description: "Server cannot process the request due to a client error.",
-      detail: "The server cannot or will not process the request due to something that is perceived to be a client error — malformed request syntax, invalid request message framing, or deceptive request routing.",
+      detail: "The server cannot or will not process the request due to something that is perceived to be a client error: malformed request syntax, invalid request message framing, or deceptive request routing.",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.5.1",
     },
@@ -207,7 +207,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 401,
       name: "Unauthorized",
       description: "Authentication required. No valid credentials were provided.",
-      detail: "The client must authenticate itself to get the requested response. The server must include a WWW-Authenticate header with the challenge. Despite the name, this means 'unauthenticated' — the client lacks valid credentials.",
+      detail: "The client must authenticate itself to get the requested response. The server must include a WWW-Authenticate header with the challenge. Despite the name, this means 'unauthenticated': the client lacks valid credentials.",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.5.2",
     },
@@ -223,7 +223,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 403,
       name: "Forbidden",
       description: "Client is authenticated but does not have permission to access the resource.",
-      detail: "The client does not have access rights to the content — it is unauthorized, so the server is refusing to give the proper response. Unlike 401, the client's identity is known to the server but lacks required permissions.",
+      detail: "The client does not have access rights to the content; it is unauthorized, so the server is refusing to give the proper response. Unlike 401, the client's identity is known to the server but lacks required permissions.",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.5.4",
     },
@@ -359,7 +359,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 422,
       name: "Unprocessable Content",
       description: "Request is well-formed but has semantic errors (validation failure).",
-      detail: "The server understands the content type of the request entity, and the syntax is correct, but it was unable to process the contained instructions — typically a validation error. Very common in REST APIs. Formerly called 'Unprocessable Entity' (WebDAV).",
+      detail: "The server understands the content type of the request entity, and the syntax is correct, but it was unable to process the contained instructions: typically a validation error. Very common in REST APIs. Formerly called 'Unprocessable Entity' (WebDAV).",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.5.21",
     },
@@ -456,7 +456,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
     {
       code: 503,
       name: "Service Unavailable",
-      description: "Server is not ready to handle the request — overloaded or in maintenance.",
+      description: "Server is not ready to handle the request: overloaded or in maintenance.",
       detail: "The server is not ready to handle the request. Common causes are a server that is down for maintenance or is overloaded. The server should include a Retry-After header when possible.",
       rfc: "RFC 9110",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc9110#section-15.6.4",
@@ -513,7 +513,7 @@ const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
       code: 511,
       name: "Network Authentication Required",
       description: "Client must authenticate to gain network access (captive portal).",
-      detail: "The client needs to authenticate to gain network access. Intended for use by intercepting proxies such as captive portals — the response body should contain a link to a page where the user can submit credentials.",
+      detail: "The client needs to authenticate to gain network access. Intended for use by intercepting proxies such as captive portals; the response body should contain a link to a page where the user can submit credentials.",
       rfc: "RFC 6585",
       rfcUrl: "https://www.rfc-editor.org/rfc/rfc6585#section-6",
     },
@@ -608,12 +608,12 @@ export default function HttpStatusCodes() {
   return (
     <ToolPageLayout
       title="HTTP Status Codes"
-      description="Complete reference for all standard HTTP response codes — click any code to expand its detail and RFC link."
+      description="Complete reference for all standard HTTP response codes. Click any code to expand its detail and RFC link."
       maxWidth="wide"
     >
       <ToolSEO
         title="HTTP Status Codes Reference"
-        description="Complete reference for all HTTP status codes — 1xx informational, 2xx success, 3xx redirection, 4xx client errors, 5xx server errors — with descriptions, examples and RFC links."
+        description="Complete reference for all HTTP status codes: 1xx informational, 2xx success, 3xx redirection, 4xx client errors, 5xx server errors, with descriptions, examples and RFC links."
         canonicalPath="/http-status"
         keywords={[
           "HTTP status codes",
@@ -822,11 +822,11 @@ export default function HttpStatusCodes() {
             HTTP status codes are three-digit numbers returned by a server to indicate the result of a client's request. They are grouped into five classes:
           </p>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-            <li><span className="font-semibold text-sky-500">1xx — Informational:</span> The request was received and the server is continuing to process it.</li>
-            <li><span className="font-semibold text-emerald-500">2xx — Success:</span> The request was successfully received, understood and accepted.</li>
-            <li><span className="font-semibold text-amber-500">3xx — Redirection:</span> Further action is needed to complete the request.</li>
-            <li><span className="font-semibold text-orange-500">4xx — Client Error:</span> The request contains bad syntax or cannot be fulfilled by the server.</li>
-            <li><span className="font-semibold text-red-500">5xx — Server Error:</span> The server failed to fulfill an apparently valid request.</li>
+            <li><span className="font-semibold text-sky-500">1xx Informational:</span> The request was received and the server is continuing to process it.</li>
+            <li><span className="font-semibold text-emerald-500">2xx Success:</span> The request was successfully received, understood and accepted.</li>
+            <li><span className="font-semibold text-amber-500">3xx Redirection:</span> Further action is needed to complete the request.</li>
+            <li><span className="font-semibold text-orange-500">4xx Client Error:</span> The request contains bad syntax or cannot be fulfilled by the server.</li>
+            <li><span className="font-semibold text-red-500">5xx Server Error:</span> The server failed to fulfill an apparently valid request.</li>
           </ul>
           <p className="mt-3 text-sm text-muted-foreground">
             Status codes are defined in <a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">RFC 9110</a> (HTTP Semantics) and extended by additional RFCs for WebDAV, rate limiting, and other extensions.

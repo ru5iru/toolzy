@@ -29,7 +29,7 @@ function randWord() { return WORDS[cryptoRandInt(WORDS.length)]; }
 
 // ─── Strength ─────────────────────────────────────────────────────────────────
 function strength(pwd: string): { score: number; label: string; cls: string } {
-  if (!pwd) return { score: 0, label: "—", cls: "bg-muted" };
+  if (!pwd) return { score: 0, label: "", cls: "bg-muted" };
   let s = 0;
   if (pwd.length >= 8)  s++;
   if (pwd.length >= 12) s++;
@@ -178,7 +178,7 @@ const PasswordGenerator = () => {
         faq={[
           { question: "Is this password generator secure?", answer: "Yes. Passwords are generated using the Web Crypto API (crypto.getRandomValues), which provides cryptographically secure randomness. Nothing leaves your browser." },
           { question: "What is a passphrase?", answer: "A passphrase is a sequence of random words separated by a character. They are easier to remember than random characters while remaining very secure when four or more words are used." },
-          { question: "How strong should my password be?", answer: "A 16-character password using upper, lower, numbers and symbols gives over 95 bits of entropy — more than enough for any practical purpose. Passphrases of 4+ words are equally strong." },
+          { question: "How strong should my password be?", answer: "A 16-character password using upper, lower, numbers and symbols gives over 95 bits of entropy, more than enough for any practical purpose. Passphrases of 4+ words are equally strong." },
         ]}
         howToSteps={["Choose Password or Passphrase mode", "Adjust length and character sets", "Click Regenerate to get a fresh set", "Copy a password with the copy button"]}
       />
@@ -341,9 +341,9 @@ const PasswordGenerator = () => {
       )}
 
       <AboutTool>
-        <p>All passwords are generated using <code>crypto.getRandomValues()</code> — the Web Crypto API — which provides cryptographically secure randomness directly in your browser. Nothing is transmitted to any server.</p>
+        <p>All passwords are generated using <code>crypto.getRandomValues()</code> (the Web Crypto API), which provides cryptographically secure randomness directly in your browser. Nothing is transmitted to any server.</p>
         <p className="mt-2"><strong>Password mode</strong> builds passwords character-by-character from your chosen pool (uppercase, lowercase, numbers, symbols). The optional "exclude similar" setting removes easily-confused characters like <code>l</code>, <code>1</code>, <code>O</code>, and <code>0</code>.</p>
-        <p className="mt-2"><strong>Passphrase mode</strong> picks random words from a 500-word list separated by your chosen character. Four words gives ~40 bits of entropy — well over the NIST 112-bit recommendation for general use.</p>
+        <p className="mt-2"><strong>Passphrase mode</strong> picks random words from a 500-word list separated by your chosen character. Four words gives ~40 bits of entropy, well over the NIST 112-bit recommendation for general use.</p>
       </AboutTool>
     </ToolPageLayout>
   );

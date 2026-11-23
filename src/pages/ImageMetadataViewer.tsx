@@ -85,7 +85,7 @@ const ImageMetadataViewer = () => {
           { question: "Are my images uploaded?", answer: "No. Image contents and extracted metadata are processed locally in your browser using exifr and are not transmitted for processing. The website still loads its own static assets." },
           { question: "Which image formats are supported?", answer: "JPEG, PNG, and classic TIFF are inspected by their file signatures. Detected tags vary by file. TIFF previews are not available. WebP, HEIC, HEIF, RAW, and BigTIFF are not supported in this tool." },
           { question: "Can this tool remove metadata from images?", answer: "Yes, for JPEG and PNG. 'Create clean copy' drops whole metadata blocks (EXIF, XMP, IPTC, comments, PNG text chunks, and other ancillary data) without re-encoding, preserves colour profiles, transparency, and animation, then re-checks the result before allowing download. TIFF removal is not supported." },
-          { question: "Does finding no metadata mean my image is fully anonymous?", answer: "No. Parser coverage is limited, and the image content itself can reveal identifying information. The privacy summary lists only detected fields — it is not a comprehensive privacy score." },
+          { question: "Does finding no metadata mean my image is fully anonymous?", answer: "No. Parser coverage is limited, and the image content itself can reveal identifying information. The privacy summary lists only detected fields; it is not a comprehensive privacy score." },
           { question: "Can I export the metadata?", answer: "Yes. Use the JSON or CSV export buttons to download all extracted tags. CSV output uses dot-path keys and formula-safe quoting for safe import into spreadsheets." },
         ]}
         howToSteps={[

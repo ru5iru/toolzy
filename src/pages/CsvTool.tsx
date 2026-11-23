@@ -324,10 +324,10 @@ const CsvTool = () => {
                             {s.numericPct}%
                           </div>
                         </td>
-                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.min !== null ? s.fmt(s.min) : <span className="opacity-30">—</span>}</td>
-                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.max !== null ? s.fmt(s.max) : <span className="opacity-30">—</span>}</td>
-                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.sum !== null ? s.fmt(s.sum) : <span className="opacity-30">—</span>}</td>
-                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.avg !== null ? s.fmt(s.avg) : <span className="opacity-30">—</span>}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.min !== null ? s.fmt(s.min) : null}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.max !== null ? s.fmt(s.max) : null}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.sum !== null ? s.fmt(s.sum) : null}</td>
+                        <td className="px-3 py-1.5 text-right font-mono text-muted-foreground">{isNum && s.avg !== null ? s.fmt(s.avg) : null}</td>
                       </tr>
                     );
                   })}
@@ -354,7 +354,7 @@ const CsvTool = () => {
       )}
 
       <AboutTool>
-        <p>Paste or upload delimited text — CSV, TSV, semicolon, or pipe-separated — and this tool parses it instantly in your browser. The delimiter is auto-detected but can be overridden.</p>
+        <p>Paste or upload delimited text (CSV, TSV, semicolon, or pipe-separated) and this tool parses it instantly in your browser. The delimiter is auto-detected but can be overridden.</p>
         <p className="mt-2">Click any column header to sort. Use the filter box to search all columns. The Stats tab shows non-empty counts, unique value counts, and what percentage of values are numeric for each column.</p>
         <p className="mt-2">Export the current view (filtered and sorted) as CSV or JSON. Nothing is sent to any server.</p>
       </AboutTool>

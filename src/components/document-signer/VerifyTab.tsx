@@ -140,8 +140,8 @@ export const VerifyTab = ({ keys, session, onResult }: VerifyTabProps) => {
       <section aria-labelledby="verify-input" className="space-y-4 min-w-0">
         <h2 id="verify-input" className="font-mono text-sm font-semibold">Inputs</h2>
         <FileDropzone label="Original document" file={document} onFile={(f) => { reset(); setDocument(f); }} onClear={() => { reset(); setDocument(undefined); }} hint="1. Original document, byte for byte" />
-        <FileDropzone label="Signature file" file={sigFile} onFile={(f) => { reset(); setSigFile(f); }} onClear={() => { reset(); setSigFile(undefined); }} hint="2. Signature (.sig) — optional if the manifest carries it" />
-        <FileDropzone label="Manifest" file={manifestFile} onFile={(f) => void pickManifest(f)} onClear={clearManifest} accept=".json,application/json" hint="3. Manifest (.signature.json) — optional, enables the modified-document check" />
+        <FileDropzone label="Signature file" file={sigFile} onFile={(f) => { reset(); setSigFile(f); }} onClear={() => { reset(); setSigFile(undefined); }} hint="2. Signature (.sig): optional if the manifest carries it" />
+        <FileDropzone label="Manifest" file={manifestFile} onFile={(f) => void pickManifest(f)} onClear={clearManifest} accept=".json,application/json" hint="3. Manifest (.signature.json): optional, enables the modified-document check" />
         {manifestError && <p role="alert" className="text-sm text-destructive break-words">{manifestError}</p>}
 
         <div className="space-y-3">

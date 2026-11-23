@@ -31,11 +31,11 @@ const MAX_TEXT_LEN = 100_000; // guard against catastrophic backtracking on huge
 function reDoSRisk(pattern: string): string | null {
   // Nested quantifiers on a group: (a+)+ (a+)* (a+){n,} (.*)+ etc
   if (/\([^()]*[+*][^()]*\)[+*]/.test(pattern) || /\([^()]*[+*][^()]*\)\{[0-9]+,/.test(pattern)) {
-    return "Pattern has nested quantifiers — may cause catastrophic backtracking on long strings";
+    return "Pattern has nested quantifiers: may cause catastrophic backtracking on long strings";
   }
   // Alternation inside a quantified group: (a|aa)+
   if (/\([^()]*\|[^()]*\)[+*{]/.test(pattern)) {
-    return "Pattern has alternation inside a quantified group — may cause catastrophic backtracking";
+    return "Pattern has alternation inside a quantified group: may cause catastrophic backtracking";
   }
   return null;
 }
@@ -155,7 +155,7 @@ const RegexPlayground = () => {
 
   return (
     <ToolPageLayout title="Regex Playground - Live Regex Tester with Highlights" icon={Regex} description="Live regex tester with real-time match highlighting, capture groups, replace preview, and a snippet library.">
-      <ToolSEO title="Regex Playground - Live Regex Tester with Highlights" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates — click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
+      <ToolSEO title="Regex Playground - Live Regex Tester with Highlights" description="Live regex tester with real-time match highlighting, capture groups, and a library of common patterns. Test regular expressions online instantly." canonicalPath="/regex" keywords={["regex tester", "regex playground", "regular expression tester", "regex match highlighter", "test regex online"]} faq={[{question:"How do I test a regex?",answer:"Enter your regular expression pattern and flags, then type or paste test text below. Matches are highlighted in real-time as you type."},{question:"What common regex patterns are included?",answer:"Pre-built patterns for emails, URLs, IPv4 addresses, phone numbers, hex colors, and ISO dates. Click any to load it instantly."},{question:"Can I share a regex test with a colleague?",answer:"Yes. Click Share to copy a link with your pattern, flags, and test text encoded in the URL."},{question:"Does the regex tester show capture groups?",answer:"Yes. Named capture groups are displayed for every match, along with each match's position in the test string."}]} howToSteps={["Enter a regex pattern and flags (e.g., g, i, m)","Type or paste test text in the text area","View highlighted matches and match details in real-time","Use the common patterns library for quick access"]} />
 
       {/* Snippet bar */}
       <div className="flex flex-wrap items-center gap-2">
@@ -224,7 +224,7 @@ const RegexPlayground = () => {
                       </span>
                     )}
                     {!error && matches.length === 0 && (
-                      <span className="text-xs text-muted-foreground">— no matches</span>
+                      <span className="text-xs text-muted-foreground">no matches</span>
                     )}
                     {matches.length > 1 && (
                       <div className="flex items-center gap-1 ml-auto">

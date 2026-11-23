@@ -186,7 +186,7 @@ const NumberBaseConverter = () => {
   return (
     <ToolPageLayout
       title="Number Base Converter"
-      description="Convert between binary, octal, decimal and hexadecimal — with bitwise operations"
+      description="Convert between binary, octal, decimal and hexadecimal: with bitwise operations"
       maxWidth="narrow"
     >
       <ToolSEO
@@ -260,7 +260,7 @@ const NumberBaseConverter = () => {
                 <span className="text-xs font-semibold text-foreground">Hex</span>
               </div>
               <div className="flex-1 font-mono text-sm text-foreground min-h-[36px] flex items-center px-3 rounded-md border border-border/50 bg-muted/30">
-                {hexValue || <span className="text-muted-foreground/50">—</span>}
+                {hexValue || null}
               </div>
               {hexAscii && <CopyButton value={hexValue} size="sm" />}
             </div>
@@ -282,7 +282,7 @@ const NumberBaseConverter = () => {
               {(asciiInput || hexAscii) && <CopyButton value={asciiInput || hexAscii || ""} size="sm" />}
             </div>
             {hexValue && !hexAscii && !asciiInput && (
-              <p className="text-xs text-muted-foreground pl-[92px]">Hex value contains non-printable bytes — no ASCII representation</p>
+              <p className="text-xs text-muted-foreground pl-[92px]">Hex value contains non-printable bytes: no ASCII representation</p>
             )}
           </div>
         </div>
@@ -354,8 +354,8 @@ const NumberBaseConverter = () => {
       </div>
 
       <AboutTool>
-        <p>Converts integers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). Uses JavaScript's native <code>BigInt</code> for arbitrary-precision integers — handles values well beyond 32-bit or 64-bit limits.</p>
-        <p className="mt-2">The bit pattern view color-codes alternating 4-bit nibbles for quick visual parsing. The hex↔ASCII panel converts printable ASCII strings to and from hex encoding. The bitwise section computes AND, OR, XOR, NOT, left-shift (LSH) and right-shift (RSH) live as you type — no button needed. Everything runs in your browser.</p>
+        <p>Converts integers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). Uses JavaScript's native <code>BigInt</code> for arbitrary-precision integers: handles values well beyond 32-bit or 64-bit limits.</p>
+        <p className="mt-2">The bit pattern view color-codes alternating 4-bit nibbles for quick visual parsing. The hex↔ASCII panel converts printable ASCII strings to and from hex encoding. The bitwise section computes AND, OR, XOR, NOT, left-shift (LSH) and right-shift (RSH) live as you type, no button needed. Everything runs in your browser.</p>
       </AboutTool>
     </ToolPageLayout>
   );

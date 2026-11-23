@@ -51,14 +51,14 @@ export function isValidBase64(str: string): { valid: boolean; error?: string } {
   // Check padding
   const noPad = base64Only.replace(/[\s\n\r]/g, '');
   if (noPad.length % 4 !== 0 && !noPad.match(/[_-]/)) {
-    return { valid: false, error: 'Invalid padding — length must be multiple of 4' };
+    return { valid: false, error: 'Invalid padding: length must be multiple of 4' };
   }
 
   try {
     atob(urlSafeToStandard(base64Only.replace(/[\s\n\r]/g, '')));
     return { valid: true };
   } catch {
-    return { valid: false, error: 'Cannot decode — malformed Base64 string' };
+    return { valid: false, error: 'Cannot decode: malformed Base64 string' };
   }
 }
 

@@ -47,8 +47,8 @@ export const TokenComparison = ({ currentToken }: { currentToken: string }) => {
         {diffs.map(([key, v1, v2]) => (
           <div key={key} className="grid grid-cols-3 gap-2 text-xs font-mono rounded bg-muted/30 p-1.5">
             <span className="text-foreground font-medium">{key}</span>
-            <span className="text-destructive break-all">{v1 === undefined ? "—" : JSON.stringify(v1)}</span>
-            <span className="text-[hsl(var(--success-foreground))] break-all">{v2 === undefined ? "—" : JSON.stringify(v2)}</span>
+            <span className="text-destructive break-all">{v1 === undefined ? "" : JSON.stringify(v1)}</span>
+            <span className="text-[hsl(var(--success-foreground))] break-all">{v2 === undefined ? "" : JSON.stringify(v2)}</span>
           </div>
         ))}
       </div>

@@ -245,10 +245,10 @@ const EncodingHub = () => {
       setDetectedSubMode(effective);
       // Auto-detect always implies decode for known encoded inputs, encode for plain
       const explanations: Record<Exclude<HubMode, "auto">, string> = {
-        base64: "Detected: Base64 encoded string — decoding",
-        base64url: "Detected: Base64 URL-safe string — decoding",
-        url: "Detected: Percent-encoded URL — decoding",
-        dataurl: "Detected: Data URL — decoding",
+        base64: "Detected: Base64 encoded string, decoding",
+        base64url: "Detected: Base64 URL-safe string, decoding",
+        url: "Detected: Percent-encoded URL, decoding",
+        dataurl: "Detected: Data URL, decoding",
       };
       // In auto-detect, default to decoding (the detector only fires for encoded-looking inputs)
       const autoDir: "encode" | "decode" = "decode";
@@ -439,7 +439,7 @@ const EncodingHub = () => {
     const b64 = await encodeFileToB64(file);
     const finalB64 = mode === "base64url" ? toUrlSafe(b64) : b64;
     setDirection("encode");
-    setInput(`[File: ${file.name} — ${formatBytes(file.size)}]`);
+    setInput(`[File: ${file.name}, ${formatBytes(file.size)}]`);
     setOutput(finalB64);
     toast.success(`Encoded ${file.name}`);
   };
@@ -457,7 +457,7 @@ const EncodingHub = () => {
     const b64 = await encodeFileToB64(file);
     const finalB64 = mode === "base64url" ? toUrlSafe(b64) : b64;
     setDirection("encode");
-    setInput(`[File: ${file.name} — ${formatBytes(file.size)}]`);
+    setInput(`[File: ${file.name}, ${formatBytes(file.size)}]`);
     setOutput(finalB64);
     toast.success(`Encoded ${file.name}`);
   };
@@ -509,15 +509,15 @@ const EncodingHub = () => {
           "RFC 3986", "query string parser",
         ]}
         faq={[
-          { question: "What is the difference between Base64 and URL encoding?", answer: "Base64 converts binary data into a 64-character ASCII alphabet (A-Z, a-z, 0-9, +, /) — used for embedding binary in text. URL encoding (percent-encoding) replaces unsafe URL characters with %HH hex escapes — used for query parameters and paths." },
-          { question: "How do I encode a file to Base64?", answer: "Switch to Base64 mode, then drag and drop your file into the input panel — or click Upload. The file's bytes are read entirely in the browser and converted to a Base64 string." },
+          { question: "What is the difference between Base64 and URL encoding?", answer: "Base64 converts binary data into a 64-character ASCII alphabet (A-Z, a-z, 0-9, +, /), used for embedding binary in text. URL encoding (percent-encoding) replaces unsafe URL characters with %HH hex escapes, used for query parameters and paths." },
+          { question: "How do I encode a file to Base64?", answer: "Switch to Base64 mode, then drag and drop your file into the input panel, or click Upload. The file's bytes are read entirely in the browser and converted to a Base64 string." },
           { question: "What is URL-safe Base64?", answer: "A Base64 variant that replaces + with - and / with _ and strips = padding, so the output is safe to use in URLs and filenames without any further percent-encoding." },
           { question: "How do I decode a data URL?", answer: "Pick Data URL mode, switch to Decoder, and paste the full data:[mime];base64,[data] string. The tool extracts the MIME type, decodes the payload, and shows an inline preview where possible." },
           { question: "What is the difference between encodeURI and encodeURIComponent?", answer: "encodeURI preserves URL structural characters (: / ? # &), so it's used on a full URL. encodeURIComponent encodes everything except letters, digits, and - _ . ~, so it's used for individual query parameter values." },
         ]}
         howToSteps={[
           "Paste text, a URL, or drop a file into the input panel",
-          "Select a mode — Auto-Detect, Base64, Base64 URL-Safe, URL Encode, or Data URL",
+          "Select a mode: Auto-Detect, Base64, Base64 URL-Safe, URL Encode, or Data URL",
           "Toggle Encode or Decode (Auto-Detect routes automatically)",
           "Copy the result or download it as a file",
         ]}
@@ -635,7 +635,7 @@ const EncodingHub = () => {
       {/* Base64 URL-safe note */}
       {mode === "base64url" && (
         <div className="text-[11px] text-muted-foreground px-2">
-          URL-safe Base64 replaces <code className="font-mono">+</code> with <code className="font-mono">-</code> and <code className="font-mono">/</code> with <code className="font-mono">_</code> — safe for use in URLs and filenames without percent-encoding.
+          URL-safe Base64 replaces <code className="font-mono">+</code> with <code className="font-mono">-</code> and <code className="font-mono">/</code> with <code className="font-mono">_</code>: safe for use in URLs and filenames without percent-encoding.
         </div>
       )}
 
@@ -734,7 +734,7 @@ const EncodingHub = () => {
                   </tbody>
                 </table>
                 {hexBytes.length > 512 * 16 && (
-                  <p className="text-xs text-muted-foreground px-3 py-2">Showing first 512 rows of {Math.ceil(hexBytes.length / 16).toLocaleString()} rows — {formatBytes(hexBytes.length)} total</p>
+                  <p className="text-xs text-muted-foreground px-3 py-2">Showing first 512 rows of {Math.ceil(hexBytes.length / 16).toLocaleString()} rows, {formatBytes(hexBytes.length)} total</p>
                 )}
               </div>
             </div>
@@ -880,7 +880,7 @@ const EncodingHub = () => {
                 </div>
               )}
               {detectedContent?.mimeType === "application/pdf" && (
-                <div className="p-2 border-b border-border bg-muted/10 text-xs flex items-center gap-2"><Badge>PDF detected</Badge> — use Download to save</div>
+                <div className="p-2 border-b border-border bg-muted/10 text-xs flex items-center gap-2"><Badge>PDF detected</Badge> Use Download to save</div>
               )}
               {mode === "dataurl" && dataUrlParsed?.mime.startsWith("image/") && (
                 <div className="p-2 border-b border-border bg-muted/10 flex justify-center">
@@ -919,11 +919,11 @@ const EncodingHub = () => {
           <Upload className="w-8 h-8 text-muted-foreground" />
           <div>
             <p className="font-medium text-sm">Drop a file here to encode it to {mode === "base64url" ? "URL-safe Base64" : "Base64"}</p>
-            <p className="text-xs text-muted-foreground mt-1">Any file type — the raw bytes will be encoded</p>
+            <p className="text-xs text-muted-foreground mt-1">Any file type: the raw bytes will be encoded</p>
           </div>
           {fileMeta && (
             <div className="text-xs text-muted-foreground flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5" />{fileMeta.name} ({formatBytes(fileMeta.size)}) — {fileMeta.type || "unknown"}
+              <FileText className="w-3.5 h-3.5" />{fileMeta.name} ({formatBytes(fileMeta.size)}), {fileMeta.type || "unknown"}
             </div>
           )}
         </div>

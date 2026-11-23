@@ -140,18 +140,18 @@ const CryptoSuite = () => {
     <ToolPageLayout title="Crypto Suite" description="Hash, HMAC, UUID generation and secret tools · all computed locally">
       <ToolSEO
         title="Crypto Suite - Hash, UUID & Random Secret Generator"
-        description="Generate SHA-256/512 hashes with HMAC, create UUID v4/v5 tokens in bulk, and generate JWT secrets and AES keys — all via the native Web Crypto API, in your browser."
+        description="Generate SHA-256/512 hashes with HMAC, create UUID v4/v5 tokens in bulk, and generate JWT secrets and AES keys: all via the native Web Crypto API, in your browser."
         canonicalPath="/crypto"
         keywords={["sha256 generator", "sha512 hash", "hmac generator", "hash file", "uuid generator", "uuid v4", "uuid v5", "bulk uuid", "crypto subtle", "web crypto api", "hash calculator", "uuid validator", "random secret generator", "jwt secret generator", "random key generator", "api token generator"]}
         faq={[
           { question: "What is the difference between SHA-256 and SHA-512?", answer: "Both are SHA-2 family hashes. SHA-256 produces a 256-bit (32-byte) digest and is faster on 32-bit hardware; SHA-512 produces a 512-bit (64-byte) digest and is generally faster on 64-bit hardware. SHA-512 offers a larger security margin against brute-force attacks." },
-          { question: "What is HMAC and when should I use it?", answer: "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash with a secret key to produce a tag that proves both integrity and authenticity. Use it whenever you need to verify a message came from a party that knows the shared secret — e.g. signing API requests or webhook payloads." },
+          { question: "What is HMAC and when should I use it?", answer: "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash with a secret key to produce a tag that proves both integrity and authenticity. Use it whenever you need to verify a message came from a party that knows the shared secret, e.g. signing API requests or webhook payloads." },
           { question: "Is it safe to hash files in the browser?", answer: "Yes. All hashing in Crypto Suite happens locally via the Web Crypto API (crypto.subtle.digest). The file bytes never leave your machine and no network requests are made." },
-          { question: "What is the difference between UUID v4 and v5?", answer: "v4 is fully random (122 bits of entropy from crypto.getRandomValues). v5 is deterministic: it derives the UUID from a namespace UUID plus a name string using SHA-1, so the same inputs always yield the same UUID — useful for stable IDs derived from URLs, DNS names, or other natural keys." },
+          { question: "What is the difference between UUID v4 and v5?", answer: "v4 is fully random (122 bits of entropy from crypto.getRandomValues). v5 is deterministic: it derives the UUID from a namespace UUID plus a name string using SHA-1, so the same inputs always yield the same UUID, useful for stable IDs derived from URLs, DNS names, or other natural keys." },
           { question: "How do I generate cryptographically secure UUIDs?", answer: "Use v4. Crypto Suite uses crypto.getRandomValues (or crypto.randomUUID when available), the browser's CSPRNG, which is suitable for security-sensitive identifiers." },
           { question: "How long should a JWT HS256 secret be?", answer: "At least 32 random bytes (256 bits), the length of the SHA-256 output, as RFC 7518 requires. The Secrets tab has presets for HS256, HS384 and HS512 secrets, AES keys and API tokens, generated with crypto.getRandomValues." },
           { question: "Are the generated secrets stored or sent anywhere?", answer: "No. Secrets are generated in your browser with its secure random source, shown only on the page, and never stored or transmitted. Once you copy one, protect it like any other credential." },
-          { question: "Why is MD5 not supported?", answer: "MD5 is cryptographically broken — practical collisions can be generated in seconds. The Web Crypto API deliberately omits it. We only expose it indirectly inside UUID v3 generation, where collision resistance is not a security requirement." },
+          { question: "Why is MD5 not supported?", answer: "MD5 is cryptographically broken: practical collisions can be generated in seconds. The Web Crypto API deliberately omits it. We only expose it indirectly inside UUID v3 generation, where collision resistance is not a security requirement." },
         ]}
         howToSteps={[
           "Hashing: paste text, drop a file, or enter a hex string in the Hashing tab",
@@ -532,15 +532,15 @@ function HashTab() {
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">{label}</Badge>
-                  {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken — not for security</span>}
+                  {a === "SHA-1" && !hmac && <span className="text-xs text-destructive">cryptographically broken: not for security</span>}
                 </div>
                 <CopyButton value={val} message="Copied" label="Copy" ariaLabel={`Copy ${label}`} variant="ghost" size="sm" disabled={!val} />
               </div>
-              <p className="font-mono text-sm text-foreground break-all min-h-[1.25rem]">{val || <span className="text-muted-foreground">—</span>}</p>
+              <p className="font-mono text-sm text-foreground break-all min-h-[1.25rem]">{val || <span className="text-muted-foreground"></span>}</p>
             </div>
           );
         })}
-        <p className="text-xs text-muted-foreground">MD5 and bcrypt are intentionally not supported — MD5 is cryptographically broken and the Web Crypto API does not expose it; bcrypt requires a server-side key-stretching loop.</p>
+        <p className="text-xs text-muted-foreground">MD5 and bcrypt are intentionally not supported: MD5 is cryptographically broken and the Web Crypto API does not expose it; bcrypt requires a server-side key-stretching loop.</p>
       </div>
 
       {/* Compare */}
@@ -1113,10 +1113,10 @@ function BcryptTab() {
         <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
           <p className="text-xs font-semibold text-muted-foreground">About bcrypt</p>
           <ul className="text-xs text-muted-foreground space-y-0.5">
-            <li>• Adaptive — cost factor slows brute-force as hardware improves</li>
-            <li>• Built-in salt — every hash is unique even for identical passwords</li>
+            <li>• Adaptive: cost factor slows brute-force as hardware improves</li>
+            <li>• Built-in salt: every hash is unique even for identical passwords</li>
             <li>• Max input: 72 bytes (passwords longer than that are truncated)</li>
-            <li>• Never store plaintext passwords — always hash before saving</li>
+            <li>• Never store plaintext passwords; always hash before saving</li>
           </ul>
         </div>
       </div>

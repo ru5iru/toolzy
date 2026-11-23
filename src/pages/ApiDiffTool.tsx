@@ -60,11 +60,11 @@ const ApiDiffTool = () => {
       return;
     }
     if (leftFormat !== "json") {
-      toast.error(`Left panel contains ${leftFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      toast.error(`Left panel contains ${leftFormat.toUpperCase()}, not JSON: this tool compares JSON only`);
       return;
     }
     if (rightFormat !== "json") {
-      toast.error(`Right panel contains ${rightFormat.toUpperCase()}, not JSON — this tool compares JSON only`);
+      toast.error(`Right panel contains ${rightFormat.toUpperCase()}, not JSON: this tool compares JSON only`);
       return;
     }
     try {
@@ -400,8 +400,8 @@ const ApiDiffTool = () => {
                     <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
                       <td className="px-3 py-2 text-foreground">{d.path}</td>
                       <td className="px-3 py-2"><Badge variant="outline" className={`text-[9px] ${colorMap[d.type]}`}>{labelMap[d.type]}</Badge></td>
-                      <td className="px-3 py-2 text-destructive max-w-[200px] truncate">{d.left ?? "—"}</td>
-                      <td className="px-3 py-2 text-[hsl(var(--success-foreground))] max-w-[200px] truncate">{d.right ?? "—"}</td>
+                      <td className="px-3 py-2 text-destructive max-w-[200px] truncate">{d.left ?? ""}</td>
+                      <td className="px-3 py-2 text-[hsl(var(--success-foreground))] max-w-[200px] truncate">{d.right ?? ""}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -433,12 +433,12 @@ const ApiDiffTool = () => {
         <div>
           <h2 className="text-lg font-bold text-foreground mb-3">Features</h2>
           <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-            <li>Structural JSON comparison — not just text diff</li>
+            <li>Structural JSON comparison, not just text diff</li>
             <li>Type change detection (string → number, null → missing)</li>
             <li>Customizable ignore rules (field names, JSON paths, regex)</li>
             <li>Export results as JSON or Markdown reports</li>
             <li>Drag & drop file support, auto-format on paste</li>
-            <li>100% browser-based — no data leaves your machine</li>
+            <li>100% browser-based: no data leaves your machine</li>
           </ul>
         </div>
 

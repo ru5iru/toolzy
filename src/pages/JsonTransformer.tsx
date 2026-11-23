@@ -86,7 +86,7 @@ const JsonTransformer = () => {
     <ToolPageLayout
       title="JSON Transformer"
       icon={Braces}
-      description="Filter and transform JSON with jq-compatible expressions — all in your browser."
+      description="Filter and transform JSON with jq-compatible expressions: all in your browser."
     >
       <ToolSEO
         title="JSON Transformer - jq-style Filter & Transform Tool"
@@ -94,7 +94,7 @@ const JsonTransformer = () => {
         canonicalPath="/json-transform"
         keywords={["json transformer", "jq online", "json filter", "json query", "json map", "json select", "jq playground"]}
         faq={[
-          { question: "Is this real jq?", answer: "It implements a large compatible subset of jq — path access, pipes, map/select/sort_by/group_by/to_entries/from_entries and many more built-ins. A few advanced features (try-catch, $ENV, recursive descent with ..) are not yet supported." },
+          { question: "Is this real jq?", answer: "It implements a large compatible subset of jq: path access, pipes, map/select/sort_by/group_by/to_entries/from_entries and many more built-ins. A few advanced features (try-catch, $ENV, recursive descent with ..) are not yet supported." },
           { question: "Does my data leave the browser?", answer: "No. All filtering runs in JavaScript in your browser tab." },
           { question: "How do I filter an array?", answer: ".[] | select(.active == true) iterates the array and keeps only objects where active is true." },
         ]}
@@ -195,7 +195,7 @@ const JsonTransformer = () => {
             <pre className="flex-1 font-mono text-xs p-3 overflow-auto bg-card whitespace-pre-wrap break-all">
               {result.error
                 ? <span className="text-destructive">{result.error}</span>
-                : result.output || <span className="text-muted-foreground italic">— empty result —</span>
+                : result.output || <span className="text-muted-foreground italic">empty result</span>
               }
             </pre>
           </div>

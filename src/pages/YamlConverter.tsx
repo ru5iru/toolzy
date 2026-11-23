@@ -164,7 +164,7 @@ const YamlConverter = () => {
   return (
     <ToolPageLayout
       title="YAML / JSON / TOML Converter"
-      description="Convert between YAML, JSON, and TOML — runs entirely in your browser"
+      description="Convert between YAML, JSON, and TOML: runs entirely in your browser"
     >
       <ToolSEO
         title="YAML JSON TOML Converter - Free Online Format Converter"
@@ -248,7 +248,7 @@ const YamlConverter = () => {
       </div>
 
       <AboutTool>
-        <p>Converts configuration data between YAML, JSON, and TOML — the three most common structured-data formats for config files, CI pipelines, and package manifests.</p>
+        <p>Converts configuration data between YAML, JSON, and TOML, the three most common structured-data formats for config files, CI pipelines, and package manifests.</p>
         <p className="mt-2">YAML is used by Docker Compose, Kubernetes, GitHub Actions, and Ansible. JSON is standard for REST APIs and <code>package.json</code>. TOML is the native format for Rust's <code>Cargo.toml</code>, Python's <code>pyproject.toml</code>, and Hugo. All conversion is done entirely in your browser with <code>js-yaml</code> and <code>@iarna/toml</code>.</p>
       </AboutTool>
     </ToolPageLayout>

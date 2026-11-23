@@ -202,7 +202,7 @@ const CronBuilder = () => {
 
   const handleRawApply = () => {
     const parsed = parseExpr(rawExpr);
-    if (!parsed) { toast.error("Invalid expression — expected 5 fields"); return; }
+    if (!parsed) { toast.error("Invalid expression: expected 5 fields"); return; }
     try { cronstrue.toString(rawExpr); } catch { toast.error("Invalid cron expression"); return; }
     setFields(parsed);
     setRawExpr("");
@@ -221,7 +221,7 @@ const CronBuilder = () => {
   return (
     <ToolPageLayout
       title="Cron Expression Builder"
-      description="Build and decode cron schedules — with plain-English explanations and next run times"
+      description="Build and decode cron schedules: plain-English explanations and next run times"
       maxWidth="wide"
     >
       <ToolSEO
@@ -267,7 +267,7 @@ const CronBuilder = () => {
             {isValid ? (
               <p className="text-sm text-foreground font-medium">{description}</p>
             ) : (
-              <p className="text-sm text-destructive" role="alert">Invalid expression — check the fields above</p>
+              <p className="text-sm text-destructive" role="alert">Invalid expression: check the fields above</p>
             )}
           </div>
 
